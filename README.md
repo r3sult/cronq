@@ -1,6 +1,6 @@
 # CronQ
 
-A cron-like system to run you application tasks across any node, instead of one
+A cron-like system to run your application tasks across any node, instead of one
 special snowflake. This is done by keeping your tasks in MySQL and publishing
 them over AMQP to workers that will run your tasks and eventually save the
 results back into the DB. This was started as a hackathon project at
