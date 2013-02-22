@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 #-*- coding:utf-8 -*-
 import argparse
-import importlib
+import datetime
 import json
 import logging
 import os
 import random
-import shlex
 import socket
 import subprocess
 import sys
@@ -15,9 +14,11 @@ import time
 from haigha.connection import Connection as haigha_Connection
 from haigha.connections import RabbitConnection
 from haigha.message import Message
-from yaml import safe_load as load
 
-logger = logging.getLogger('amqp-dispatcher')
+from queue_connection import connect
+
+
+logger = logging.getLogger('cronq')
 
 class NullHandler(logging.Handler):
     def emit(self, record):
@@ -45,37 +46,12 @@ def create_connection_closed_cb(connection):
     return connection_closed_cb
 
 
-def connect_to_hosts(connector, hosts, **kwargs):
-    for host in hosts:
-        logger.info('Trying to connect to host: {0}'.format(host))
-        try:
-            conn = connector(host=host, **kwargs)
-            return conn
-        except socket.error:
-            logger.info('Error connecting to {0}'.format(host))
-    logger.error('Could not connect to any hosts')
 
 
 def setup():
     args = get_args_from_cli()
 
-    hosts_string = os.getenv('RABBITMQ_HOSTS', None)
-    if hosts_string is not None:
-        hosts = hosts_string.split(',')
-        logger.info('Hosts are: {0}'.format(hosts))
-        random.shuffle(hosts)
-    else:
-        hosts = [os.getenv('RABBITMQ_HOST', 'localhost')]
-    user = os.getenv('RABBITMQ_USER', 'guest')
-    password = os.getenv('RABBITMQ_PASS', 'guest')
-    rabbit_logger = logging.getLogger('amqp-dispatcher.haigha')
-    conn = connect_to_hosts(
-        RabbitConnection,
-        hosts,
-        user=user,
-        password=password,
-        logger=rabbit_logger
-    )
+    conn = connect()
     if conn is None:
         return
     conn._close_cb = create_connection_closed_cb(conn)
@@ -87,7 +63,7 @@ def setup():
     runner = create_runner(channel)
 
     channel.basic.consume(
-        queue='cronq',
+        queue='cronq_jobs',
         consumer=runner,
         no_ack=False,
     )
@@ -112,21 +88,38 @@ def create_runner(channel):
 
         data = json.loads(str(msg.body))
         cmd = data.get('cmd')
-        args = shlex.split(str(cmd))
         print 'starting'
-        print args
+        publish_result({
+            'job_id': data.get('job_id'),
+            'run_id': data.get('run_id'),
+            'start_time': str(datetime.datetime.utcnow()),
+            'type': 'starting',
+        })
         start = time.time()
-        proc = subprocess.Popen(args)
+        try:
+            proc = subprocess.Popen(cmd, shell=True)
+        except OSError as exc:
+            print 'Failed', exc
+            end = time.time()
+            publish_result({
+                'job_id': data.get('job_id'),
+                'run_id': data.get('run_id'),
+                'run_time': end - start,
+                'type': 'failed',
+            })
+            return reject(requeue=False)
         print 'waiting'
 
         proc.wait()
         end = time.time()
         publish_result({
             'job_id': data.get('job_id'),
+            'run_id': data.get('run_id'),
             'return_code': proc.returncode,
-            'run_time': end - start
+            'run_time': end - start,
+            'type': 'finished',
         })
-        print 'done', proc.returncode
+        print 'done', proc.returncode, data.get('run_id')
 
         ack()
 

@@ -8,16 +8,19 @@ def read(fname):
 
 def run_setup():
     setup(
-        name='',
-        version='0.0.1',
-        description='',
-        keywords = '',
-        url='',
-        author='',
-        author_email='@',
-        license='',
-        packages=[''],
+        name='cronq',
+        version='0.0.3',
+        description='A Cron-like system for running tasks',
+        keywords = 'cron amqp',
+        url='http://github.com/philipcristiano/cronq',
+        author='Philip Cristiano',
+        author_email='philipcristiano@gmail.com',
+        license='BSD',
+        packages=['cronq', 'cronq.backends'],
         install_requires=[
+            'haigha',
+            'sqlalchemy',
+            'mysql-connector-python',
         ],
         test_suite='tests',
         long_description=read('README.md'),
@@ -26,6 +29,8 @@ def run_setup():
         ],
         entry_points="""
         [console_scripts]
+           cronq-runner=cronq.runner:main
+           cronq-injector=cronq.injector:main
         """,
     )
 
