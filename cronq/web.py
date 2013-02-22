@@ -20,7 +20,7 @@ def remove_storage(request):
     return request
 
 @app.route('/')
-def hello():
+def index():
     jobs = list(g.storage.jobs)
     return render_template('index.html', jobs=jobs)
 
