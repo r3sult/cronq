@@ -9,7 +9,7 @@ def read(fname):
 def run_setup():
     setup(
         name='cronq',
-        version='0.0.9',
+        version='0.0.10',
         description='A Cron-like system for running tasks',
         keywords = 'cron amqp',
         url='http://github.com/philipcristiano/cronq',

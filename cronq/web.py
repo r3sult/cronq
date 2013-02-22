@@ -31,6 +31,11 @@ def job(id):
     events = g.storage.last_events_for_job(id, 10)
     return render_template('job.html', job=job_doc, events=events)
 
+@app.route('/run/<string:id>')
+def run_id(id):
+    events = g.storage.events_for_run_id(id)
+    return render_template('run_id.html', events=events)
+
 
 if __name__ == "__main__":
     app.run(debug=True)

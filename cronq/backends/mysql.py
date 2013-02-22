@@ -96,16 +96,11 @@ class Storage(object):
 
     def last_events_for_job(self, job_id, number):
         events = self.session.query(Event).filter_by(job_id=job_id).order_by(desc(Event.id)).limit(number)
-        for event in events:
-            yield {
-                'id': event.id,
-                'datetime': event.datetime,
-                'run_id': UUID(hex=event.run_id),
-                'host': event.host,
-                'return_code': event.return_code,
-                'type': event.type,
-            }
+        return event_models_to_docs(events)
 
+    def events_for_run_id(self, run_id):
+        events = self.session.query(Event).filter_by(run_id=run_id).order_by(Event.id)
+        return event_models_to_docs(events)
 
     def inject(self):
         """Get a message from storage and injects it into the job stream"""
@@ -137,6 +132,18 @@ class Storage(object):
         except Exception as exc:
             session.rollback()
             raise exc
+
+def event_models_to_docs(events):
+    for event in events:
+        yield {
+            'id': event.id,
+            'datetime': event.datetime,
+            'run_id': UUID(hex=event.run_id),
+            'host': event.host,
+            'return_code': event.return_code,
+            'type': event.type,
+            'run_id': event.run_id,
+        }
 
 
 def new_engine():
