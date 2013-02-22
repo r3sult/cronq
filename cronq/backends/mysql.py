@@ -4,11 +4,10 @@ import os
 
 import sqlalchemy
 from sqlalchemy import (
+    or_,
     Binary,
-    BLOB,
     Column,
     CHAR,
-    Date,
     DateTime,
     Integer,
     Interval,
@@ -102,6 +101,11 @@ class Storage(object):
         events = self.session.query(Event).filter_by(run_id=run_id).order_by(Event.id)
         return event_models_to_docs(events)
 
+    def run_job_now(self, id):
+        event = self.session.query(Job).filter_by(id=id).first()
+        event.run_now = True
+        self.session.commit()
+
     def inject(self):
         """Get a message from storage and injects it into the job stream"""
         print 'Trying to inject', datetime.datetime.utcnow()
@@ -110,7 +114,10 @@ class Storage(object):
 
     def get_unpublished_task(self):
         session = self.session
-        to_run = Job.next_run < datetime.datetime.utcnow()
+        to_run = or_(
+            Job.next_run < datetime.datetime.utcnow(),
+            Job.run_now == True,
+        )
 
         job = session.query(Job).filter(to_run).first()
         if job is None:
@@ -127,6 +134,7 @@ class Storage(object):
                 'command': unicode(job.command),
                 'id': job.id,
             }
+            job.run_now = False
             self.publisher.publish(job.routing_key, job_doc, uuid4().hex)
             session.commit()
         except Exception as exc:
@@ -161,6 +169,7 @@ class Job(Base):
     next_run = Column(DateTime(), default=datetime.datetime.utcnow)
     routing_key = Column(CHAR(32), default='default')
     command = Column(Text())
+    run_now = Column(Integer(1))
 
 
 class Event(Base):

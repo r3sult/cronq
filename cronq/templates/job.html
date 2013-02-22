@@ -6,6 +6,12 @@
         <h2>Interval: {{job.interval}} seconds</h2>
         <h3>Command: <pre>{{job.command}}</pre></h3>
       </div>
+      <div>
+        <form method="POST">
+            <input type="hidden" name="run_now" value="1">
+            <input type="submit" class="btn btn-primary" value="Run Now">
+        </form>
+      </div>
       <hr>
       <div id="events">
         {% for event in events %}

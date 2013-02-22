@@ -65,6 +65,15 @@
         </ul>
         <h3 class="muted"><a href="{{url_for("index")}}">CronQ</a></h3>
       </div>
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          <div class="flashes alert alert-info">
+          {% for message in messages %}
+            {{ message }}
+          {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
       {% block main %}
       {% endblock main %}
 
