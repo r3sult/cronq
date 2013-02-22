@@ -41,12 +41,6 @@ class Storage(object):
                 model.__table__.create(self._engine)
             except (OperationalError, ProgrammingError):
                 pass
-        self.add_job(
-            'sleep',
-            10,
-            '(source /Users/philipcristiano/gits/cronq/venv/bin/activate && python -V)',
-            id=1
-        )
 
     def add_job(self, name, interval_seconds, command, next_run=None, id=None):
         job = Job()
