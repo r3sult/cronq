@@ -9,7 +9,7 @@ def read(fname):
 def run_setup():
     setup(
         name='cronq',
-        version='0.0.4',
+        version='0.0.5',
         description='A Cron-like system for running tasks',
         keywords = 'cron amqp',
         url='http://github.com/philipcristiano/cronq',
@@ -18,12 +18,14 @@ def run_setup():
         license='BSD',
         packages=['cronq', 'cronq.backends'],
         install_requires=[
+            'flask',
             'haigha',
             'sqlalchemy',
             'mysql-connector-python',
         ],
         test_suite='tests',
         long_description=read('README.md'),
+        include_package_data=True,
         zip_safe=True,
         classifiers=[
         ],

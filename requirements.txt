@@ -5,3 +5,4 @@ haigha
 sqlalchemy>=0.7,<0.8
 #mysql-connector-python
 mysql-python
+flask

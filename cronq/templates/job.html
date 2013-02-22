@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block main %}
+      <div class="jumbotron">
+        <h1>{{job.name}}</h1>
+        <h2>Next run: {{job.next_run}}</h2>
+        <h2>Interval: {{job.interval}} seconds</h2>
+        <h3>Command: <pre>{{job.command}}</pre></h3>
+      </div>
+      <hr>
+{% endblock main %}

@@ -1,1 +1,3 @@
 include README.md
+recursive-include cronq/templates *
+recursive-include cronq/static *

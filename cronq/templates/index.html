@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block main %}
+      <div class="jumbotron">
+        <h1>You got something BETTER than Cron</h1>
+        {% for job in jobs %}
+        <h2>Job: <a href="{{ url_for('job', id=job.id)}}">{{job.name}}</a></h2>
+            <hr>
+        {% endfor %}
+      </div>
+
+      <hr>
+{% endblock main %}

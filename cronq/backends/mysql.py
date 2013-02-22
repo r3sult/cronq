@@ -42,6 +42,10 @@ class Storage(object):
             except (OperationalError, ProgrammingError):
                 pass
 
+    def close(self):
+        self.session.close()
+        self.engine.close()
+
     def add_job(self, name, interval_seconds, command, next_run=None, id=None):
         job = Job()
         job.id = id
@@ -50,6 +54,27 @@ class Storage(object):
         job.command = command
         self.session.merge(job)
         self.session.commit()
+
+    @property
+    def jobs(self):
+        session = self.session
+        for job in session.query(Job):
+            yield {
+                'id': job.id,
+                'name': job.name,
+                'next_run': job.next_run,
+                'interval': job.interval,
+            }
+
+    def get_job(self, id):
+        job = self.session.query(Job).filter_by(id=id).first()
+        return {
+            'id': job.id,
+            'name': job.name,
+            'next_run': job.next_run,
+            'interval': job.interval,
+            'command': job.command,
+        }
 
     def inject(self):
         """Get a message from storage and injects it into the job stream"""
