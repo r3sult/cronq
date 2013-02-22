@@ -14,18 +14,18 @@ class Publisher(object):
         self._connection = connect()
         self._channel = self._connection.channel()
 
-    def publish(self, job, run_id):
+    def publish(self, routing_key, job, run_id):
         cmd = {
             'run_id': str(run_id),
             'job_id': job['id'],
             'cmd': job['command']
         }
         print cmd
-        self._publish(cmd)
+        self._publish(routing_key, cmd)
 
-    def _publish(self, body):
+    def _publish(self, routing_key, body):
         msg = Message(json.dumps(body), {})
-        self._channel.basic.publish(msg, 'cronq', 'cronq_jobs')
+        self._channel.basic.publish(msg, 'cronq', routing_key)
 
 
 def connect():

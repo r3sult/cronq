@@ -127,11 +127,12 @@ class Storage(object):
                 'command': unicode(job.command),
                 'id': job.id,
             }
-            self.publisher.publish(job_doc, uuid4().hex)
+            self.publisher.publish(job.routing_key, job_doc, uuid4().hex)
             session.commit()
         except Exception as exc:
             session.rollback()
-            raise exc
+            raise
+        return True
 
 def event_models_to_docs(events):
     for event in events:
@@ -158,6 +159,7 @@ class Job(Base):
     name = Column(CHAR(255))
     interval = Column(Interval)
     next_run = Column(DateTime(), default=datetime.datetime.utcnow)
+    routing_key = Column(CHAR(32), default='default')
     command = Column(Text())
 
 

@@ -3,6 +3,7 @@
 import datetime
 import json
 import logging
+import os
 import socket
 import subprocess
 import sys
@@ -45,12 +46,13 @@ def setup():
 
     # Create message channel
     channel = conn.channel()
+    queue = os.getenv('CRONQ_QUEUE', 'cronq_jobs')
 
     channel.basic.qos(prefetch_count=1)
     runner = create_runner(channel)
 
     channel.basic.consume(
-        queue='cronq_jobs',
+        queue=queue,
         consumer=runner,
         no_ack=False,
     )

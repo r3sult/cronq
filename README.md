@@ -19,4 +19,7 @@ Workers that need to be started
 These take the envvars `RABBITMQ_HOST` and `CRONQ_MYQL`. `CRONQ_MYQL` should
 be a MySQL Connector DSN starting with `mysql+mysqlconnector://`.
 
+`cronq-runner` will also use the variable `CRONQ_QUEUE` to determine which
+queue to consume. The default is `cronq_jobs`.
+
 The web view is a WSGI app run from `cronq.web:app` and requires the same envvars.
