@@ -1,9 +1,11 @@
-from uuid import uuid4
+from uuid import uuid4, UUID
 import datetime
 import os
 
 import sqlalchemy
 from sqlalchemy import (
+    Binary,
+    BLOB,
     Column,
     CHAR,
     Date,
@@ -14,6 +16,7 @@ from sqlalchemy import (
     Time,
     Text,
 )
+from sqlalchemy.sql.expression import desc
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.exc import OperationalError, ProgrammingError
@@ -35,11 +38,14 @@ class Storage(object):
     def bootstrap(self):
         models = [
             Job,
+            Event,
         ]
         for model in models:
             try:
+                print 'Try model', model
                 model.__table__.create(self._engine)
-            except (OperationalError, ProgrammingError):
+            except (OperationalError, ProgrammingError) as exc:
+                print exc
                 pass
 
     def close(self):
@@ -54,6 +60,18 @@ class Storage(object):
         job.command = command
         self.session.merge(job)
         self.session.commit()
+
+    def add_event(self, job_id, datetime, run_id, type, host, return_code):
+        event = Event()
+        event.job_id = job_id
+        event.datetime = datetime
+        event.run_id = run_id
+        event.type = type
+        event.host = host
+        event.return_code = return_code
+        self.session.add(event)
+        self.session.commit()
+
 
     @property
     def jobs(self):
@@ -75,6 +93,19 @@ class Storage(object):
             'interval': job.interval,
             'command': job.command,
         }
+
+    def last_events_for_job(self, job_id, number):
+        events = self.session.query(Event).filter_by(job_id=job_id).order_by(desc(Event.id)).limit(number)
+        for event in events:
+            yield {
+                'id': event.id,
+                'datetime': event.datetime,
+                'run_id': UUID(hex=event.run_id),
+                'host': event.host,
+                'return_code': event.return_code,
+                'type': event.type,
+            }
+
 
     def inject(self):
         """Get a message from storage and injects it into the job stream"""
@@ -101,12 +132,11 @@ class Storage(object):
                 'command': unicode(job.command),
                 'id': job.id,
             }
-            self.publisher.publish(job_doc, uuid4())
+            self.publisher.publish(job_doc, uuid4().hex)
             session.commit()
         except Exception as exc:
             session.rollback()
             raise exc
-
 
 
 def new_engine():
@@ -129,7 +159,9 @@ class Event(Base):
     __tablename__ = 'events'
 
     id = Column(Integer, primary_key=True)
-    job_id = Column(Integer, primary_key=True)
+    job_id = Column(Integer)
+    datetime = Column(DateTime)
     run_id = Column(CHAR(32))
     type = Column(CHAR(32))
+    host= Column(CHAR(255))
     return_code = Column(Integer)

@@ -7,4 +7,12 @@
         <h3>Command: <pre>{{job.command}}</pre></h3>
       </div>
       <hr>
+      <div id="events">
+        {% for event in events %}
+        <h3>Type: {{event.type}} {% if event.type == 'finished'}} Return Code: {{event.return_code}}{% endif %} </h3>
+        <h3>Time: {{event.datetime}} </h3>
+        <h3>Host: {{event.host}} </h3>
+        <hr>
+        {% endfor %}
+      </div>
 {% endblock main %}

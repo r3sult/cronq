@@ -9,7 +9,7 @@ def read(fname):
 def run_setup():
     setup(
         name='cronq',
-        version='0.0.7',
+        version='0.0.8',
         description='A Cron-like system for running tasks',
         keywords = 'cron amqp',
         url='http://github.com/philipcristiano/cronq',
@@ -22,6 +22,7 @@ def run_setup():
             'haigha',
             'sqlalchemy',
             'mysql-connector-python',
+            'python-dateutil',
         ],
         test_suite='tests',
         long_description=read('README.md'),
@@ -33,6 +34,7 @@ def run_setup():
         [console_scripts]
            cronq-runner=cronq.runner:main
            cronq-injector=cronq.injector:main
+           cronq-results=cronq.result_aggregator:main
         """,
     )
 

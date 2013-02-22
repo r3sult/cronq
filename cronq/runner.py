@@ -1,18 +1,13 @@
 #!/usr/bin/env python
 #-*- coding:utf-8 -*-
-import argparse
 import datetime
 import json
 import logging
-import os
-import random
 import socket
 import subprocess
 import sys
 import time
 
-from haigha.connection import Connection as haigha_Connection
-from haigha.connections import RabbitConnection
 from haigha.message import Message
 
 from queue_connection import connect
@@ -25,12 +20,6 @@ class NullHandler(logging.Handler):
         pass
 
 logger.addHandler(NullHandler())
-
-def get_args_from_cli():
-    parser = argparse.ArgumentParser(description='Start CronQ Runner')
-
-    args = parser.parse_args()
-    return args
 
 def channel_closed_cb(ch):
     print "AMQP channel closed; close-info: %s" % (
@@ -49,8 +38,6 @@ def create_connection_closed_cb(connection):
 
 
 def setup():
-    args = get_args_from_cli()
-
     conn = connect()
     if conn is None:
         return
@@ -83,7 +70,12 @@ def create_runner(channel):
             channel.basic.reject(tag, requeue=requeue)
 
         def publish_result(body):
-            msg = Message(json.dumps(body), {})
+            headers = {
+                'x-send-datetime': str(datetime.datetime.utcnow()),
+                'x-host': str(socket.getfqdn()),
+            }
+            body.update(headers)
+            msg = Message(json.dumps(body))
             channel.basic.publish(msg, 'cronq', 'cronq_results')
 
         data = json.loads(str(msg.body))

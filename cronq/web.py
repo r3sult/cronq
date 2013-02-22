@@ -28,7 +28,8 @@ def index():
 @app.route('/job/<int:id>')
 def job(id):
     job_doc = g.storage.get_job(id)
-    return render_template('job.html', job=job_doc)
+    events = g.storage.last_events_for_job(id, 10)
+    return render_template('job.html', job=job_doc, events=events)
 
 
 if __name__ == "__main__":
