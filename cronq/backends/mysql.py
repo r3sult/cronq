@@ -44,7 +44,7 @@ class Storage(object):
 
     def close(self):
         self.session.close()
-        self.engine.close()
+        self._engine.dispose()
 
     def add_job(self, name, interval_seconds, command, next_run=None, id=None):
         job = Job()
