@@ -27,7 +27,6 @@ logger.addHandler(NullHandler())
 
 def get_args_from_cli():
     parser = argparse.ArgumentParser(description='Start CronQ Runner')
-    parser.add_argument('--config', metavar='config', type=str,  default='config.yml', help='path to the config file')
 
     args = parser.parse_args()
     return args
@@ -59,14 +58,6 @@ def connect_to_hosts(connector, hosts, **kwargs):
 
 def setup():
     args = get_args_from_cli()
-    config = load(open(args.config).read())
-    config = {}
-
-    startup_handler_str = config.get('startup_handler')
-    if startup_handler_str is not None:
-        startup_handler = load_module_object(startup_handler_str)
-        startup_handler()
-        logger.info('Startup handled')
 
     hosts_string = os.getenv('RABBITMQ_HOSTS', None)
     if hosts_string is not None:
@@ -114,18 +105,31 @@ def create_runner(channel):
 
         def reject(requeue=True):
             channel.basic.reject(tag, requeue=requeue)
+
+        def publish_result(body):
+            msg = Message(json.dumps(body), {})
+            channel.basic.publish(msg, 'cronq', 'cronq_results')
+
         data = json.loads(str(msg.body))
         cmd = data.get('cmd')
         args = shlex.split(str(cmd))
         print 'starting'
         print args
+        start = time.time()
         proc = subprocess.Popen(args)
         print 'waiting'
 
         proc.wait()
+        end = time.time()
+        publish_result({
+            'job_id': data.get('job_id'),
+            'return_code': proc.returncode,
+            'run_time': end - start
+        })
         print 'done', proc.returncode
 
-        reject()
+        ack()
+
     return run_something
 
 
