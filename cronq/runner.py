@@ -3,6 +3,7 @@
 import datetime
 import json
 import logging
+import logging.handlers
 import os
 import socket
 import subprocess
@@ -28,14 +29,13 @@ def channel_closed_cb(ch):
     ch = None
     return
 
+
 def create_connection_closed_cb(connection):
     def connection_closed_cb():
         print "AMQP broker connection closed; close-info: %s" % (
           connection.close_info,)
         connection = None
     return connection_closed_cb
-
-
 
 
 def setup():
@@ -59,6 +59,13 @@ def setup():
 
     while True:
         conn.read_frames()
+
+
+def make_directory(directory):
+    try:
+        os.mkdir(directory)
+    except OSError:
+        pass
 
 
 def create_runner(channel):
@@ -91,7 +98,13 @@ def create_runner(channel):
         })
         start = time.time()
         try:
-            proc = subprocess.Popen(cmd, shell=True)
+            proc = subprocess.Popen(
+                cmd,
+                shell=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                bufsize=1,
+            )
         except OSError as exc:
             print 'Failed', exc
             end = time.time()
@@ -103,8 +116,16 @@ def create_runner(channel):
             })
             return reject(requeue=False)
         print 'waiting'
+        make_directory('/var/log/cronq')
+        filename = '/var/log/cronq/{0}'.format(data.get('name', 'UNKNOWN'))
+        handler = logging.handlers.WatchedFileHandler(filename)
+        while proc.returncode is None:
+            log_record = logging.makeLogRecord({
+                'msg': proc.stdout.read(1024),
+            })
+            handler.emit(log_record)
+            proc.poll()
 
-        proc.wait()
         end = time.time()
         publish_result({
             'job_id': data.get('job_id'),

@@ -129,8 +129,8 @@ class Storage(object):
                 print 'Adding time!'
                 job.next_run += job.interval
             print job.next_run
-            print job.command
             job_doc = {
+                'name': job.name,
                 'command': unicode(job.command),
                 'id': job.id,
             }

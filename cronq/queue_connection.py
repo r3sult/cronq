@@ -18,7 +18,8 @@ class Publisher(object):
         cmd = {
             'run_id': str(run_id),
             'job_id': job['id'],
-            'cmd': job['command']
+            'cmd': job['command'],
+            'name': job['name'],
         }
         print cmd
         self._publish(routing_key, cmd)
