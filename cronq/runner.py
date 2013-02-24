@@ -57,9 +57,10 @@ def setup():
         no_ack=False,
     )
 
-    while True:
+    while conn.close_info is None:
         conn.read_frames()
 
+    sys.exit(1)
 
 def make_directory(directory):
     try:
@@ -251,11 +252,7 @@ def message_pump_greenthread(connection):
     return exit_code
 
 def main():
-    greenlet = setup()
-    if greenlet is not None:
-        greenlet.start()
-        greenlet.join()
-        sys.exit(greenlet.get())
+    setup()
 
 
 if __name__ == '__main__':
