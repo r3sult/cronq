@@ -126,6 +126,7 @@ def create_runner(channel):
             })
             handler.emit(log_record)
             proc.poll()
+        handler.close()
 
         end = time.time()
         publish_result({
