@@ -117,7 +117,7 @@ def create_runner(channel):
             return reject(requeue=False)
         print 'waiting'
         make_directory('/var/log/cronq')
-        filename = '/var/log/cronq/{0}'.format(data.get('name', 'UNKNOWN'))
+        filename = '/var/log/cronq/{0}.log'.format(data.get('name', 'UNKNOWN'))
         handler = logging.handlers.WatchedFileHandler(filename)
         while proc.returncode is None:
             log_record = logging.makeLogRecord({

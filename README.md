@@ -23,3 +23,8 @@ be a MySQL Connector DSN starting with `mysql+mysqlconnector://`.
 queue to consume. The default is `cronq_jobs`.
 
 The web view is a WSGI app run from `cronq.web:app` and requires the same envvars.
+
+## Runner
+
+The runner requires `/var/log/cronq/` to exist and be writable by the user
+executing the runner.
