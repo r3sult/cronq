@@ -1,6 +1,8 @@
 import json
 import logging
 import os
+import random
+import socket
 
 from haigha.connection import Connection as haigha_Connection
 from haigha.connections import RabbitConnection
@@ -45,7 +47,8 @@ def connect():
         hosts,
         user=user,
         password=password,
-        logger=rabbit_logger
+        logger=rabbit_logger,
+        heartbeat=86400,
     )
     return conn
 
