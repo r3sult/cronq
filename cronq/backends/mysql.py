@@ -1,6 +1,7 @@
 from uuid import uuid4, UUID
 import datetime
 import os
+import socket
 
 import sqlalchemy
 from sqlalchemy import (
@@ -135,6 +136,8 @@ class Storage(object):
                 'id': job.id,
             }
             job.run_now = False
+            me = '{0}.{1}'.format(socket.gethostname(), os.getpid())
+            job.locked_by = me
             self.publisher.publish(job.routing_key, job_doc, uuid4().hex)
             session.commit()
         except Exception as exc:
@@ -170,6 +173,7 @@ class Job(Base):
     routing_key = Column(CHAR(32), default='default')
     command = Column(Text())
     run_now = Column(Integer(1))
+    locked_by = Column(CHAR(64))
 
 
 class Event(Base):
