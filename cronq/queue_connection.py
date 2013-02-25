@@ -48,7 +48,7 @@ def connect():
         user=user,
         password=password,
         logger=rabbit_logger,
-        heartbeat=86400,
+        heartbeat=43200,
     )
     return conn
 
