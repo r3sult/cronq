@@ -138,8 +138,8 @@ class Storage(object):
             job.run_now = False
             me = '{0}.{1}'.format(socket.gethostname(), os.getpid())
             job.locked_by = me
-            self.publisher.publish(job.routing_key, job_doc, uuid4().hex)
             session.commit()
+            self.publisher.publish(job.routing_key, job_doc, uuid4().hex)
         except Exception as exc:
             session.rollback()
             raise
