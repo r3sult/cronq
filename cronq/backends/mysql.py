@@ -160,7 +160,7 @@ def event_models_to_docs(events):
 
 def new_engine():
     dsn = os.getenv('CRONQ_MYSQL', 'mysql+mysqlconnector://root@localhost/cronq')
-    return create_engine(dsn)
+    return create_engine(dsn, isolation_level='SERIALIZABLE')
 
 
 class Job(Base):
