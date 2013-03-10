@@ -150,11 +150,10 @@ def event_models_to_docs(events):
         yield {
             'id': event.id,
             'datetime': event.datetime,
-            'run_id': UUID(hex=event.run_id),
+            'run_id': event.run_id,
             'host': event.host,
             'return_code': event.return_code,
             'type': event.type,
-            'run_id': event.run_id,
         }
 
 
