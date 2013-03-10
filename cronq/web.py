@@ -41,8 +41,10 @@ def job(id):
 
 @app.route('/run/<string:id>')
 def run_id(id):
-    events = g.storage.events_for_run_id(id)
-    return render_template('run_id.html', events=events)
+    events = list(g.storage.events_for_run_id(id))
+    job_id = events[0]['job_id']
+    job = g.storage.get_job(job_id)
+    return render_template('run_id.html', events=events, job=job)
 
 
 if __name__ == "__main__":
