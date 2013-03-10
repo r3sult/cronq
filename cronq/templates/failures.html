@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block main %}
+      <div id="events">
+        {% for event in events %}
+        <h3>Job: <a href="{{url_for('job', id=event.job_id)}}
+        ">{{event.job_name}}</a></h3>
+        <h4>ID: <a href="{{url_for("run_id", id=event.run_id)}}">{{event.run_id}}</a></h4>
+        <h3>Time: {{event.datetime}} </h3>
+        <h3>Host: {{event.host}} </h3>
+        <hr>
+        {% endfor %}
+      </div>
+{% endblock main %}

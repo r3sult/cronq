@@ -46,6 +46,15 @@ def run_id(id):
     job = g.storage.get_job(job_id)
     return render_template('run_id.html', events=events, job=job)
 
+@app.route('/failures')
+def failures():
+    failure_events = list(g.storage.failures())
+    names = { job['id']: job['name'] for job in g.storage.jobs }
+    for event in failure_events:
+        event['job_name'] = names[event['job_id']]
+    return render_template('failures.html', events=failure_events)
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)

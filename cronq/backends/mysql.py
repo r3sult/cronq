@@ -72,7 +72,6 @@ class Storage(object):
         self.session.add(event)
         self.session.commit()
 
-
     @property
     def jobs(self):
         session = self.session
@@ -100,6 +99,13 @@ class Storage(object):
 
     def events_for_run_id(self, run_id):
         events = self.session.query(Event).filter_by(run_id=run_id).order_by(Event.id)
+        return event_models_to_docs(events)
+
+    def failures(self):
+        events = self.session.query(Event)\
+            .filter_by(type='finished')\
+            .filter(Event.return_code!=0)\
+            .order_by(desc(Event.id)).limit(50)
         return event_models_to_docs(events)
 
     def run_job_now(self, id):
@@ -154,6 +160,7 @@ def event_models_to_docs(events):
             'host': event.host,
             'return_code': event.return_code,
             'type': event.type,
+            'job_id': event.job_id,
         }
 
 
