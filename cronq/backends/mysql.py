@@ -33,7 +33,10 @@ class Storage(object):
 
         self._engine = new_engine()
         self._maker = sessionmaker(bind=self._engine)
-        self.session = self._maker()
+        self.session = self._new_session()
+
+    def _new_session(self):
+        return self._maker()
 
     def bootstrap(self):
         models = [
@@ -120,7 +123,7 @@ class Storage(object):
             pass
 
     def get_unpublished_task(self):
-        session = self.session
+        session = self._new_session()
         to_run = or_(
             Job.next_run < datetime.datetime.utcnow(),
             Job.run_now == True,
@@ -128,6 +131,7 @@ class Storage(object):
 
         job = session.query(Job).filter(to_run).first()
         if job is None:
+            session.close()
             return
         print 'Found a job:', job.name, job.next_run
         to_run_at = job.next_run
@@ -149,6 +153,7 @@ class Storage(object):
         except Exception as exc:
             session.rollback()
             raise
+        session.close()
         return True
 
 def event_models_to_docs(events):
