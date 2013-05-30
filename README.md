@@ -28,3 +28,25 @@ The web view is a WSGI app run from `cronq.web:app` and requires the same envvar
 
 The runner requires `/var/log/cronq/` to exist and be writable by the user
 executing the runner.
+
+
+## Categories
+
+Categories allow you to replace a set of jobs with a single API call
+
+```
+curl -v 'localhost:5000/api/category/example' -XPUT -H 'content-type: application/json' -d '
+{
+    "category": "example",
+    "jobs": [{
+        "name": "Test Job",
+        "schedule": "R/2013-05-29T00:00:00/PT1M",
+        "command": "sleep 10",
+        "queue": "slow"
+    }]
+}'
+```
+
+This adds / updates a job named `Test Job` in the `example` category. The time
+format is ISO 8601. Any jobs no longer defined for the example category will be
+removed. This allows you to script job additions / removes in your VCS.

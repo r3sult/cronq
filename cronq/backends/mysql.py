@@ -68,6 +68,12 @@ class Storage(object):
         self.session.merge(job)
         self.session.commit()
 
+    def remove_job(self, job_id):
+        job = self.session.query(Job).filter_by(id=job_id).first()
+        if job:
+            self.session.delete(job)
+            self.session.commit()
+
     def add_event(self, job_id, datetime, run_id, type, host, return_code):
         event = Event()
         event.job_id = job_id

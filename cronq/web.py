@@ -76,7 +76,6 @@ def category(name):
         new_next_run = next_run
         new_interval = duration.total_seconds()
         command = job['command']
-        print 'adding'
         g.storage.add_job(
             name,
             new_interval,
@@ -85,10 +84,17 @@ def category(name):
             new_id,
             category_id,
         )
+        if existing_job:
+            del job_lookup[name]
 
-    print data
+    remove_jobs(g.storage, job_lookup.itervalues())
 
     return '200 ok'
+
+
+def remove_jobs(storage, jobs):
+    for job in jobs:
+        g.storage.remove_job(job['id'])
 
 
 def validate_unique_job_names(jobs):
