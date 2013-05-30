@@ -1,6 +1,6 @@
 import datetime
 
-from flask import Flask, g, render_template, request, redirect, url_for, flash
+from flask import Flask, g, render_template, request, redirect, url_for, flash, abort
 
 from cronq import interval_parser
 from backends.mysql import Storage
@@ -62,6 +62,9 @@ def category(name):
     category_id = g.storage.category_id_for_name(name)
     job_lookup = {}
 
+    if not validate_unique_job_names(data.get('jobs', [])):
+        abort(400)
+
     for job in existing_jobs:
         job_lookup[job['name']] = job
 
@@ -88,6 +91,9 @@ def category(name):
     return '200 ok'
 
 
+def validate_unique_job_names(jobs):
+    job_names = [job['name'] for job in jobs]
+    return len(job_names) == len(set(job_names))
 
 
 if __name__ == "__main__":
