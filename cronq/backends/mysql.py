@@ -15,6 +15,7 @@ from sqlalchemy import (
     String,
     Time,
     Text,
+    UniqueConstraint
 )
 from sqlalchemy.sql.expression import desc
 from sqlalchemy import create_engine
@@ -42,6 +43,7 @@ class Storage(object):
         models = [
             Job,
             Event,
+            Category,
         ]
         for model in models:
             try:
@@ -55,12 +57,14 @@ class Storage(object):
         self.session.close()
         self._engine.dispose()
 
-    def add_job(self, name, interval_seconds, command, next_run=None, id=None):
+    def add_job(self, name, interval_seconds, command, next_run, id=None, category_id=None):
         job = Job()
         job.id = id
         job.name = name
+        job.next_run = next_run
         job.interval = datetime.timedelta(seconds=interval_seconds)
         job.command = command
+        job.category_id = category_id
         self.session.merge(job)
         self.session.commit()
 
@@ -88,6 +92,9 @@ class Storage(object):
 
     def get_job(self, id):
         job = self.session.query(Job).filter_by(id=id).first()
+        return self._job_doc_for_model(job)
+
+    def _job_doc_for_model(self, job):
         return {
             'id': job.id,
             'name': job.name,
@@ -95,6 +102,24 @@ class Storage(object):
             'interval': job.interval,
             'command': job.command,
         }
+
+
+    def jobs_for_category(self, id=None, name=None):
+        if id and name:
+            assert "Don't pass both id and name"
+        if name:
+            id = self.category_id_for_name(name)
+        for job in self.session.query(Job).filter_by(category_id=id):
+            yield self._job_doc_for_model(job)
+
+    def category_id_for_name(self, name):
+        category = self.session.query(Category).filter_by(name=name).first()
+        if category is None:
+            category = Category(name=name)
+            self.session.add(category)
+            self.session.commit()
+        return category.id
+
 
     def last_events_for_job(self, job_id, number):
         events = self.session.query(Event).filter_by(job_id=job_id).order_by(desc(Event.id)).limit(number)
@@ -175,7 +200,9 @@ def new_engine():
 
 
 class Job(Base):
+
     __tablename__ = 'jobs'
+    __table_args__ = (UniqueConstraint('category_id', 'name'),{'mysql_engine':'InnoDB'})
 
     id = Column(Integer, primary_key=True)
     name = Column(CHAR(255))
@@ -185,11 +212,13 @@ class Job(Base):
     command = Column(Text())
     run_now = Column(Integer(1))
     locked_by = Column(CHAR(64))
+    category_id = Column(Integer)
 
 
 class Event(Base):
 
     __tablename__ = 'events'
+    __table_args__ = {'mysql_engine':'InnoDB'}
 
     id = Column(Integer, primary_key=True)
     job_id = Column(Integer)
@@ -198,3 +227,11 @@ class Event(Base):
     type = Column(CHAR(32))
     host= Column(CHAR(255))
     return_code = Column(Integer)
+
+class Category(Base):
+
+    __tablename__ = 'categories'
+    __table_args__ = {'mysql_engine':'InnoDB'}
+
+    id = Column(Integer, primary_key=True)
+    name = Column(CHAR(255), unique=True)

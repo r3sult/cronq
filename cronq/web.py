@@ -1,8 +1,9 @@
 import datetime
 
-from backends.mysql import Storage
-
 from flask import Flask, g, render_template, request, redirect, url_for, flash
+
+from cronq import interval_parser
+from backends.mysql import Storage
 app = Flask(__name__)
 
 app.secret_key = 'not a secret'
@@ -53,6 +54,39 @@ def failures():
     for event in failure_events:
         event['job_name'] = names[event['job_id']]
     return render_template('failures.html', events=failure_events)
+
+@app.route('/api/category/<string:name>', methods=['PUT'])
+def category(name):
+    data = request.json
+    existing_jobs = g.storage.jobs_for_category(name=name)
+    category_id = g.storage.category_id_for_name(name)
+    job_lookup = {}
+
+    for job in existing_jobs:
+        job_lookup[job['name']] = job
+
+    for job in data.get('jobs', []):
+        name = job['name']
+        next_run, duration = interval_parser.next_run_and_duration_from_8601(job['schedule'])
+        existing_job = job_lookup.get(name, {})
+        new_id = existing_job.get('id')
+        new_next_run = next_run
+        new_interval = duration.total_seconds()
+        command = job['command']
+        print 'adding'
+        g.storage.add_job(
+            name,
+            new_interval,
+            command,
+            next_run,
+            new_id,
+            category_id,
+        )
+
+    print data
+
+    return '200 ok'
+
 
 
 
