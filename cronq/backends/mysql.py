@@ -131,19 +131,19 @@ class Storage(object):
             return
         print 'Found a job:', job.name, job.next_run
         to_run_at = job.next_run
+        while job.next_run < datetime.datetime.utcnow():
+            print 'Adding time!'
+            job.next_run += job.interval
+        print job.next_run
+        job_doc = {
+            'name': job.name,
+            'command': unicode(job.command),
+            'id': job.id,
+        }
+        job.run_now = False
+        me = '{0}.{1}'.format(socket.gethostname(), os.getpid())
+        job.locked_by = me
         try:
-            while job.next_run < datetime.datetime.utcnow():
-                print 'Adding time!'
-                job.next_run += job.interval
-            print job.next_run
-            job_doc = {
-                'name': job.name,
-                'command': unicode(job.command),
-                'id': job.id,
-            }
-            job.run_now = False
-            me = '{0}.{1}'.format(socket.gethostname(), os.getpid())
-            job.locked_by = me
             session.commit()
             self.publisher.publish(job.routing_key, job_doc, uuid4().hex)
         except Exception as exc:
