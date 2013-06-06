@@ -83,6 +83,7 @@ def category(name):
             next_run,
             new_id,
             category_id,
+            routing_key=job.get('routing_key')
         )
         if existing_job:
             del job_lookup[name]

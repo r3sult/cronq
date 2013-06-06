@@ -42,7 +42,7 @@ curl -v 'localhost:5000/api/category/example' -XPUT -H 'content-type: applicatio
         "name": "Test Job",
         "schedule": "R/2013-05-29T00:00:00/PT1M",
         "command": "sleep 10",
-        "queue": "slow"
+        "routing_key": "slow"
     }]
 }'
 ```

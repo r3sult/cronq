@@ -57,13 +57,16 @@ class Storage(object):
         self.session.close()
         self._engine.dispose()
 
-    def add_job(self, name, interval_seconds, command, next_run, id=None, category_id=None):
+    def add_job(self, name, interval_seconds, command, next_run, id=None, category_id=None, routing_key=None):
+        if routing_key is None:
+            routing_key = 'default'
         job = Job()
         job.id = id
         job.name = name
         job.next_run = next_run
         job.interval = datetime.timedelta(seconds=interval_seconds)
         job.command = command
+        job.routing_key = routing_key
         job.category_id = category_id
         self.session.merge(job)
         self.session.commit()
