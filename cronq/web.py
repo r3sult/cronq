@@ -61,7 +61,7 @@ def failures():
         event['job_name'] = names[event['job_id']]
     return render_template('failures.html', events=failure_events)
 
-@app.route('/api/category/<string:name>', methods=['PUT'])
+@app.route('/api/category/<string:name>', methods=['PUT', 'POST'])
 def category(name):
     data = request.json
     existing_jobs = g.storage.jobs_for_category(name=name)
