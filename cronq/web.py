@@ -1,10 +1,16 @@
 import datetime
+import logging
 
 from flask import Flask, g, render_template, request, redirect, url_for, flash, abort
 
 from cronq import interval_parser
 from backends.mysql import Storage
+
 app = Flask(__name__)
+stream_handler = logging.StreamHandler()
+stream_handler.setLevel(logging.INFO)
+app.logger.addHandler(stream_handler)
+
 
 app.secret_key = 'not a secret'
 
