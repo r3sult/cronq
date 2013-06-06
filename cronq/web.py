@@ -90,7 +90,7 @@ def category(name):
 
     remove_jobs(g.storage, job_lookup.itervalues())
 
-    return '200 ok'
+    return '{"status": "success"}'
 
 
 def remove_jobs(storage, jobs):
