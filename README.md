@@ -35,7 +35,7 @@ executing the runner.
 Categories allow you to replace a set of jobs with a single API call
 
 ```
-curl -v 'localhost:5000/api/category/example' -XPUT -H 'content-type: application/json' -d '
+curl -v 'localhost:5000/api/category/example' -f -XPUT -H 'content-type: application/json' -d '
 {
     "category": "example",
     "jobs": [{
