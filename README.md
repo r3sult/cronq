@@ -50,6 +50,8 @@ When run, `cronq-runner` will:
 
 ### cronq-injector
 
+> The `cronq-injector` command will non-destructively create any necessary `cronq` tables, though it will need a database to perform this action against. Please note that if you do not have tables created, it is helpful to run the injector first.
+
 The `injector` is used to retrieve jobs from the database and publish them to AMQP. Jobs are published in the following format:
 
     # where job is a database record
