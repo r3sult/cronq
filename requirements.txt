@@ -7,4 +7,4 @@ mysql-connector-python
 #mysql-python
 flask
 python-dateutil
-aniso8601==0.70
+aniso8601==0.82
