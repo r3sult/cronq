@@ -18,7 +18,7 @@ def run_setup():
         license='BSD',
         packages=['cronq', 'cronq.backends'],
         install_requires=[
-            'aniso8601==0.70',
+            'aniso8601==0.82',
             'flask',
             'haigha',
             'sqlalchemy',
