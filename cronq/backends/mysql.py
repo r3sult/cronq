@@ -219,7 +219,7 @@ class Job(Base):
     next_run = Column(DateTime(), default=datetime.datetime.utcnow)
     routing_key = Column(CHAR(32), default='default')
     command = Column(Text())
-    run_now = Column(Integer(1))
+    run_now = Column(Integer)
     locked_by = Column(CHAR(64))
     category_id = Column(Integer)
 
