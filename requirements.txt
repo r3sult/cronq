@@ -8,3 +8,4 @@ mysql-connector-python
 flask
 python-dateutil
 aniso8601==0.82
+haigha==0.7.0
