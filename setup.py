@@ -24,6 +24,7 @@ def run_setup():
             'sqlalchemy',
             'mysql-connector-python',
             'python-dateutil',
+            'haigha==0.7.0',
         ],
         test_suite='tests',
         long_description=read('README.md'),
