@@ -1,7 +1,6 @@
 coverage
 mock
 -e git://github.com/lacostej/nosyd.git#egg=nosyd
-haigha
 sqlalchemy>=0.7,<0.8
 mysql-connector-python
 #mysql-python
