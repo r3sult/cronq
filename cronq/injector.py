@@ -1,5 +1,6 @@
 import time
 
+
 class Injector(object):
 
     def __init__(self, storage):
@@ -10,6 +11,7 @@ class Injector(object):
         while True:
             self.storage.inject()
             time.sleep(1)
+
 
 def main():
     from cronq.backends.mysql import Storage

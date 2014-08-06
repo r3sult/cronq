@@ -1,6 +1,7 @@
 import datetime
 import aniso8601
 
+
 def next_run_and_duration_from_8601(interval):
     gen = aniso8601.parse_repeating_interval(interval)
     start = next(gen)
@@ -8,8 +9,13 @@ def next_run_and_duration_from_8601(interval):
     duration = second - start
     now = datetime.datetime.utcnow()
     diff_from_now = now - start
-    number_of_iterations = number_of_iterations_in_time(duration, diff_from_now)
-    next_run = apply_delta_to_datetime(duration, start, number_of_iterations +1)
+    number_of_iterations = number_of_iterations_in_time(
+        duration,
+        diff_from_now)
+    next_run = apply_delta_to_datetime(
+        duration,
+        start,
+        number_of_iterations + 1)
     return next_run, duration
 
 

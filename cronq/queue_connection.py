@@ -4,11 +4,11 @@ import os
 import random
 import socket
 
-from haigha.connection import Connection as haigha_Connection
 from haigha.connections import RabbitConnection
 from haigha.message import Message
 
 logger = logging.getLogger('cronq')
+
 
 class Publisher(object):
 
@@ -51,6 +51,7 @@ def connect():
         heartbeat=43200,
     )
     return conn
+
 
 def connect_to_hosts(connector, hosts, **kwargs):
     for host in hosts:

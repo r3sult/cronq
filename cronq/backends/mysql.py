@@ -1,19 +1,15 @@
-from uuid import uuid4, UUID
+from uuid import uuid4
 import datetime
 import os
 import socket
 
-import sqlalchemy
 from sqlalchemy import (
     or_,
-    Binary,
     Column,
     CHAR,
     DateTime,
     Integer,
     Interval,
-    String,
-    Time,
     Text,
     UniqueConstraint
 )
@@ -24,7 +20,6 @@ from sqlalchemy.exc import OperationalError, ProgrammingError
 from sqlalchemy.orm import sessionmaker
 
 Base = declarative_base()
-
 
 
 class Storage(object):
@@ -57,7 +52,14 @@ class Storage(object):
         self.session.close()
         self._engine.dispose()
 
-    def add_job(self, name, interval_seconds, command, next_run, id=None, category_id=None, routing_key=None):
+    def add_job(self,
+                name,
+                interval_seconds,
+                command,
+                next_run,
+                id=None,
+                category_id=None,
+                routing_key=None):
         if routing_key is None:
             routing_key = 'default'
         job = Job()
@@ -112,7 +114,6 @@ class Storage(object):
             'command': job.command,
         }
 
-
     def jobs_for_category(self, id=None, name=None):
         if id and name:
             assert "Don't pass both id and name"
@@ -129,19 +130,20 @@ class Storage(object):
             self.session.commit()
         return category.id
 
-
     def last_events_for_job(self, job_id, number):
-        events = self.session.query(Event).filter_by(job_id=job_id).order_by(desc(Event.id)).limit(number)
+        events = self.session.query(Event).filter_by(job_id=job_id).\
+            order_by(desc(Event.id)).limit(number)
         return event_models_to_docs(events)
 
     def events_for_run_id(self, run_id):
-        events = self.session.query(Event).filter_by(run_id=run_id).order_by(Event.id)
+        events = self.session.query(Event).filter_by(run_id=run_id).\
+            order_by(Event.id)
         return event_models_to_docs(events)
 
     def failures(self):
         events = self.session.query(Event)\
             .filter_by(type='finished')\
-            .filter(Event.return_code!=0)\
+            .filter(Event.return_code != 0)\
             .order_by(desc(Event.id)).limit(50)
         return event_models_to_docs(events)
 
@@ -160,7 +162,7 @@ class Storage(object):
         session = self._new_session()
         to_run = or_(
             Job.next_run < datetime.datetime.utcnow(),
-            Job.run_now == True,
+            Job.run_now is True,
         )
 
         job = session.query(Job).filter(to_run).first()
@@ -168,11 +170,12 @@ class Storage(object):
             session.close()
             return
         print 'Found a job:', job.name, job.next_run
+
         to_run_at = job.next_run
-        while job.next_run < datetime.datetime.utcnow():
+        while to_run_at < datetime.datetime.utcnow():
             print 'Adding time!'
-            job.next_run += job.interval
-        print job.next_run
+            to_run_at += job.interval
+        print to_run_at
         job_doc = {
             'name': job.name,
             'command': unicode(job.command),
@@ -184,11 +187,12 @@ class Storage(object):
         try:
             session.commit()
             self.publisher.publish(job.routing_key, job_doc, uuid4().hex)
-        except Exception as exc:
+        except Exception:
             session.rollback()
             raise
         session.close()
         return True
+
 
 def event_models_to_docs(events):
     for event in events:
@@ -204,14 +208,16 @@ def event_models_to_docs(events):
 
 
 def new_engine():
-    dsn = os.getenv('CRONQ_MYSQL', 'mysql+mysqlconnector://root@localhost/cronq')
+    dsn = os.getenv('CRONQ_MYSQL',
+                    'mysql+mysqlconnector://root@localhost/cronq')
     return create_engine(dsn, isolation_level='SERIALIZABLE')
 
 
 class Job(Base):
 
     __tablename__ = 'jobs'
-    __table_args__ = (UniqueConstraint('category_id', 'name'),{'mysql_engine':'InnoDB'})
+    __table_args__ = (UniqueConstraint('category_id', 'name'), {
+        'mysql_engine': 'InnoDB'})
 
     id = Column(Integer, primary_key=True)
     name = Column(CHAR(255))
@@ -227,20 +233,21 @@ class Job(Base):
 class Event(Base):
 
     __tablename__ = 'events'
-    __table_args__ = {'mysql_engine':'InnoDB'}
+    __table_args__ = {'mysql_engine': 'InnoDB'}
 
     id = Column(Integer, primary_key=True)
     job_id = Column(Integer)
     datetime = Column(DateTime)
     run_id = Column(CHAR(32))
     type = Column(CHAR(32))
-    host= Column(CHAR(255))
+    host = Column(CHAR(255))
     return_code = Column(Integer)
+
 
 class Category(Base):
 
     __tablename__ = 'categories'
-    __table_args__ = {'mysql_engine':'InnoDB'}
+    __table_args__ = {'mysql_engine': 'InnoDB'}
 
     id = Column(Integer, primary_key=True)
     name = Column(CHAR(255), unique=True)

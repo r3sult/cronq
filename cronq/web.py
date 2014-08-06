@@ -1,7 +1,14 @@
 import datetime
 import logging
 
-from flask import Flask, g, render_template, request, redirect, url_for, flash, abort
+from flask import Flask
+from flask import g
+from flask import render_template
+from flask import request
+from flask import redirect
+from flask import url_for
+from flask import flash
+from flask import abort
 
 from cronq import interval_parser
 from backends.mysql import Storage
@@ -14,11 +21,13 @@ app.logger.addHandler(stream_handler)
 
 app.secret_key = 'not a secret'
 
+
 @app.before_request
 def create_storage():
     if request.path.startswith('/static/'):
         return
     g.storage = Storage()
+
 
 @app.after_request
 def remove_storage(request):
@@ -28,6 +37,7 @@ def remove_storage(request):
         except Exception as exc:
             print exc
     return request
+
 
 @app.route('/')
 def index():
@@ -46,6 +56,7 @@ def job(id):
     events = g.storage.last_events_for_job(id, 10)
     return render_template('job.html', job=job_doc, events=events)
 
+
 @app.route('/run/<string:id>')
 def run_id(id):
     events = list(g.storage.events_for_run_id(id))
@@ -53,13 +64,15 @@ def run_id(id):
     job = g.storage.get_job(job_id)
     return render_template('run_id.html', events=events, job=job)
 
+
 @app.route('/failures')
 def failures():
     failure_events = list(g.storage.failures())
-    names = { job['id']: job['name'] for job in g.storage.jobs }
+    names = {job['id']: job['name'] for job in g.storage.jobs}
     for event in failure_events:
         event['job_name'] = names[event['job_id']]
     return render_template('failures.html', events=failure_events)
+
 
 @app.route('/api/category/<string:name>', methods=['PUT', 'POST'])
 def category(name):
@@ -76,10 +89,10 @@ def category(name):
 
     for job in data.get('jobs', []):
         name = job['name']
-        next_run, duration = interval_parser.next_run_and_duration_from_8601(job['schedule'])
+        next_run, duration = interval_parser.next_run_and_duration_from_8601(
+            job['schedule'])
         existing_job = job_lookup.get(name, {})
         new_id = existing_job.get('id')
-        new_next_run = next_run
         new_interval = duration.total_seconds()
         command = job['command']
         g.storage.add_job(

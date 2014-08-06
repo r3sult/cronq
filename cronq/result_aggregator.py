@@ -28,18 +28,22 @@ def setup():
     while True:
         conn.read_frames()
 
+
 def create_connection_closed_cb(connection):
     def connection_closed_cb():
-        print "AMQP broker connection closed; close-info: %s" % (
-          connection.close_info,)
+        message = "AMQP broker connection closed; close-info: {0}"
+        print message.format(connection.close_info)
         connection = None
+        connection
     return connection_closed_cb
+
 
 def create_aggregator(channel):
     storage = Storage()
 
     def run_something(msg):
         tag = msg.delivery_info['delivery_tag']
+
         def ack():
             channel.basic.ack(tag)
 
@@ -59,6 +63,7 @@ def create_aggregator(channel):
         ack()
 
     return run_something
+
 
 def main():
     setup()
