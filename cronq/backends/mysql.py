@@ -8,6 +8,7 @@ from sqlalchemy import (
     Column,
     CHAR,
     DateTime,
+    ForeignKey,
     Integer,
     Interval,
     Text,
@@ -19,6 +20,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.exc import OperationalError, ProgrammingError
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import relationship
 
 Base = declarative_base()
 
@@ -220,6 +222,8 @@ class Job(Base):
     __table_args__ = (UniqueConstraint('category_id', 'name'), {
         'mysql_engine': 'InnoDB'})
 
+    events = relationship("Event")
+
     id = Column(Integer, primary_key=True)
     name = Column(CHAR(255))
     interval = Column(Interval)
@@ -228,7 +232,7 @@ class Job(Base):
     command = Column(Text())
     run_now = Column(Integer)
     locked_by = Column(CHAR(64))
-    category_id = Column(Integer)
+    category_id = Column(Integer, ForeignKey('categories.id'))
 
 
 class Event(Base):
@@ -237,7 +241,7 @@ class Event(Base):
     __table_args__ = {'mysql_engine': 'InnoDB'}
 
     id = Column(Integer, primary_key=True)
-    job_id = Column(Integer)
+    job_id = Column(Integer, ForeignKey('jobs.id'))
     datetime = Column(DateTime)
     run_id = Column(CHAR(32))
     type = Column(CHAR(32))
@@ -249,6 +253,8 @@ class Category(Base):
 
     __tablename__ = 'categories'
     __table_args__ = {'mysql_engine': 'InnoDB'}
+
+    jobs = relationship("Job")
 
     id = Column(Integer, primary_key=True)
     name = Column(CHAR(255), unique=True)
