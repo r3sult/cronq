@@ -125,7 +125,7 @@ class Storage(object):
                 'last_run_start': job.last_run_start,
                 'last_run_stop': job.last_run_stop,
                 'last_run_status': job.last_run_status,
-                'current_status': job.current_status
+                'current_status': job.current_status or 'none'
             }
 
     def get_job(self, id):
