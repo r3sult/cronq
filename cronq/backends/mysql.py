@@ -13,6 +13,7 @@ from sqlalchemy import (
     Text,
     UniqueConstraint
 )
+from sqlalchemy.sql.expression import asc
 from sqlalchemy.sql.expression import desc
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
@@ -93,7 +94,7 @@ class Storage(object):
     @property
     def jobs(self):
         session = self.session
-        for job in session.query(Job):
+        for job in session.query(Job).order_by(asc(Job.name)):
             yield {
                 'id': job.id,
                 'name': job.name,
