@@ -82,10 +82,10 @@ class Storage(object):
             self.session.delete(job)
             self.session.commit()
 
-    def add_event(self, job_id, datetime, run_id, type, host, return_code):
+    def add_event(self, job_id, _datetime, run_id, type, host, return_code):
         event = Event()
         event.job_id = job_id
-        event.datetime = datetime
+        event.datetime = _datetime
         event.run_id = run_id
         event.type = type
         event.host = host
