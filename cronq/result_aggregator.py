@@ -62,7 +62,8 @@ def create_aggregator(channel):
         storage.update_job_status(
             data.get('job_id'),
             parse(data.get('x-send-datetime')),
-            data.get('type'))
+            data.get('type'),
+            data.get('return_code', None))
 
         ack()
 

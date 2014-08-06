@@ -93,7 +93,7 @@ class Storage(object):
         self.session.add(event)
         self.session.commit()
 
-    def update_job_status(self, job_id, _datetime, status):
+    def update_job_status(self, job_id, _datetime, status, return_code=None):
         job = self.session.query(Job).filter_by(id=job_id).first()
         if job:
             job.current_status = status
@@ -107,6 +107,9 @@ class Storage(object):
             if status == 'finished':
                 job.last_run_status = status
                 job.last_run_stop = _datetime
+                if return_code is not None and int(return_code) == 0:
+                    job.current_status = 'succeeded'
+                    job.last_run_status = 'succeeded'
             self.session.merge(job)
             self.session.commit()
 
