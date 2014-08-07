@@ -127,9 +127,11 @@ body {
   box-shadow: inset -5px -5px 10px rgba(0,0,0,.5);
   display: block;
   float: left;
-  height: 32px;
-  margin: 14px;
-  width: 32px;
+  height: 16px;
+  margin-left: 23px;
+  margin-top: 23px;
+  margin-right: 23px;
+  width: 16px;
   background-image: -webkit-linear-gradient(-45deg, rgba(255,255,220,.2) 0%, transparent 100%);
   background-image: -moz-linear-gradient(-45deg, rgba(255,255,220,.2) 0%, transparent 100%);
   background-image: -o-linear-gradient(-45deg, rgba(255,255,220,.2) 0%, transparent 100%);
@@ -154,15 +156,12 @@ body {
   background-color: #a6e22d;
 }
 .task-status-small {
-  box-shadow: inset -2px -2px 5px rgba(0,0,0,.5);
   display: inline-block;
   float: none;
-  height: 16px;
   left: -26px;
   margin: 0;
   position: absolute;
   top: 7px;
-  width: 16px;
 }
 .task-status-container {
   position: relative;
