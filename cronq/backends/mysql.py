@@ -1,28 +1,18 @@
-from uuid import uuid4
 import datetime
 import os
 import socket
 
-from sqlalchemy import (
-    or_,
-    Column,
-    CHAR,
-    DateTime,
-    ForeignKey,
-    Integer,
-    Interval,
-    Text,
-    UniqueConstraint
-)
+from sqlalchemy import or_
 from sqlalchemy.sql.expression import asc
 from sqlalchemy.sql.expression import desc
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.exc import OperationalError, ProgrammingError
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.orm import relationship
+from uuid import uuid4
 
-Base = declarative_base()
+from cronq.models.category import Category
+from cronq.models.event import Event
+from cronq.models.job import Job
 
 
 class Storage(object):
@@ -30,9 +20,14 @@ class Storage(object):
     def __init__(self, publisher=None):
         self.publisher = publisher
 
-        self._engine = new_engine()
+        self._engine = self._new_engine()
         self._maker = sessionmaker(bind=self._engine)
         self.session = self._new_session()
+
+    def _new_engine(self):
+        dsn = os.getenv('CRONQ_MYSQL',
+                        'mysql+mysqlconnector://root@localhost/cronq')
+        return create_engine(dsn, isolation_level='SERIALIZABLE')
 
     def _new_session(self):
         return self._maker()
@@ -160,19 +155,19 @@ class Storage(object):
     def last_events_for_job(self, job_id, number):
         events = self.session.query(Event).filter_by(job_id=job_id).\
             order_by(desc(Event.id)).limit(number)
-        return event_models_to_docs(events)
+        return self.event_models_to_docs(events)
 
     def events_for_run_id(self, run_id):
         events = self.session.query(Event).filter_by(run_id=run_id).\
             order_by(Event.id)
-        return event_models_to_docs(events)
+        return self.event_models_to_docs(events)
 
     def failures(self):
         events = self.session.query(Event)\
             .filter_by(type='finished')\
             .filter(Event.return_code != 0)\
             .order_by(desc(Event.id)).limit(50)
-        return event_models_to_docs(events)
+        return self.event_models_to_docs(events)
 
     def run_job_now(self, id):
         event = self.session.query(Job).filter_by(id=id).first()
@@ -220,69 +215,14 @@ class Storage(object):
         session.close()
         return True
 
-
-def event_models_to_docs(events):
-    for event in events:
-        yield {
-            'id': event.id,
-            'datetime': event.datetime,
-            'run_id': event.run_id,
-            'host': event.host,
-            'return_code': event.return_code,
-            'type': event.type,
-            'job_id': event.job_id,
-        }
-
-
-def new_engine():
-    dsn = os.getenv('CRONQ_MYSQL',
-                    'mysql+mysqlconnector://root@localhost/cronq')
-    return create_engine(dsn, isolation_level='SERIALIZABLE')
-
-
-class Job(Base):
-
-    __tablename__ = 'jobs'
-    __table_args__ = (UniqueConstraint('category_id', 'name'), {
-        'mysql_engine': 'InnoDB'})
-
-    events = relationship("Event")
-
-    id = Column(Integer, primary_key=True)
-    name = Column(CHAR(255))
-    interval = Column(Interval)
-    next_run = Column(DateTime(), default=datetime.datetime.utcnow)
-    last_run_start = Column(DateTime(), default=None)
-    last_run_stop = Column(DateTime(), default=None)
-    last_run_status = Column(CHAR(32))
-    current_status = Column(CHAR(32))
-    routing_key = Column(CHAR(32), default='default')
-    command = Column(Text())
-    run_now = Column(Integer)
-    locked_by = Column(CHAR(64))
-    category_id = Column(Integer, ForeignKey('categories.id'))
-
-
-class Event(Base):
-
-    __tablename__ = 'events'
-    __table_args__ = {'mysql_engine': 'InnoDB'}
-
-    id = Column(Integer, primary_key=True)
-    job_id = Column(Integer, ForeignKey('jobs.id'))
-    datetime = Column(DateTime)
-    run_id = Column(CHAR(32))
-    type = Column(CHAR(32))
-    host = Column(CHAR(255))
-    return_code = Column(Integer)
-
-
-class Category(Base):
-
-    __tablename__ = 'categories'
-    __table_args__ = {'mysql_engine': 'InnoDB'}
-
-    jobs = relationship("Job")
-
-    id = Column(Integer, primary_key=True)
-    name = Column(CHAR(255), unique=True)
+    def event_models_to_docs(self, events):
+        for event in events:
+            yield {
+                'id': event.id,
+                'datetime': event.datetime,
+                'run_id': event.run_id,
+                'host': event.host,
+                'return_code': event.return_code,
+                'type': event.type,
+                'job_id': event.job_id,
+            }
