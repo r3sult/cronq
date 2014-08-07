@@ -51,11 +51,9 @@ body {
   width: 100%;
   perspective-origin: 466px 31px;
   transform-origin: 466px 31px;
-  border: 1px solid rgb(215, 215, 215);
-  border-radius: 0 0 2px 2px;
+  border-top: 2px solid #ebebeb;
   font: normal normal lighter 16px/16px 'Roboto', helvetica, arial, sans-serif;
   outline: rgb(80, 86, 82) none 0px;
-  margin-bottom: 4px;
 }
 .task-container-outer:after {
   clear: both;
