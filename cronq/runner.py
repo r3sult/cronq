@@ -14,7 +14,7 @@ import time
 
 from haigha.message import Message
 
-from queue_connection import connect
+from cronq.queue_connection import connect
 
 
 logger = logging.getLogger('cronq')

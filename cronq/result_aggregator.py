@@ -3,8 +3,8 @@ from uuid import UUID
 
 from dateutil.parser import parse
 
-from backends.mysql import Storage
-from queue_connection import connect
+from cronq.backends.mysql import Storage
+from cronq.queue_connection import connect
 
 
 def setup():

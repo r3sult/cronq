@@ -12,7 +12,7 @@ from flask import abort
 
 from cronq import interval_parser
 from cronq.utils import split_command
-from backends.mysql import Storage
+from cronq.backends.mysql import Storage
 
 app = Flask(__name__)
 stream_handler = logging.StreamHandler()
