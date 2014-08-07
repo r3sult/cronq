@@ -1,13 +1,23 @@
 {% extends "base.html" %}
 {% block javascript %}
   <script src="/static/js/prism.js"></script>
+  <script src="/static/js/moment.min.js"></script>
+  <script>
+  $(document).ready(function() {
+        var dates = $('.datetime');
+        $.each(dates, function (i, date) {
+          var $date = $(date);
+          $date.html(moment(new Date($date.attr('data-date'))).fromNow());
+        });
+      });
+  </script>
 {% endblock javascript %}
 
 {% block main %}
       <div class="jumbotron">
         <div class="task-definition">
           <h2>{{job.name}}</h2>
-          <h3>Next run: {{job.next_run}}</h3>
+          <h3>Next run: <span class="datetime" data-date="{{ job.next_run }}">{{ job.next_run }}</span></h3>
           <h3>Interval: {{job.interval}} seconds</h3>
 
           <pre class="language-bash"><code class="language-bash">{% set commands = job.command | split_command %}{% for command in commands %}{{ command }}
@@ -25,7 +35,7 @@
         {% for event in events %}
         <h3>Type: {{event.type}} {% if event.type == 'finished'%} Return Code: {{event.return_code}}{% endif %} </h3>
         <h4>ID: <a href="{{url_for("run_id", id=event.run_id)}}">{{event.run_id}}</a></h4>
-        <h3>Time: {{event.datetime}} </h3>
+        <h3>Time: <span class="datetime" data-date="{{ event.datetime }}">{{ event.datetime }}</span> </h3>
         <h3>Host: {{event.host}} </h3>
         <hr>
         {% endfor %}
