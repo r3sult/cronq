@@ -48,14 +48,12 @@ body {
   height: 60px;
   text-align: center;
   text-decoration: none solid rgb(80, 86, 82);
-  /*width: 930px;*/
   width: 100%;
   perspective-origin: 466px 31px;
   transform-origin: 466px 31px;
   border: 1px solid rgb(215, 215, 215);
   border-radius: 0 0 2px 2px;
   font: normal normal lighter 16px/16px 'Roboto', helvetica, arial, sans-serif;
-  /*margin: 0px 284.5px;*/
   outline: rgb(80, 86, 82) none 0px;
   margin-bottom: 4px;
 }
@@ -79,7 +77,6 @@ body {
   position: relative;
   text-align: center;
   text-decoration: none solid rgb(80, 86, 82);
-  /*width: 930px;*/
   width: 100%;
   perspective-origin: 465px 30px;
   transform-origin: 465px 30px;
@@ -123,7 +120,6 @@ body {
   border: 1px solid rgb(155, 161, 157);
   border-radius: 2px 2px 2px 2px;
   font: normal normal normal 14px/14px "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
-  /*margin: 18px 0px 0px;*/
   margin: 18px 24px 0px 10px;
   outline: rgb(103, 114, 108) none 0px;
   padding: 5px 8px 4px;
