@@ -12,6 +12,8 @@ from flask import abort
 
 from cronq import interval_parser
 from cronq.utils import split_command
+from cronq.utils import task_status
+from cronq.utils import took
 from cronq.backends.mysql import Storage
 
 app = Flask(__name__)
@@ -20,6 +22,8 @@ stream_handler.setLevel(logging.INFO)
 app.logger.addHandler(stream_handler)
 app.secret_key = 'not a secret'
 app.jinja_env.filters['split_command'] = split_command
+app.jinja_env.globals.update(task_status=task_status)
+app.jinja_env.globals.update(took=took)
 
 
 @app.before_request
@@ -53,8 +57,8 @@ def job(id):
         return redirect(url_for('job', id=id))
 
     job_doc = g.storage.get_job(id)
-    events = g.storage.last_events_for_job(id, 10)
-    return render_template('job.html', job=job_doc, events=events)
+    chunks = g.storage.last_event_chunks_for_job(id, 20)
+    return render_template('job.html', job=job_doc, chunks=chunks)
 
 
 @app.route('/run/<string:id>')

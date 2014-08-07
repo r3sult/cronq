@@ -5,7 +5,7 @@
         {% for job in jobs %}
         <div class="task-container-outer">
             <div class="task-container-inner">
-                <a href="{{ url_for('job', id=job.id) }}" class="task-status .task-status-{{ job.last_run_status }}"></a>
+                <a href="{{ url_for('job', id=job.id) }}" class="task-status task-status-{{ job.last_run_status }}"></a>
                 <a href="{{ url_for('job', id=job.id) }}" class="task-name">{{ job.name }}</a>
                 <div class="task-lastrun">
                     {% if job.current_status == 'started' %}

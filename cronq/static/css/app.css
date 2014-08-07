@@ -141,20 +141,37 @@ body {
   background-image: -o-linear-gradient(-45deg, rgba(255,255,220,.2) 0%, transparent 100%);
   background-image: -ms-linear-gradient(-45deg, rgba(255,255,220,.2) 0%, transparent 100%);
 }
+.task-status:hover {
+  text-decoration: none;
+}
 .task-status-none {
   background-color: white;
 }
 .task-status-failed {
-  background-color: red;
+  background-color: #f92772;
 }
-.task-status-started {
-  background-color: blue;
+.task-status-starting {
+  background-color: #339ed5;
 }
 .task-status-finished {
   background-color: grey;
 }
 .task-status-succeeded {
-  background-color: green;
+  background-color: #a6e22d;
+}
+.task-status-small {
+  box-shadow: inset -2px -2px 5px rgba(0,0,0,.5);
+  display: inline-block;
+  float: none;
+  height: 16px;
+  left: -26px;
+  margin: 0;
+  position: absolute;
+  top: 7px;
+  width: 16px;
+}
+.task-status-container {
+  position: relative;
 }
 
 /* http://prismjs.com/download.html?themes=prism-okaidia&languages=clike+bash */

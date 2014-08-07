@@ -3,13 +3,47 @@
   <script src="/static/js/prism.js"></script>
   <script src="/static/js/moment.min.js"></script>
   <script>
-  $(document).ready(function() {
-        var dates = $('.datetime');
-        $.each(dates, function (i, date) {
-          var $date = $(date);
-          $date.html(moment(new Date($date.attr('data-date'))).fromNow());
-        });
+    function secondsToStr(seconds, every) {
+      var milliseconds = seconds * 1000;
+      function numberEnding (number) {
+        return (number > 1) ? 's' : '';
+      }
+
+      var temp = Math.floor(milliseconds / 1000);
+      var years = Math.floor(temp / 31536000);
+      if (years) return (every ? (years == 1 ? 'every ' : 'every ' + years) : years) + ' year' + numberEnding(years);
+      //TODO: Months! Maybe weeks?
+      var days = Math.floor((temp %= 31536000) / 86400);
+      if (days) return (every ? (days == 1 ? 'every ' : 'every ' + days) : days) + ' day' + numberEnding(days);
+      var hours = Math.floor((temp %= 86400) / 3600);
+      if (hours) return (every ? (hours == 1 ? 'every ' : 'every ' + hours) : hours) + ' hour' + numberEnding(hours);
+      var minutes = Math.floor((temp %= 3600) / 60);
+      if (minutes) return (every ? (minutes == 1 ? 'every ' : 'every ' + minutes) : minutes) + ' minute' + numberEnding(minutes);
+      var seconds = temp % 60;
+      if (seconds) return (every ? (seconds == 1 ? 'every ' : 'every ' + seconds) : seconds) + ' second' + numberEnding(seconds);
+      return 'less than a second'; //'just now' //or other string you like;
+    }
+
+    $(document).ready(function() {
+      var dates = $('.datetime'),
+          intervals = $('.time-interval')
+          times = $('.time');
+      $.each(dates, function (i, date) {
+        var $date = $(date);
+        $date.html(moment(new Date($date.attr('data-date'))).fromNow());
       });
+
+      $.each(intervals, function (i, interval) {
+        var $interval = $(interval);
+        $interval.html(secondsToStr($interval.attr('data-time'), true));
+      });
+
+      $.each(times, function (i, time) {
+        var $time = $(time);
+        $time.html(secondsToStr($time.attr('data-time')));
+      });
+      $('.datetime, .time, .time-interval').tooltip();
+    });
   </script>
 {% endblock javascript %}
 
@@ -17,27 +51,54 @@
       <div class="jumbotron">
         <div class="task-definition">
           <h2>{{job.name}}</h2>
-          <h3>Next run: <span class="datetime" data-date="{{ job.next_run }}">{{ job.next_run }}</span></h3>
-          <h3>Interval: {{job.interval}} seconds</h3>
+          <h4>Next run: <span class="datetime" data-toggle="tooltip" data-placement="right" data-date="{{ job.next_run }}" title="{{ job.next_run }}">{{ job.next_run }}</span></h4>
+          <h4>Interval: <span class="time-interval" data-toggle="tooltip" data-placement="right" data-time="{{ job.interval.total_seconds() }}" title="{{ job.interval.total_seconds() }}">{{ job.interval.total_seconds() }}</span></h4>
 
           <pre class="language-bash"><code class="language-bash">{% set commands = job.command | split_command %}{% for command in commands %}{{ command }}
 {% endfor %}</code></pre>
         </div>
       </div>
       <div>
-        <form method="POST">
+        <div  style="max-width: 400px; margin: 0 auto 10px;">
+          <form method="POST">
             <input type="hidden" name="run_now" value="1">
-            <input type="submit" class="btn btn-primary" value="Run Now">
-        </form>
+            <input type="submit" class="btn btn-block btn-primary" value="Run Now" style="background-image: none">
+          </form>
+        </div>
       </div>
       <hr>
       <div id="events">
-        {% for event in events %}
-        <h3>Type: {{event.type}} {% if event.type == 'finished'%} Return Code: {{event.return_code}}{% endif %} </h3>
-        <h4>ID: <a href="{{url_for("run_id", id=event.run_id)}}">{{event.run_id}}</a></h4>
-        <h3>Time: <span class="datetime" data-date="{{ event.datetime }}">{{ event.datetime }}</span> </h3>
-        <h3>Host: {{event.host}} </h3>
-        <hr>
+        {% for chunk in chunks %}
+          <dl class="dl-horizontal">
+            <dt>
+              <h3 class="task-job-id">
+                <span class="task-status-container"><a href="{{ url_for("run_id", id=chunk.first.run_id) }}" class="task-status task-status-small task-status-{{ task_status(chunk.first, chunk.last) }}">&nbsp;</a></span>
+              ID</h3>
+            </dt>
+            <dd><h3><a href="{{ url_for("run_id", id=chunk.first.run_id) }}">{{ chunk.first.run_id }}</a></h3></dd>
+            <dt>Host</dt>
+            <dd>{{ chunk.first.host }}</dd>
+            <dt>Started</dt>
+            <dd><span class="datetime" data-toggle="tooltip" data-placement="right" data-date="{{ chunk.first.datetime }}" title="{{ chunk.first.datetime }}">{{ chunk.first.datetime }}</span></dd>
+
+            {% if chunk.last %}
+              {% set total_seconds = took(chunk.first.datetime, chunk.last.datetime) %}
+              <dt>Ended</dt>
+              <dd><span class="datetime" data-toggle="tooltip" data-placement="right" data-date="{{ chunk.last.datetime }}" title="{{ chunk.last.datetime }}">{{ chunk.last.datetime }}</span> </dd>
+
+              <dt>Took</dt>
+              <dd><span class="time" data-toggle="tooltip" data-placement="right" data-time="{{ total_seconds }}" title="{{ total_seconds }}">{{ total_seconds }} seconds</span></dd>
+
+              <dt>Status</dt>
+              <dd>{{chunk.last.type}}</dd>
+
+              {% if chunk.last.type == 'finished' %}
+                <dt>Return Code</dt>
+                <dd>{{chunk.last.return_code}}</dd>
+              {% endif %}
+            {% endif %}
+          </dl>
+
         {% endfor %}
       </div>
 {% endblock main %}

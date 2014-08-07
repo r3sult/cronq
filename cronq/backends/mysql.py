@@ -17,6 +17,11 @@ from cronq.models.job import Job
 
 class Storage(object):
 
+    FINISHED = 'finished'
+    FAILED = 'failed'
+    STARTED = 'started'
+    SUCCEEDED = 'succeeded'
+
     def __init__(self, publisher=None):
         self.publisher = publisher
 
@@ -92,19 +97,19 @@ class Storage(object):
         job = self.session.query(Job).filter_by(id=job_id).first()
         if job:
             job.current_status = status
-            if status == 'started':
+            if status == self.STARTED:
                 job.last_run_start = _datetime
                 job.last_run_status = None
                 job.last_run_stop = None
-            if status == 'failed':
+            if status == self.FAILED:
                 job.last_run_status = status
                 job.last_run_stop = _datetime
-            if status == 'finished':
+            if status == self.FINISHED:
                 job.last_run_status = status
                 job.last_run_stop = _datetime
                 if return_code is not None and int(return_code) == 0:
-                    job.current_status = 'succeeded'
-                    job.last_run_status = 'succeeded'
+                    job.current_status = self.SUCCEEDED
+                    job.last_run_status = self.SUCCEEDED
             self.session.merge(job)
             self.session.commit()
 
@@ -152,10 +157,35 @@ class Storage(object):
             self.session.commit()
         return category.id
 
-    def last_events_for_job(self, job_id, number):
+    def last_event_chunks_for_job(self, job_id, number):
         events = self.session.query(Event).filter_by(job_id=job_id).\
             order_by(desc(Event.id)).limit(number)
-        return self.event_models_to_docs(events)
+        docs = [doc for doc in self.event_models_to_docs(events)]
+
+        if docs <= 1:
+            return docs
+
+        if docs[-1]['type'] != 'starting':
+            del docs[-1]
+
+        def chunk_it(l, n):
+            if n < 1:
+                n = 1
+            return [l[i:i + n] for i in range(0, len(l), n)]
+
+        chunks = chunk_it(docs, 2)
+        docs = []
+
+        for chunk in chunks:
+            indexed = {'first': None, 'last': None}
+            for event in chunk:
+                if event['type'] == 'starting':
+                    indexed['first'] = event
+                else:
+                    indexed['last'] = event
+            docs.append(indexed)
+
+        return docs
 
     def events_for_run_id(self, run_id):
         events = self.session.query(Event).filter_by(run_id=run_id).\
@@ -164,7 +194,7 @@ class Storage(object):
 
     def failures(self):
         events = self.session.query(Event)\
-            .filter_by(type='finished')\
+            .filter_by(type=self.FINISHED)\
             .filter(Event.return_code != 0)\
             .order_by(desc(Event.id)).limit(50)
         return self.event_models_to_docs(events)
@@ -217,7 +247,7 @@ class Storage(object):
 
     def event_models_to_docs(self, events):
         for event in events:
-            yield {
+            doc = {
                 'id': event.id,
                 'datetime': event.datetime,
                 'run_id': event.run_id,
@@ -225,4 +255,17 @@ class Storage(object):
                 'return_code': event.return_code,
                 'type': event.type,
                 'job_id': event.job_id,
+                'status': self.get_status(event.type, event.return_code),
             }
+            yield doc
+
+    def get_status(self, _type, return_code=None):
+        if _type == self.SUCCEEDED:
+            return self.SUCCEEDED
+        elif return_code is None:
+            return _type
+        elif _type == self.FINISHED:
+            if int(return_code) == 0:
+                return self.SUCCEEDED
+
+        return self.FINISHED
