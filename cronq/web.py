@@ -11,15 +11,15 @@ from flask import flash
 from flask import abort
 
 from cronq import interval_parser
+from cronq.utils import split_command
 from backends.mysql import Storage
 
 app = Flask(__name__)
 stream_handler = logging.StreamHandler()
 stream_handler.setLevel(logging.INFO)
 app.logger.addHandler(stream_handler)
-
-
 app.secret_key = 'not a secret'
+app.jinja_env.filters['split_command'] = split_command
 
 
 @app.before_request
