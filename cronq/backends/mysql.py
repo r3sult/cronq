@@ -116,9 +116,10 @@ class Storage(object):
     @property
     def jobs(self):
         session = self.session
-        for job in session.query(Job).order_by(asc(Job.name)):
+        for job in session.query(Job).order_by(asc(Job.category_id)):
             yield {
                 'id': job.id,
+                'category_id': job.category_id,
                 'name': job.name,
                 'next_run': job.next_run,
                 'interval': job.interval,
@@ -126,6 +127,15 @@ class Storage(object):
                 'last_run_stop': job.last_run_stop,
                 'last_run_status': job.last_run_status,
                 'current_status': job.current_status or 'none'
+            }
+
+    @property
+    def categories(self):
+        session = self.session
+        for category in session.query(Category).order_by(asc(Category.id)):
+            yield {
+                'id': category.id,
+                'name': category.name,
             }
 
     def get_job(self, id):

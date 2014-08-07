@@ -46,7 +46,9 @@ def remove_storage(request):
 @app.route('/')
 def index():
     jobs = list(g.storage.jobs)
-    return render_template('index.html', jobs=jobs)
+    categories = list(g.storage.categories)
+    categories = {category['id']: category for category in categories}
+    return render_template('index.html', jobs=jobs, categories=categories)
 
 
 @app.route('/job/<int:id>', methods=['GET', 'POST'])

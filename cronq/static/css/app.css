@@ -166,6 +166,10 @@ body {
 .task-status-container {
   position: relative;
 }
+.task-category {
+  margin-left: 64px;
+  text-align: left;
+}
 
 /* http://prismjs.com/download.html?themes=prism-okaidia&languages=clike+bash */
 /**
