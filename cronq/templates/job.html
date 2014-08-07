@@ -51,7 +51,7 @@
       <div class="jumbotron">
         <div class="task-definition">
           <h2>{{job.name}}</h2>
-          <h4>Next run: <span class="datetime" data-toggle="tooltip" data-placement="right" data-date="{{ job.next_run }}" title="{{ job.next_run }}">{{ job.next_run }}</span></h4>
+          <h4>Next run: <span class="datetime" data-toggle="tooltip" data-placement="right" data-date="{{ job.next_run }} UTC" title="{{ job.next_run }} UTC">{{ job.next_run }} UTC</span></h4>
           <h4>Interval: <span class="time-interval" data-toggle="tooltip" data-placement="right" data-time="{{ job.interval.total_seconds() }}" title="{{ job.interval.total_seconds() }}">{{ job.interval.total_seconds() }}</span></h4>
 
           <pre class="language-bash"><code class="language-bash">{% set commands = job.command | split_command %}{% for command in commands %}{{ command }}
@@ -79,12 +79,12 @@
             <dt>Host</dt>
             <dd>{{ chunk.first.host }}</dd>
             <dt>Started</dt>
-            <dd><span class="datetime" data-toggle="tooltip" data-placement="right" data-date="{{ chunk.first.datetime }}" title="{{ chunk.first.datetime }}">{{ chunk.first.datetime }}</span></dd>
+            <dd><span class="datetime" data-toggle="tooltip" data-placement="right" data-date="{{ chunk.first.datetime }} UTC" title="{{ chunk.first.datetime }} UTC">{{ chunk.first.datetime }} UTC</span></dd>
 
             {% if chunk.last %}
               {% set total_seconds = took(chunk.first.datetime, chunk.last.datetime) %}
               <dt>Ended</dt>
-              <dd><span class="datetime" data-toggle="tooltip" data-placement="right" data-date="{{ chunk.last.datetime }}" title="{{ chunk.last.datetime }}">{{ chunk.last.datetime }}</span> </dd>
+              <dd><span class="datetime" data-toggle="tooltip" data-placement="right" data-date="{{ chunk.last.datetime }} UTC" title="{{ chunk.last.datetime }} UTC">{{ chunk.last.datetime }} UTC</span> </dd>
 
               <dt>Took</dt>
               <dd><span class="time" data-toggle="tooltip" data-placement="right" data-time="{{ total_seconds }}" title="{{ total_seconds }}">{{ total_seconds }} seconds</span></dd>
