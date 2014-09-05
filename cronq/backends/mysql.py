@@ -231,11 +231,10 @@ class Storage(object):
             return
         print 'Found a job:', job.name, job.next_run
 
-        to_run_at = job.next_run
-        while to_run_at < datetime.datetime.utcnow():
+        while job.next_run < datetime.datetime.utcnow():
             print 'Adding time!'
-            to_run_at += job.interval
-        print to_run_at
+            job.next_run += job.interval
+        print job.next_run
         job_doc = {
             'name': job.name,
             'command': unicode(job.command),
