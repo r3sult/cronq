@@ -2,6 +2,7 @@
 import os
 from setuptools import setup
 
+
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
@@ -9,9 +10,9 @@ def read(fname):
 def run_setup():
     setup(
         name='cronq',
-        version='0.0.30',
+        version='0.0.31',
         description='A Cron-like system for running tasks',
-        keywords = 'cron amqp',
+        keywords='cron amqp',
         url='http://github.com/philipcristiano/cronq',
         author='Philip Cristiano',
         author_email='philipcristiano@gmail.com',
