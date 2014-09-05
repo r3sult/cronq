@@ -45,10 +45,8 @@ class Storage(object):
         ]
         for model in models:
             try:
-                print 'Try model', model
                 model.__table__.create(self._engine)
-            except (OperationalError, ProgrammingError) as exc:
-                print exc
+            except (OperationalError, ProgrammingError):
                 pass
 
     def close(self):
