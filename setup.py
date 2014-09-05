@@ -13,9 +13,9 @@ def run_setup():
         version='0.0.31',
         description='A Cron-like system for running tasks',
         keywords='cron amqp',
-        url='http://github.com/philipcristiano/cronq',
-        author='Philip Cristiano',
-        author_email='philipcristiano@gmail.com',
+        url='http://github.com/seatgeek/cronq',
+        author='SeatGeek',
+        author_email='opensource@seatgeek.com',
         license='BSD',
         packages=['cronq', 'cronq.backends'],
         install_requires=[
