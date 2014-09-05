@@ -1,12 +1,33 @@
 {% extends "base.html" %}
 {% block main %}
       <div class="jumbotron">
-        <h1>You got something BETTER than Cron</h1>
+        <h2>Tasks</h2>
+        {% set category_id = None %}
         {% for job in jobs %}
-        <h2>Job: <a href="{{ url_for('job', id=job.id)}}">{{job.name}}</a></h2>
-            <hr>
+            {% if job.category_id != category_id %}
+                {% set category_id = job.category_id %}
+                <h5 class="task-category">{{ categories[job.category_id].name }}</h4>
+            {% endif %}
+
+            <div class="task-container-outer">
+                <div class="task-container-inner">
+                    <a href="{{ url_for('job', id=job.id) }}" class="task-status task-status-{{ job.last_run_status }}"></a>
+                    <a href="{{ url_for('job', id=job.id) }}" class="task-name">{{ job.name }}</a>
+                    <div class="task-lastrun">
+                        {% if job.current_status == 'started' %}
+                            Running now
+                        {% elif job.current_status == 'failed' %}
+                            Last run failed
+                        {% elif job.current_status == 'finished' %}
+                            Completed an error
+                        {% elif job.current_status == 'none' %}
+                            Waiting...
+                        {% elif job.current_status == 'succeeded' %}
+                            Succeeded at {{ job.last_run_stop }}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
         {% endfor %}
       </div>
-
-      <hr>
 {% endblock main %}

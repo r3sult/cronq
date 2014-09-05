@@ -1,40 +1,38 @@
-from uuid import uuid4, UUID
 import datetime
 import os
 import socket
 
-import sqlalchemy
-from sqlalchemy import (
-    or_,
-    Binary,
-    Column,
-    CHAR,
-    DateTime,
-    Integer,
-    Interval,
-    String,
-    Time,
-    Text,
-    UniqueConstraint
-)
+from sqlalchemy import or_
+from sqlalchemy.sql.expression import asc
 from sqlalchemy.sql.expression import desc
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.exc import OperationalError, ProgrammingError
 from sqlalchemy.orm import sessionmaker
+from uuid import uuid4
 
-Base = declarative_base()
-
+from cronq.models.category import Category
+from cronq.models.event import Event
+from cronq.models.job import Job
 
 
 class Storage(object):
 
+    FINISHED = 'finished'
+    FAILED = 'failed'
+    STARTED = 'started'
+    SUCCEEDED = 'succeeded'
+
     def __init__(self, publisher=None):
         self.publisher = publisher
 
-        self._engine = new_engine()
+        self._engine = self._new_engine()
         self._maker = sessionmaker(bind=self._engine)
         self.session = self._new_session()
+
+    def _new_engine(self):
+        dsn = os.getenv('CRONQ_MYSQL',
+                        'mysql+mysqlconnector://root@localhost/cronq')
+        return create_engine(dsn, isolation_level='SERIALIZABLE')
 
     def _new_session(self):
         return self._maker()
@@ -57,7 +55,14 @@ class Storage(object):
         self.session.close()
         self._engine.dispose()
 
-    def add_job(self, name, interval_seconds, command, next_run, id=None, category_id=None, routing_key=None):
+    def add_job(self,
+                name,
+                interval_seconds,
+                command,
+                next_run,
+                id=None,
+                category_id=None,
+                routing_key=None):
         if routing_key is None:
             routing_key = 'default'
         job = Job()
@@ -77,10 +82,10 @@ class Storage(object):
             self.session.delete(job)
             self.session.commit()
 
-    def add_event(self, job_id, datetime, run_id, type, host, return_code):
+    def add_event(self, job_id, _datetime, run_id, type, host, return_code):
         event = Event()
         event.job_id = job_id
-        event.datetime = datetime
+        event.datetime = _datetime
         event.run_id = run_id
         event.type = type
         event.host = host
@@ -88,15 +93,49 @@ class Storage(object):
         self.session.add(event)
         self.session.commit()
 
+    def update_job_status(self, job_id, _datetime, status, return_code=None):
+        job = self.session.query(Job).filter_by(id=job_id).first()
+        if job:
+            job.current_status = status
+            if status == self.STARTED:
+                job.last_run_start = _datetime
+                job.last_run_status = None
+                job.last_run_stop = None
+            if status == self.FAILED:
+                job.last_run_status = status
+                job.last_run_stop = _datetime
+            if status == self.FINISHED:
+                job.last_run_status = status
+                job.last_run_stop = _datetime
+                if return_code is not None and int(return_code) == 0:
+                    job.current_status = self.SUCCEEDED
+                    job.last_run_status = self.SUCCEEDED
+            self.session.merge(job)
+            self.session.commit()
+
     @property
     def jobs(self):
         session = self.session
-        for job in session.query(Job):
+        for job in session.query(Job).order_by(asc(Job.category_id)):
             yield {
                 'id': job.id,
+                'category_id': job.category_id,
                 'name': job.name,
                 'next_run': job.next_run,
                 'interval': job.interval,
+                'last_run_start': job.last_run_start,
+                'last_run_stop': job.last_run_stop,
+                'last_run_status': job.last_run_status,
+                'current_status': job.current_status or 'none'
+            }
+
+    @property
+    def categories(self):
+        session = self.session
+        for category in session.query(Category).order_by(asc(Category.id)):
+            yield {
+                'id': category.id,
+                'name': category.name,
             }
 
     def get_job(self, id):
@@ -111,7 +150,6 @@ class Storage(object):
             'interval': job.interval,
             'command': job.command,
         }
-
 
     def jobs_for_category(self, id=None, name=None):
         if id and name:
@@ -129,21 +167,47 @@ class Storage(object):
             self.session.commit()
         return category.id
 
+    def last_event_chunks_for_job(self, job_id, number):
+        events = self.session.query(Event).filter_by(job_id=job_id).\
+            order_by(desc(Event.id)).limit(number)
+        docs = [doc for doc in self.event_models_to_docs(events)]
 
-    def last_events_for_job(self, job_id, number):
-        events = self.session.query(Event).filter_by(job_id=job_id).order_by(desc(Event.id)).limit(number)
-        return event_models_to_docs(events)
+        if docs <= 1:
+            return docs
+
+        if docs[-1]['type'] != 'starting':
+            del docs[-1]
+
+        def chunk_it(l, n):
+            if n < 1:
+                n = 1
+            return [l[i:i + n] for i in range(0, len(l), n)]
+
+        chunks = chunk_it(docs, 2)
+        docs = []
+
+        for chunk in chunks:
+            indexed = {'first': None, 'last': None}
+            for event in chunk:
+                if event['type'] == 'starting':
+                    indexed['first'] = event
+                else:
+                    indexed['last'] = event
+            docs.append(indexed)
+
+        return docs
 
     def events_for_run_id(self, run_id):
-        events = self.session.query(Event).filter_by(run_id=run_id).order_by(Event.id)
-        return event_models_to_docs(events)
+        events = self.session.query(Event).filter_by(run_id=run_id).\
+            order_by(Event.id)
+        return self.event_models_to_docs(events)
 
     def failures(self):
         events = self.session.query(Event)\
-            .filter_by(type='finished')\
-            .filter(Event.return_code!=0)\
+            .filter_by(type=self.FINISHED)\
+            .filter(Event.return_code != 0)\
             .order_by(desc(Event.id)).limit(50)
-        return event_models_to_docs(events)
+        return self.event_models_to_docs(events)
 
     def run_job_now(self, id):
         event = self.session.query(Job).filter_by(id=id).first()
@@ -160,7 +224,7 @@ class Storage(object):
         session = self._new_session()
         to_run = or_(
             Job.next_run < datetime.datetime.utcnow(),
-            Job.run_now == True,
+            Job.run_now is True,
         )
 
         job = session.query(Job).filter(to_run).first()
@@ -168,11 +232,12 @@ class Storage(object):
             session.close()
             return
         print 'Found a job:', job.name, job.next_run
+
         to_run_at = job.next_run
-        while job.next_run < datetime.datetime.utcnow():
+        while to_run_at < datetime.datetime.utcnow():
             print 'Adding time!'
-            job.next_run += job.interval
-        print job.next_run
+            to_run_at += job.interval
+        print to_run_at
         job_doc = {
             'name': job.name,
             'command': unicode(job.command),
@@ -184,63 +249,33 @@ class Storage(object):
         try:
             session.commit()
             self.publisher.publish(job.routing_key, job_doc, uuid4().hex)
-        except Exception as exc:
+        except Exception:
             session.rollback()
             raise
         session.close()
         return True
 
-def event_models_to_docs(events):
-    for event in events:
-        yield {
-            'id': event.id,
-            'datetime': event.datetime,
-            'run_id': event.run_id,
-            'host': event.host,
-            'return_code': event.return_code,
-            'type': event.type,
-            'job_id': event.job_id,
-        }
+    def event_models_to_docs(self, events):
+        for event in events:
+            doc = {
+                'id': event.id,
+                'datetime': event.datetime,
+                'run_id': event.run_id,
+                'host': event.host,
+                'return_code': event.return_code,
+                'type': event.type,
+                'job_id': event.job_id,
+                'status': self.get_status(event.type, event.return_code),
+            }
+            yield doc
 
+    def get_status(self, _type, return_code=None):
+        if _type == self.SUCCEEDED:
+            return self.SUCCEEDED
+        elif return_code is None:
+            return _type
+        elif _type == self.FINISHED:
+            if int(return_code) == 0:
+                return self.SUCCEEDED
 
-def new_engine():
-    dsn = os.getenv('CRONQ_MYSQL', 'mysql+mysqlconnector://root@localhost/cronq')
-    return create_engine(dsn, isolation_level='SERIALIZABLE')
-
-
-class Job(Base):
-
-    __tablename__ = 'jobs'
-    __table_args__ = (UniqueConstraint('category_id', 'name'),{'mysql_engine':'InnoDB'})
-
-    id = Column(Integer, primary_key=True)
-    name = Column(CHAR(255))
-    interval = Column(Interval)
-    next_run = Column(DateTime(), default=datetime.datetime.utcnow)
-    routing_key = Column(CHAR(32), default='default')
-    command = Column(Text())
-    run_now = Column(Integer)
-    locked_by = Column(CHAR(64))
-    category_id = Column(Integer)
-
-
-class Event(Base):
-
-    __tablename__ = 'events'
-    __table_args__ = {'mysql_engine':'InnoDB'}
-
-    id = Column(Integer, primary_key=True)
-    job_id = Column(Integer)
-    datetime = Column(DateTime)
-    run_id = Column(CHAR(32))
-    type = Column(CHAR(32))
-    host= Column(CHAR(255))
-    return_code = Column(Integer)
-
-class Category(Base):
-
-    __tablename__ = 'categories'
-    __table_args__ = {'mysql_engine':'InnoDB'}
-
-    id = Column(Integer, primary_key=True)
-    name = Column(CHAR(255), unique=True)
+        return self.FINISHED

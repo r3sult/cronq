@@ -1,0 +1,288 @@
+body {
+  padding-top: 20px;
+  padding-bottom: 40px;
+  background: #f2f2f2
+}
+.masthead {
+  height: 60px;
+}
+
+/* Custom container */
+.container-narrow {
+  margin: 0 auto;
+  max-width: 700px;
+}
+.container-narrow > hr {
+  margin: 30px 0;
+}
+
+/* Main marketing message and sign up button */
+.jumbotron {
+  margin: 0 0 60px 0;
+  text-align: center;
+}
+.jumbotron h1 {
+  font-size: 72px;
+  line-height: 1;
+}
+.task-definition pre {
+  position: relative;
+  text-align: left;
+}
+.task-definition pre:before {
+  content: 'command';
+  color: black;
+  background-color: #CFCFCF;
+  display: inline-block;
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 0.9em;
+  border-radius: 0 0 0 5px;
+  padding: 0 0.5em;
+  text-shadow: none;
+}
+.task-container-outer {
+  clear: both;
+  color: rgb(80, 86, 82);
+  height: 60px;
+  text-align: center;
+  text-decoration: none solid rgb(80, 86, 82);
+  width: 100%;
+  perspective-origin: 466px 31px;
+  transform-origin: 466px 31px;
+  border-top: 2px solid #ebebeb;
+  font: normal normal lighter 16px/16px 'Roboto', helvetica, arial, sans-serif;
+  outline: rgb(80, 86, 82) none 0px;
+}
+.task-container-outer:after {
+  clear: both;
+  color: rgb(80, 86, 82);
+  display: table;
+  text-align: center;
+  text-decoration: none solid rgb(80, 86, 82);
+  width: 1px;
+  perspective-origin: 0.5px 0px;
+  transform-origin: 0.5px 0px;
+  content: '';
+  border: 0px none rgb(80, 86, 82);
+  font: normal normal lighter 16px/16px 'Roboto', helvetica, arial, sans-serif;
+  outline: rgb(80, 86, 82) none 0px;
+}
+.task-container-inner {
+  color: rgb(80, 86, 82);
+  height: 60px;
+  position: relative;
+  text-align: center;
+  text-decoration: none solid rgb(80, 86, 82);
+  width: 100%;
+  perspective-origin: 465px 30px;
+  transform-origin: 465px 30px;
+  background: #eeeeee;
+  border: 0px none rgb(80, 86, 82);
+  border-radius: 2px 2px 2px 2px;
+  font: normal normal lighter 16px/16px 'Roboto', helvetica, arial, sans-serif;
+  outline: rgb(80, 86, 82) none 0px;
+}
+.task-name {
+  color: rgb(107, 117, 111);
+  display: block;
+  float: left;
+  height: 19px;
+  text-align: left;
+  text-decoration: none solid rgb(107, 117, 111);
+  text-shadow: rgb(255, 255, 255) 0px 1px 0px;
+  white-space: nowrap;
+  width: 335px;
+  z-index: 0;
+  perspective-origin: 167.5px 28px;
+  transform-origin: 167.5px 28px;
+  border: 0px none rgb(107, 117, 111);
+  font: normal normal lighter 15px/15px 'Roboto', helvetica, arial, sans-serif;
+  outline: rgb(107, 117, 111) none 0px;
+  overflow: hidden;
+  padding: 24px 0px 18px;
+}
+.task-lastrun {
+  box-shadow: rgba(0, 0, 0, 0.0980392) 0px 0px 4px 0px inset, rgba(255, 255, 255, 0.14902) 0px 1px 0px 0px;
+  color: rgb(103, 114, 108);
+  float: right;
+  height: 14px;
+  letter-spacing: 1px;
+  text-align: left;
+  text-decoration: none solid rgb(103, 114, 108);
+  width: 160px;
+  perspective-origin: 89px 12.5px;
+  transform-origin: 89px 12.5px;
+  background: rgb(206, 210, 208) linear-gradient(rgb(206, 210, 208), rgb(197, 201, 199)) repeat scroll 0% 0% / auto padding-box border-box;
+  border: 1px solid rgb(155, 161, 157);
+  border-radius: 2px 2px 2px 2px;
+  font: normal normal normal 14px/14px "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
+  margin: 18px 24px 0px 10px;
+  outline: rgb(103, 114, 108) none 0px;
+  padding: 5px 8px 4px;
+}
+.task-status {
+  border-radius: 50%;
+  box-shadow: inset -5px -5px 10px rgba(0,0,0,.5);
+  display: block;
+  float: left;
+  height: 16px;
+  margin-left: 23px;
+  margin-top: 23px;
+  margin-right: 23px;
+  width: 16px;
+  background-image: -webkit-linear-gradient(-45deg, rgba(255,255,220,.2) 0%, transparent 100%);
+  background-image: -moz-linear-gradient(-45deg, rgba(255,255,220,.2) 0%, transparent 100%);
+  background-image: -o-linear-gradient(-45deg, rgba(255,255,220,.2) 0%, transparent 100%);
+  background-image: -ms-linear-gradient(-45deg, rgba(255,255,220,.2) 0%, transparent 100%);
+}
+.task-status:hover {
+  text-decoration: none;
+}
+.task-status-none {
+  background-color: white;
+}
+.task-status-failed {
+  background-color: #f92772;
+}
+.task-status-starting {
+  background-color: #339ed5;
+}
+.task-status-finished {
+  background-color: grey;
+}
+.task-status-succeeded {
+  background-color: #a6e22d;
+}
+.task-status-small {
+  display: inline-block;
+  float: none;
+  left: -26px;
+  margin: 0;
+  position: absolute;
+  top: 7px;
+}
+.task-status-container {
+  position: relative;
+}
+.task-category {
+  margin-left: 64px;
+  text-align: left;
+}
+
+/* http://prismjs.com/download.html?themes=prism-okaidia&languages=clike+bash */
+/**
+ * okaidia theme for JavaScript, CSS and HTML
+ * Loosely based on Monokai textmate theme by http://www.monokai.nl/
+ * @author ocodia
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+  color: #f8f8f2;
+  text-shadow: 0 1px rgba(0,0,0,0.3);
+  font-family: Consolas, Monaco, 'Andale Mono', monospace;
+  direction: ltr;
+  text-align: left;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+
+  -moz-tab-size: 4;
+  -o-tab-size: 4;
+  tab-size: 4;
+
+  -webkit-hyphens: none;
+  -moz-hyphens: none;
+  -ms-hyphens: none;
+  hyphens: none;
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+  padding: 1em;
+  margin: .5em 0;
+  overflow: auto;
+  border-radius: 0.3em;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+  background: #272822;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+  padding: .1em;
+  border-radius: .3em;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  color: slategray;
+}
+
+.token.punctuation {
+  color: #f8f8f2;
+}
+
+.namespace {
+  opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.constant,
+.token.symbol {
+  color: #f92672;
+}
+
+.token.boolean,
+.token.number{
+  color: #ae81ff;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.builtin {
+  color: #a6e22e;
+}
+
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string,
+.token.variable {
+  color: #f8f8f2;
+}
+
+.token.atrule,
+.token.attr-value
+{
+  color: #e6db74;
+}
+
+
+.token.keyword{
+color: #66d9ef;
+}
+
+.token.regex,
+.token.important {
+  color: #fd971f;
+}
+
+.token.important {
+  font-weight: bold;
+}
+
+.token.entity {
+  cursor: help;
+}
+

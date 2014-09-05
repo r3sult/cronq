@@ -3,8 +3,8 @@ from uuid import UUID
 
 from dateutil.parser import parse
 
-from backends.mysql import Storage
-from queue_connection import connect
+from cronq.backends.mysql import Storage
+from cronq.queue_connection import connect
 
 
 def setup():
@@ -28,18 +28,22 @@ def setup():
     while True:
         conn.read_frames()
 
+
 def create_connection_closed_cb(connection):
     def connection_closed_cb():
-        print "AMQP broker connection closed; close-info: %s" % (
-          connection.close_info,)
+        message = "AMQP broker connection closed; close-info: {0}"
+        print message.format(connection.close_info)
         connection = None
+        connection
     return connection_closed_cb
+
 
 def create_aggregator(channel):
     storage = Storage()
 
     def run_something(msg):
         tag = msg.delivery_info['delivery_tag']
+
         def ack():
             channel.basic.ack(tag)
 
@@ -55,10 +59,16 @@ def create_aggregator(channel):
             data.get('x-host'),
             data.get('return_code'),
         )
+        storage.update_job_status(
+            data.get('job_id'),
+            parse(data.get('x-send-datetime')),
+            data.get('type'),
+            data.get('return_code', None))
 
         ack()
 
     return run_something
+
 
 def main():
     setup()

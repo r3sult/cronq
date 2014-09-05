@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 #-*- coding:utf-8 -*-
 import datetime
+import gevent
 import json
+import importlib
 import logging
 import logging.handlers
 import os
@@ -12,10 +14,11 @@ import time
 
 from haigha.message import Message
 
-from queue_connection import connect
+from cronq.queue_connection import connect
 
 
 logger = logging.getLogger('cronq')
+
 
 class NullHandler(logging.Handler):
     def emit(self, record):
@@ -23,18 +26,20 @@ class NullHandler(logging.Handler):
 
 logger.addHandler(NullHandler())
 
+
 def channel_closed_cb(ch):
-    print "AMQP channel closed; close-info: %s" % (
-      ch.close_info,)
+    message = "AMQP channel closed; close-info: {0}"
+    print message.format(ch.close_info)
     ch = None
     return
 
 
 def create_connection_closed_cb(connection):
     def connection_closed_cb():
-        print "AMQP broker connection closed; close-info: %s" % (
-          connection.close_info,)
+        message = "AMQP broker connection closed; close-info: {0}"
+        print message.format(connection.close_info)
         connection = None
+        connection
     return connection_closed_cb
 
 
@@ -62,6 +67,7 @@ def setup():
 
     sys.exit(1)
 
+
 def make_directory(directory):
     try:
         os.mkdir(directory)
@@ -73,6 +79,7 @@ def create_runner(channel):
 
     def run_something(msg):
         tag = msg.delivery_info['delivery_tag']
+
         def ack():
             channel.basic.ack(tag)
 
@@ -146,9 +153,11 @@ def create_runner(channel):
 def load_module(module_name):
     return importlib.import_module(module_name)
 
+
 def load_consumer(consumer_str):
     logger.debug('Loading consumer {0}'.format(consumer_str))
     return load_module_object(consumer_str)
+
 
 def load_module_object(module_object_str):
     module_name, obj_name = module_object_str.split(':')
@@ -166,7 +175,8 @@ class ConsumerPool(object):
             self._create()
 
     def _create(self):
-        logger.debug('Creating consumer instance: {0}'.format(self._klass.__name__))
+        logger.debug('Creating consumer instance: {0}'.format(
+            self._klass.__name__))
         self._pool.put(self._klass())
 
     def handle(self, msg):
@@ -186,6 +196,7 @@ class ConsumerPool(object):
                     consumer.shutdown,
                     failed_greenlet.exception
                 )
+
                 def create_wrapper(*args):
                     self._create()
                 shutdown_greenlet.link(create_wrapper)
@@ -196,6 +207,7 @@ class ConsumerPool(object):
             greenlet.link_exception(recreate)
             greenlet.start()
         self._gm(func).start()
+
 
 class AMQPProxy(object):
 
@@ -229,7 +241,7 @@ class AMQPProxy(object):
         self._channel.basic.publish(msg, exchange, routing_key)
 
     def _error_if_already_terminated(self):
-        if self._terminal_state == True:
+        if self._terminal_state is True:
             raise Exception('Already responded to message!')
         else:
             self._terminal_state = True
@@ -251,6 +263,7 @@ def message_pump_greenthread(connection):
     finally:
         logging.debug('Leaving message pump')
     return exit_code
+
 
 def main():
     setup()
