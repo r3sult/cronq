@@ -117,7 +117,7 @@ body {
   background: rgb(206, 210, 208) linear-gradient(rgb(206, 210, 208), rgb(197, 201, 199)) repeat scroll 0% 0% / auto padding-box border-box;
   border: 1px solid rgb(155, 161, 157);
   border-radius: 2px 2px 2px 2px;
-  font: normal normal normal 14px/14px "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
+  font: normal normal normal 11px/14px "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
   margin: 18px 24px 0px 10px;
   outline: rgb(103, 114, 108) none 0px;
   padding: 5px 8px 4px;

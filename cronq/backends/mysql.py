@@ -124,7 +124,8 @@ class Storage(object):
                 'last_run_start': job.last_run_start,
                 'last_run_stop': job.last_run_stop,
                 'last_run_status': job.last_run_status,
-                'current_status': job.current_status or 'none'
+                'current_status': job.current_status or 'none',
+                'last_run_text': job.last_run_text(),
             }
 
     @property

@@ -1,4 +1,29 @@
 {% extends "base.html" %}
+{% block javascript %}
+  <script src="/static/js/moment.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      var dates = $('.datetime'),
+          intervals = $('.time-interval')
+          times = $('.time');
+      $.each(dates, function (i, date) {
+        var $date = $(date);
+        $date.html(moment(new Date($date.attr('data-date'))).fromNow());
+      });
+
+      $.each(intervals, function (i, interval) {
+        var $interval = $(interval);
+        $interval.html(secondsToStr($interval.attr('data-time'), true));
+      });
+
+      $.each(times, function (i, time) {
+        var $time = $(time);
+        $time.html(secondsToStr($time.attr('data-time')));
+      });
+      $('.datetime, .time, .time-interval').tooltip();
+    });
+  </script>
+{% endblock javascript %}
 {% block main %}
       <div class="jumbotron">
         <h2>Tasks</h2>
@@ -14,17 +39,7 @@
                     <a href="{{ url_for('job', id=job.id) }}" class="task-status task-status-{{ job.last_run_status }}"></a>
                     <a href="{{ url_for('job', id=job.id) }}" class="task-name">{{ job.name }}</a>
                     <div class="task-lastrun">
-                        {% if job.current_status == 'started' %}
-                            Running now
-                        {% elif job.current_status == 'failed' %}
-                            Last run failed
-                        {% elif job.current_status == 'finished' %}
-                            Completed an error
-                        {% elif job.current_status == 'none' %}
-                            Waiting...
-                        {% elif job.current_status == 'succeeded' %}
-                            Succeeded at {{ job.last_run_stop }}
-                        {% endif %}
+                        {{ job.last_run_text | safe }}
                     </div>
                 </div>
             </div>
