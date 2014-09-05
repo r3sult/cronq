@@ -26,7 +26,6 @@ def run_setup():
             'Werkzeug==0.9.6',
             'aniso8601==0.82',
             'argparse==1.2.1',
-            'cronq==0.0.33',
             'gevent==1.0.1',
             'greenlet==0.4.3',
             'gunicorn==19.1.1',
