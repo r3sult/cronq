@@ -1,3 +1,6 @@
+import datetime
+
+
 def split_command(string):
     commands = string.strip().split(';')
     ret = []
@@ -18,5 +21,11 @@ def task_status(first, last=None):
 
 
 def took(first_time, last_time):
+    if type(first_time) is not datetime.datetime:
+        return ""
+
+    if type(last_time) is not datetime.datetime:
+        return ""
+
     elapsed_time = last_time - first_time
     return int(elapsed_time.total_seconds())
