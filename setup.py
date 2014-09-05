@@ -17,7 +17,7 @@ def run_setup():
         author='SeatGeek',
         author_email='opensource@seatgeek.com',
         license='BSD',
-        packages=['cronq', 'cronq.backends'],
+        packages=['cronq', 'cronq.backends', 'cronq.models'],
         install_requires=[
             'aniso8601==0.82',
             'flask',
