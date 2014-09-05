@@ -105,9 +105,12 @@ class Storage(object):
             if status == self.FINISHED:
                 job.last_run_status = status
                 job.last_run_stop = _datetime
-                if return_code is not None and int(return_code) == 0:
-                    job.current_status = self.SUCCEEDED
-                    job.last_run_status = self.SUCCEEDED
+                if return_code is not None:
+                    job.current_status = self.FAILED
+                    job.last_run_status = self.FAILED
+                    if int(return_code) == 0:
+                        job.current_status = self.SUCCEEDED
+                        job.last_run_status = self.SUCCEEDED
             self.session.merge(job)
             self.session.commit()
 
