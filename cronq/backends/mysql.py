@@ -226,7 +226,7 @@ class Storage(object):
         session = self._new_session()
         to_run = or_(
             Job.next_run < datetime.datetime.utcnow(),
-            Job.run_now is True,
+            Job.run_now == True,
         )
 
         job = session.query(Job).filter(to_run).first()
