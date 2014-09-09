@@ -1,3 +1,4 @@
-include README.md
+include *.txt
+include *.rst
 recursive-include cronq/templates *
 recursive-include cronq/static *
