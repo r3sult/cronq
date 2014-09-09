@@ -1,16 +1,27 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# Copyright (c) 2013 SeatGeek
+
+# This file is part of cronq.
+
+from cronq import __version__
 import os
-from setuptools import setup
+
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils.core import setup
 
 
-def read(fname):
-    return open(os.path.join(os.path.dirname(__file__), fname)).read()
+def open_file(fname):
+    return open(os.path.join(os.path.dirname(__file__), fname))
 
 
 def run_setup():
     setup(
         name='cronq',
-        version='0.0.40',
+        version=__version__,
         description='A Cron-like system for running tasks',
         keywords='cron amqp',
         url='http://github.com/seatgeek/cronq',
@@ -37,7 +48,7 @@ def run_setup():
             'wsgiref==0.1.2',
         ],
         test_suite='tests',
-        long_description=read('README.md'),
+        long_description=open_file('README.rst').read(),
         include_package_data=True,
         zip_safe=True,
         classifiers=[
