@@ -2,7 +2,7 @@
 CronQ
 =====
 
-A cron-like system to run your application tasks across any node, instead of one special snowflake. This is done by keeping your tasks in MySQL and publishing them over AMQP to workers that will run your tasks and eventually save the results back into the DB. This was started as a hackathon project at [SeatGeek](http://seatgeek.com)
+A cron-like system to run your application tasks across any node, instead of one special snowflake. This is done by keeping your tasks in MySQL and publishing them over AMQP to workers that will run your tasks and eventually save the results back into the DB. This was started as a hackathon project at SeatGeek_
 
 Requirements
 ============
@@ -64,7 +64,7 @@ When run, `cronq-runner` will:
 cronq-injector
 ==============
 
-> The ``cronq-injector`` command will non-destructively create any necessary ``cronq`` tables, though it will need a database to perform this action against. Please note that if you do not have tables created, it is helpful to run the injector first.
+    The ``cronq-injector`` command will non-destructively create any necessary ``cronq`` tables, though it will need a database to perform this action against. Please note that if you do not have tables created, it is helpful to run the injector first.
 
 The ``injector`` is used to retrieve jobs from the database and publish them to AMQP. Jobs are published in the following format::
 
@@ -116,7 +116,8 @@ The `results` aggregator listens to the ``cronq_results`` queue for the results 
 
 These results can be viewed for particular commands within the web-admin, or by inspecting the database.
 
-### cronq-web
+cronq-web
+=========
 
 The web view is a WSGI app run from ``cronq.web:app`` and requires only database access. The following is an example for running the web admin using webscale technologies::
 
@@ -161,3 +162,5 @@ License
 =======
 
 BSD
+
+.. _SeatGeek: https://seatgeek.com
