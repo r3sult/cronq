@@ -174,7 +174,7 @@ class Storage(object):
             order_by(desc(Event.id)).limit(number)
         docs = [doc for doc in self.event_models_to_docs(events)]
 
-        if docs <= 1:
+        if len(docs) <= 1:
             return docs
 
         if docs[-1]['type'] != 'starting':
