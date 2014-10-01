@@ -1,8 +1,17 @@
 Changelog
 =========
 
+0.0.42 (2014-10-01)
+-------------------
+
+- Add .env to gitignore. [Adam Cohen]
+
+- This should be checking the length. [Adam Cohen]
+
 0.0.41 (2014-09-09)
 -------------------
+
+- Release version 0.0.41. [Jose Diaz-Gonzalez]
 
 - Add release script. [Jose Diaz-Gonzalez]
 
