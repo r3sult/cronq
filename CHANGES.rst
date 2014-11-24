@@ -1,8 +1,15 @@
 Changelog
 =========
 
+0.1.0 (2014-11-24)
+------------------
+
+- Add an /_status endpoint. [Jose Diaz-Gonzalez]
+
 0.0.42 (2014-10-01)
 -------------------
+
+- Release version 0.0.42. [Jose Diaz-Gonzalez]
 
 - Add .env to gitignore. [Adam Cohen]
 
