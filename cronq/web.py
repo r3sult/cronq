@@ -1,10 +1,13 @@
 import datetime
 import logging
 
+import json
+
 from flask import Flask
 from flask import g
 from flask import render_template
 from flask import request
+from flask import Response
 from flask import redirect
 from flask import url_for
 from flask import flash
@@ -49,6 +52,14 @@ def index():
     categories = list(g.storage.categories)
     categories = {category['id']: category for category in categories}
     return render_template('index.html', jobs=jobs, categories=categories)
+
+
+@app.route('/_status')
+def status():
+    return Response(
+        json.dumps({'status': 'OK'}),
+        mimetype='application/json',
+    )
 
 
 @app.route('/job/<int:id>', methods=['GET', 'POST'])
