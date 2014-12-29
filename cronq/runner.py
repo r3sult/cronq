@@ -14,8 +14,9 @@ import time
 
 from haigha.message import Message
 
+from cronq.config import LOG_PATH
+from cronq.config import QUEUE
 from cronq.queue_connection import connect
-
 
 logger = logging.getLogger('cronq')
 
@@ -51,13 +52,12 @@ def setup():
 
     # Create message channel
     channel = conn.channel()
-    queue = os.getenv('CRONQ_QUEUE', 'cronq_jobs')
 
     channel.basic.qos(prefetch_count=1)
     runner = create_runner(channel)
 
     channel.basic.consume(
-        queue=queue,
+        queue=QUEUE,
         consumer=runner,
         no_ack=False,
     )
@@ -79,6 +79,8 @@ def create_runner(channel):
 
     def run_something(msg):
         tag = msg.delivery_info['delivery_tag']
+
+        make_directory(LOG_PATH)
 
         def ack():
             channel.basic.ack(tag)
@@ -135,8 +137,8 @@ def create_runner(channel):
             })
             return reject(requeue=False)
         print 'waiting'
-        make_directory('/var/log/cronq')
-        filename = '/var/log/cronq/{0}.log'.format(data.get('name', 'UNKNOWN'))
+
+        filename = '{0}/{1}.log'.format(LOG_PATH, data.get('name', 'UNKNOWN'))
         handler = logging.handlers.WatchedFileHandler(filename)
         while proc.returncode is None:
             log_record = logging.makeLogRecord({

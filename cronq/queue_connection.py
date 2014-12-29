@@ -1,9 +1,10 @@
 import json
 import logging
-import os
-import random
 import socket
 
+from cronq.config import RABBITMQ_HOSTS
+from cronq.config import RABBITMQ_USER
+from cronq.config import RABBITMQ_PASS
 from haigha.connections import RabbitConnection
 from haigha.message import Message
 
@@ -32,21 +33,13 @@ class Publisher(object):
 
 
 def connect():
-    hosts_string = os.getenv('RABBITMQ_HOSTS', None)
-    if hosts_string is not None:
-        hosts = hosts_string.split(',')
-        logger.info('Hosts are: {0}'.format(hosts))
-        random.shuffle(hosts)
-    else:
-        hosts = [os.getenv('RABBITMQ_HOST', 'localhost')]
-    user = os.getenv('RABBITMQ_USER', 'guest')
-    password = os.getenv('RABBITMQ_PASS', 'guest')
+    logger.info('Hosts are: {0}'.format(RABBITMQ_HOSTS))
     rabbit_logger = logging.getLogger('amqp-dispatcher.haigha')
     conn = connect_to_hosts(
         RabbitConnection,
-        hosts,
-        user=user,
-        password=password,
+        RABBITMQ_HOSTS,
+        user=RABBITMQ_USER,
+        password=RABBITMQ_PASS,
         logger=rabbit_logger,
         heartbeat=43200,
     )

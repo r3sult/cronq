@@ -10,6 +10,7 @@ from sqlalchemy.exc import OperationalError, ProgrammingError
 from sqlalchemy.orm import sessionmaker
 from uuid import uuid4
 
+from cronq.config import DATABASE_URL
 from cronq.models.category import Category
 from cronq.models.event import Event
 from cronq.models.job import Job
@@ -30,9 +31,7 @@ class Storage(object):
         self.session = self._new_session()
 
     def _new_engine(self):
-        dsn = os.getenv('CRONQ_MYSQL',
-                        'mysql+mysqlconnector://root@localhost/cronq')
-        return create_engine(dsn, isolation_level='SERIALIZABLE')
+        return create_engine(DATABASE_URL, isolation_level='SERIALIZABLE')
 
     def _new_session(self):
         return self._maker()
