@@ -95,7 +95,18 @@ def create_runner(channel):
             msg = Message(json.dumps(body))
             channel.basic.publish(msg, 'cronq', 'cronq_results')
 
+        def valid_job(data):
+            valid = True
+            for key in ['cmd', 'job_id', 'run_id']:
+                if not data.get(key, None):
+                    print 'Missing {0}'.format(key)
+                    valid = False
+            return valid
+
         data = json.loads(str(msg.body))
+        if not valid_job(data):
+            return reject(requeue=False)
+
         cmd = data.get('cmd')
         print 'starting'
         publish_result({
