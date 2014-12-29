@@ -1,8 +1,25 @@
 Changelog
 =========
 
+0.1.1 (2014-12-29)
+------------------
+
+- Simplify chunking code. [Jose Diaz-Gonzalez]
+
+- Switch to retrieving configuration from config module. [Jose Diaz-
+  Gonzalez]
+
+- Add a config.py module to contain configuration for the entire app.
+  [Jose Diaz-Gonzalez]
+
+- Add missing requirements to requirements.txt. [Jose Diaz-Gonzalez]
+
+- Validate jobs before attempting to run them. [Jose Diaz-Gonzalez]
+
 0.1.0 (2014-11-24)
 ------------------
+
+- Release version 0.1.0. [Jose Diaz-Gonzalez]
 
 - Add an /_status endpoint. [Jose Diaz-Gonzalez]
 
