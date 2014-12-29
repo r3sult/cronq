@@ -171,30 +171,35 @@ class Storage(object):
     def last_event_chunks_for_job(self, job_id, number):
         events = self.session.query(Event).filter_by(job_id=job_id).\
             order_by(desc(Event.id)).limit(number)
-        docs = [doc for doc in self.event_models_to_docs(events)]
+        events = [doc for doc in self.event_models_to_docs(events)]
 
-        if len(docs) <= 1:
-            return docs
+        if len(events) == 0:
+            return []
 
-        if docs[-1]['type'] != 'starting':
-            del docs[-1]
+        chunks = {}
+        for event in events:
+            if event['run_id'] not in chunks:
+                chunks[event['run_id']] = {'first': None, 'last': None}
 
-        def chunk_it(l, n):
-            if n < 1:
-                n = 1
-            return [l[i:i + n] for i in range(0, len(l), n)]
+            if event['type'] == 'starting':
+                chunks[event['run_id']]['first'] = event
+            else:
+                chunks[event['run_id']]['last'] = event
 
-        chunks = chunk_it(docs, 2)
-        docs = []
+        docs = [chunk for i, chunk in chunks.iteritems()]
 
-        for chunk in chunks:
-            indexed = {'first': None, 'last': None}
-            for event in chunk:
-                if event['type'] == 'starting':
-                    indexed['first'] = event
-                else:
-                    indexed['last'] = event
-            docs.append(indexed)
+        def chunk_compare(x, y):
+            first = x.get('first', x.get('last'))
+            last = y.get('first', y.get('last'))
+            if first is None and last is None:
+                return 0
+            if first is None:
+                return -1
+            if last is None:
+                return 1
+            return int((first['datetime'] - last['datetime']).total_seconds())
+
+        docs = sorted(docs, cmp=chunk_compare, reverse=True)
 
         return docs
 
