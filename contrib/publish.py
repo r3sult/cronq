@@ -6,9 +6,12 @@ from haigha.connection import Connection
 from haigha.message import Message
 
 connection = Connection(
-  user='guest', password='guest',
-  vhost='/', host='rabbit-ec2-01.seatgeek.com',
-  heartbeat=None, debug=True)
+    user='guest',
+    password='guest',
+    vhost='/',
+    host='rabbit-ec2-01.seatgeek.com',
+    heartbeat=None,
+    debug=True)
 
 ch = connection.channel()
 ch.exchange.declare('cronq', 'direct')
@@ -23,7 +26,7 @@ while True:
         'job_id': str(uuid4()),
         'cmd': 'sleep 1'
     }
-    asd
-    ch.basic.publish( Message(json.dumps(cmd), application_headers={'src':'test'}),
-      'cronq', 'cronq' )
+    ch.basic.publish(Message(json.dumps(cmd), application_headers={
+        'src': 'test'
+    }), 'cronq', 'cronq')
     time.sleep(1)
