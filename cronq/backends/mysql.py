@@ -23,15 +23,17 @@ class Storage(object):
     STARTED = 'started'
     SUCCEEDED = 'succeeded'
 
-    def __init__(self, publisher=None):
+    def __init__(self, publisher=None, isolation_level='SERIALIZABLE'):
         self.publisher = publisher
 
-        self._engine = self._new_engine()
+        self._engine = self._new_engine(isolation_level=isolation_level)
         self._maker = sessionmaker(bind=self._engine)
         self.session = self._new_session()
 
-    def _new_engine(self):
-        return create_engine(DATABASE_URL, isolation_level='SERIALIZABLE')
+    def _new_engine(self, isolation_level='SERIALIZABLE'):
+        if isolation_level is not None:
+            return create_engine(DATABASE_URL, isolation_level=isolation_level)
+        return create_engine(DATABASE_URL)
 
     def _new_session(self):
         return self._maker()

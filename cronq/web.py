@@ -33,7 +33,7 @@ app.jinja_env.globals.update(took=took)
 def create_storage():
     if request.path.startswith('/static/'):
         return
-    g.storage = Storage()
+    g.storage = Storage(isolation_level=None)
 
 
 @app.after_request
