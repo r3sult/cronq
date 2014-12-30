@@ -15,4 +15,4 @@ LOG_PATH = os.getenv('LOG_PATH', '/var/log/cronq')
 QUEUE = os.getenv('CRONQ_QUEUE', 'cronq_jobs')
 RABBITMQ_HOSTS = hosts
 RABBITMQ_USER = os.getenv('RABBITMQ_USER', 'guest')
-RABBITMQ_PASSWORD = os.getenv('RABBITMQ_PASS', 'guest')
+RABBITMQ_PASS = os.getenv('RABBITMQ_PASS', 'guest')
