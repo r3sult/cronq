@@ -1,8 +1,16 @@
 Changelog
 =========
 
+0.1.3 (2014-12-30)
+------------------
+
+- Set isolation_level to None for web requests. Closes #17. [Jose Diaz-
+  Gonzalez]
+
 0.1.2 (2014-12-30)
 ------------------
+
+- Release version 0.1.2. [Jose Diaz-Gonzalez]
 
 - Fix import issue. [Jose Diaz-Gonzalez]
 
