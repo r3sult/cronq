@@ -38,7 +38,7 @@ The ``runner`` executes tasks, and should be run on hosts that will actually per
 
 The runner requires ``/var/log/cronq/`` to exist and be writable by the user executing the runner.
 
-::
+.. code-block:: bash
 
     # setup rabbitmq connection info
     export RABBITMQ_HOST=localhost
@@ -66,7 +66,9 @@ cronq-injector
 
     The ``cronq-injector`` command will non-destructively create any necessary ``cronq`` tables, though it will need a database to perform this action against. Please note that if you do not have tables created, it is helpful to run the injector first.
 
-The ``injector`` is used to retrieve jobs from the database and publish them to AMQP. Jobs are published in the following format::
+The ``injector`` is used to retrieve jobs from the database and publish them to AMQP. Jobs are published in the following format:
+
+.. code-block:: python
 
     # where job is a database record
     {
@@ -77,7 +79,7 @@ The ``injector`` is used to retrieve jobs from the database and publish them to 
 
 You can ostensibly run as many injectors as necessary. MySQL isolation levels are used to attain locks on job records.
 
-::
+.. code-block:: bash
 
     # setup rabbitmq connection info
     export RABBITMQ_HOST=localhost
@@ -101,7 +103,7 @@ cronq-results
 
 The `results` aggregator listens to the ``cronq_results`` queue for the results of ``cronq-runner`` executions. You can run as many of these as possible, as they will retrieve results one-at-a-time from rabbitmq.
 
-::
+.. code-block:: bash
 
     # setup rabbitmq connection info
     export RABBITMQ_HOST=localhost
@@ -119,7 +121,9 @@ These results can be viewed for particular commands within the web-admin, or by 
 cronq-web
 =========
 
-The web view is a WSGI app run from ``cronq.web:app`` and requires only database access. The following is an example for running the web admin using webscale technologies::
+The web view is a WSGI app run from ``cronq.web:app`` and requires only database access. The following is an example for running the web admin using webscale technologies:
+
+.. code-block:: bash
 
     # install libevent-dev
     sudo apt-get install libevent-dev
@@ -142,7 +146,7 @@ Categories Api
 
 The web admin exposes a ``category`` endpoint which allows you to replace a set of jobs with a single API call
 
-::
+.. code-block:: bash
 
     curl -v 'localhost:5000/api/category/example' -f -XPUT -H 'content-type: application/json' -d '
     {
