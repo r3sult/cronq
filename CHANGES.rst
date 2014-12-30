@@ -1,8 +1,23 @@
 Changelog
 =========
 
+0.1.2 (2014-12-30)
+------------------
+
+- Fix import issue. [Jose Diaz-Gonzalez]
+
+- Move certain files into contrib directory. [Jose Diaz-Gonzalez]
+
+- Remove unused config.yml file. [Jose Diaz-Gonzalez]
+
+- Merge pull request #23 from msabramo/patch-1. [Jose Diaz-Gonzalez]
+
+  README.rst: Add language for syntax highlighting
+
 0.1.1 (2014-12-29)
 ------------------
+
+- Release version 0.1.1. [Jose Diaz-Gonzalez]
 
 - Simplify chunking code. [Jose Diaz-Gonzalez]
 
