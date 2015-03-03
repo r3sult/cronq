@@ -1,6 +1,19 @@
 Changelog
 =========
 
+0.2.0 (2015-03-03)
+------------------
+
+- Actually add the logger. [Adam Cohen]
+
+- Use a real logger instead of print statements. [Adam Cohen]
+
+- This declaration does nothing and breaks any attempt to call this
+  callback, part deux. [Adam Cohen]
+
+- This assignment does nothing and breaks every attempt to call this
+  callback as an UnboundLocalError. [Adam Cohen]
+
 0.1.3 (2014-12-30)
 ------------------
 
@@ -10,22 +23,16 @@ Changelog
 0.1.2 (2014-12-30)
 ------------------
 
-- Release version 0.1.2. [Jose Diaz-Gonzalez]
-
 - Fix import issue. [Jose Diaz-Gonzalez]
 
 - Move certain files into contrib directory. [Jose Diaz-Gonzalez]
 
 - Remove unused config.yml file. [Jose Diaz-Gonzalez]
 
-- Merge pull request #23 from msabramo/patch-1. [Jose Diaz-Gonzalez]
-
-  README.rst: Add language for syntax highlighting
+- README.rst: Add language for syntax highlighting. [Marc Abramowitz]
 
 0.1.1 (2014-12-29)
 ------------------
-
-- Release version 0.1.1. [Jose Diaz-Gonzalez]
 
 - Simplify chunking code. [Jose Diaz-Gonzalez]
 
@@ -42,14 +49,10 @@ Changelog
 0.1.0 (2014-11-24)
 ------------------
 
-- Release version 0.1.0. [Jose Diaz-Gonzalez]
-
 - Add an /_status endpoint. [Jose Diaz-Gonzalez]
 
 0.0.42 (2014-10-01)
 -------------------
-
-- Release version 0.0.42. [Jose Diaz-Gonzalez]
 
 - Add .env to gitignore. [Adam Cohen]
 
@@ -58,24 +61,21 @@ Changelog
 0.0.41 (2014-09-09)
 -------------------
 
-- Release version 0.0.41. [Jose Diaz-Gonzalez]
-
 - Add release script. [Jose Diaz-Gonzalez]
-
-- Update MANIFEST.in. [Jose Diaz-Gonzalez]
 
 - Change setup.py. [Jose Diaz-Gonzalez]
 
-  - move version to cronq/__init__.py - allow using distutils - do not
-  immediately read in file - use rat instead of md
+  - move version to cronq/__init__.py
+  - allow using distutils
+  - do not immediately read in file
+  - use rat instead of md
+
 
 - Minor rst fixes. [Jose Diaz-Gonzalez]
 
 - Move readme to rst format. [Jose Diaz-Gonzalez]
 
 - Use == instead of is for sqlalchemy query. [Jose Diaz-Gonzalez]
-
-- Release 0.0.40. [Jose Diaz-Gonzalez]
 
 - Properly handle failed run return_code when setting job status. [Jose
   Diaz-Gonzalez]
@@ -85,96 +85,134 @@ Changelog
 0.0.39 (2014-09-05)
 -------------------
 
-- Release 0.0.39. [Jose Diaz-Gonzalez]
-
 - Fix timestamp display on index page. [Jose Diaz-Gonzalez]
 
-- Release 0.0.38. [Jose Diaz-Gonzalez]
-
 - Fix next_run setting. [Jose Diaz-Gonzalez]
-
-- Release 0.0.37. [Jose Diaz-Gonzalez]
 
 - Do not attempt to output time if the values are invalid. [Jose Diaz-
   Gonzalez]
 
-- Release 0.0.36. [Jose Diaz-Gonzalez]
-
 - Do not print table creation errors. [Jose Diaz-Gonzalez]
-
-- Release 0.0.35. [Jose Diaz-Gonzalez]
 
 - Remove bad install_requires. [Jose Diaz-Gonzalez]
 
 0.0.34 (2014-09-05)
 -------------------
 
-- Release 0.0.34. [Jose Diaz-Gonzalez]
-
 - Add missing python requirements. [Jose Diaz-Gonzalez]
 
 0.0.33 (2014-09-05)
 -------------------
-
-- Release 0.0.33. [Jose Diaz-Gonzalez]
 
 - Add missing package entry. [Jose Diaz-Gonzalez]
 
 0.0.32 (2014-09-05)
 -------------------
 
-- Release 0.0.32. [Jose Diaz-Gonzalez]
-
 - Change author and urls to SeatGeek. [Jose Diaz-Gonzalez]
 
 0.0.31 (2014-09-05)
 -------------------
 
-- Release 0.0.31. [Jose Diaz-Gonzalez]
+- Convert UTC times to local timezone. [Jose Diaz-Gonzalez]
 
-- Merge pull request #22 from seatgeek/ui-changes. [Jose Diaz-Gonzalez]
+  javascript date handling allows you to specify the timezone in the date time string and will correctly handle parsing to local time when performing a toString.
 
-  UI changes
+
+- Group jobs by category on index page. [Jose Diaz-Gonzalez]
+
+- Use smaller status balls everywhere. [Jose Diaz-Gonzalez]
+
+- Remove old css. [Jose Diaz-Gonzalez]
+
+- Much nicer list view of events that occurred. [Jose Diaz-Gonzalez]
+
+  - Group events by ID
+  - Show a running time for each job run
+  - Use human readable dates/times everywhere
+  - Show the appropriate status ball for each run
+  - Fix the button css to be a bit more flat and less bootstrappy
+
+  Still need to fix dates to convert from UTC to local time.
+
+
+- Reference cronq modules with cronq prefix. [Jose Diaz-Gonzalez]
+
+- Extract models into their own namespace. [Jose Diaz-Gonzalez]
+
+  This will allow us to build separate backends - postgres for instance - without needing to redefine models
+
+
+- Use moment.js to provide human-readable task running info. [Jose Diaz-
+  Gonzalez]
+
+- Add missing utils.py. [Jose Diaz-Gonzalez]
+
+- Slightly better looking task definition. [Jose Diaz-Gonzalez]
+
+  Still need to work on actual task running information, though the command information looks more spiffy
+
+
+- Fix header height to center h1s. [Jose Diaz-Gonzalez]
+
+- Better index page. [Jose Diaz-Gonzalez]
+
+  - Show the last status of a task
+  - Show the current running state of the task
+  - "Better" display of each task
+  - Use Roboto font from Google to display text
+
+
+- Change heading. [Jose Diaz-Gonzalez]
+
+- Remove commented out code. [Jose Diaz-Gonzalez]
+
+- Use minified css files. [Jose Diaz-Gonzalez]
+
+- Properly handle return codes for finished tasks and set the job status
+  to succeeded. [Jose Diaz-Gonzalez]
+
+- Expose job status and run info to the job index. [Jose Diaz-Gonzalez]
+
+- Keep track of the current job status as well as the last job status.
+  [Jose Diaz-Gonzalez]
+
+  Useful for dashboards. Whenever tracking the last_run, reset if the status is "starting", as otherwise the information will be incorrect.
+
+
+- Add status and run info to each job. [Jose Diaz-Gonzalez]
+
+- Datetime => _datetime. [Jose Diaz-Gonzalez]
+
+- Add relations between models. [Jose Diaz-Gonzalez]
+
+- Order jobs on ui by name. [Jose Diaz-Gonzalez]
+
+- PEP8. [Jose Diaz-Gonzalez]
 
 0.0.30 (2014-06-25)
 -------------------
-
-- Release 0.0.30. [Jose Diaz-Gonzalez]
 
 - Pin haigha to 0.7.0. [Jose Diaz-Gonzalez]
 
 0.0.29 (2014-06-17)
 -------------------
 
-- Release 0.0.29. [Jose Diaz-Gonzalez]
+- Pin haigha to 0.7.0. [Jose Diaz-Gonzalez]
+
+  0.7.1 had a bc-incompatible change when they made it PEP-8. Who knows what else broke
 
 - Pin haigha to 0.7.0. [Jose Diaz-Gonzalez]
 
-  0.7.1 had a bc-incompatible change when they made it PEP-8. Who knows
-  what else broke
-
-- Pin haigha to 0.7.0. [Jose Diaz-Gonzalez]
-
-  0.7.1 had a bc-incompatible change when they made it PEP-8. Who knows
-  what else broke
-
-- Release 0.0.28. [Jose Diaz-Gonzalez]
+  0.7.1 had a bc-incompatible change when they made it PEP-8. Who knows what else broke
 
 - Actually upgrade aniso8601. [Jose Diaz-Gonzalez]
 
-- Release version 0.0.27. [Jose Diaz-Gonzalez]
+- Use Integer instead of Integer(1) for run_now. [Jose Diaz-Gonzalez]
 
-- Merge pull request #21 from seatgeek/master. [Jose Diaz-Gonzalez]
-
-  Use Integer instead of Integer(1) for run_now
-
-- Merge pull request #20 from seatgeek/master. [Jose Diaz-Gonzalez]
-
-  Update aniso8601 to properly support weeks
+- Bump version. [zackkitzmiller]
 
 - Added note about cronq-injector creating tables. [Jose Diaz-Gonzalez]
-
-- Updated readme. [Jose Diaz-Gonzalez]
 
 - Remove zip file. [Jose Diaz-Gonzalez]
 
@@ -203,8 +241,7 @@ Changelog
 
 - Add categories. [Philip Cristiano]
 
-  First step, add ability to add categories and job in them with a
-  single request.
+  First step, add ability to add categories and job in them with a single request.
 
 - Mysql: Prevent deadlocks from leaving a serializable session open.
   [Philip Cristiano]
@@ -223,8 +260,7 @@ Changelog
 
 - V0.0.20: Publish after committing. [Philip Cristiano]
 
-  I thought this was how I was doing it. This definitely is related to
-  #9
+  I thought this was how I was doing it. This definitely is related to #9
 
 - V0.0.19: Set MySQL isolation leve. [Philip Cristiano]
 
@@ -242,9 +278,7 @@ Changelog
 
 - Handle longer running jobs. [Philip Cristiano]
 
-  The heartbeat would kick the connection off causing a bunch of
-  problems. This can be dealt with later since it's still a problem, but
-  it takes 1 full day to cause it
+  The heartbeat would kick the connection off causing a bunch of problems. This can be dealt with later since it's still a problem, but it takes 1 full day to cause it
 
 - Close handler after process ends. [Philip Cristiano]
 
