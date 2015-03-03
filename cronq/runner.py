@@ -39,8 +39,6 @@ def create_connection_closed_cb(connection):
     def connection_closed_cb():
         message = "AMQP broker connection closed; close-info: {0}"
         print message.format(connection.close_info)
-        connection = None
-        connection
     return connection_closed_cb
 
 
