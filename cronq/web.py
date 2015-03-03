@@ -28,6 +28,8 @@ app.jinja_env.filters['split_command'] = split_command
 app.jinja_env.globals.update(task_status=task_status)
 app.jinja_env.globals.update(took=took)
 
+import logging
+logger = logging.getLogger(__name__)
 
 @app.before_request
 def create_storage():
@@ -41,8 +43,8 @@ def remove_storage(request):
     if hasattr(g, 'storage'):
         try:
             g.storage.close()
-        except Exception as exc:
-            print exc
+        except Exception:
+            logger.exception("exception in remove storage")
     return request
 
 

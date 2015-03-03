@@ -18,7 +18,7 @@ from cronq.config import LOG_PATH
 from cronq.config import QUEUE
 from cronq.queue_connection import connect
 
-logger = logging.getLogger('cronq')
+logger = logging.getLogger(__name__)
 
 
 class NullHandler(logging.Handler):
@@ -29,18 +29,14 @@ logger.addHandler(NullHandler())
 
 
 def channel_closed_cb(ch):
-    message = "AMQP channel closed; close-info: {0}"
-    print message.format(ch.close_info)
-    ch = None
-    return
-
+    message = "AMQP channel closed; close-info: {0}".format(ch.close_info)
+    logger.warning(message)
 
 def create_connection_closed_cb(connection):
     def connection_closed_cb():
-        message = "AMQP broker connection closed; close-info: {0}"
-        print message.format(connection.close_info)
+        message = "AMQP broker connection closed; close-info: {0}".format(connection.close_info)
+        logger.warning(message)
     return connection_closed_cb
-
 
 def setup():
     conn = connect()
@@ -99,7 +95,7 @@ def create_runner(channel):
             valid = True
             for key in ['cmd', 'job_id', 'run_id']:
                 if not data.get(key, None):
-                    print 'Missing {0}'.format(key)
+                    logger.debug('Missing {0}'.format(key))
                     valid = False
             return valid
 
@@ -108,7 +104,7 @@ def create_runner(channel):
             return reject(requeue=False)
 
         cmd = data.get('cmd')
-        print 'starting'
+        logger.info("Starting {}".format(cmd))
         publish_result({
             'job_id': data.get('job_id'),
             'run_id': data.get('run_id'),
@@ -124,8 +120,8 @@ def create_runner(channel):
                 stderr=subprocess.STDOUT,
                 bufsize=1,
             )
-        except OSError as exc:
-            print 'Failed', exc
+        except OSError:
+            logger.exception("Failed job")
             end = time.time()
             publish_result({
                 'job_id': data.get('job_id'),
@@ -134,7 +130,7 @@ def create_runner(channel):
                 'type': 'failed',
             })
             return reject(requeue=False)
-        print 'waiting'
+        logger.info("waiting")
 
         filename = '{0}/{1}.log'.format(LOG_PATH, data.get('name', 'UNKNOWN'))
         handler = logging.handlers.WatchedFileHandler(filename)
@@ -154,8 +150,7 @@ def create_runner(channel):
             'run_time': end - start,
             'type': 'finished',
         })
-        print 'done', proc.returncode, data.get('run_id')
-
+        logger.info("Done {} {}".format(proc.returncode, data.get('run_id')))
         ack()
 
     return run_something

@@ -10,7 +10,6 @@ from haigha.message import Message
 
 logger = logging.getLogger('cronq')
 
-
 class Publisher(object):
 
     def __init__(self):
@@ -24,7 +23,7 @@ class Publisher(object):
             'cmd': job['command'],
             'name': job['name'],
         }
-        print cmd
+        logger.debug(cmd)
         self._publish(routing_key, cmd)
 
     def _publish(self, routing_key, body):

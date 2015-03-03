@@ -6,6 +6,9 @@ from dateutil.parser import parse
 from cronq.backends.mysql import Storage
 from cronq.queue_connection import connect
 
+import logging
+logger = logging.getLogger(__name__)
+
 
 def setup():
     conn = connect()
@@ -31,8 +34,8 @@ def setup():
 
 def create_connection_closed_cb(connection):
     def connection_closed_cb():
-        message = "AMQP broker connection closed; close-info: {0}"
-        print message.format(connection.close_info)
+        message = "AMQP broker connection closed; close-info: {0}".format(connection.close_info)
+        logger.warning(message)
     return connection_closed_cb
 
 
@@ -47,8 +50,8 @@ def create_aggregator(channel):
 
         data = json.loads(str(msg.body))
         run_id = UUID(hex=data['run_id'])
-        print 'id', run_id
-        print data
+        logger.debug("id:{}".format(run_id))
+        logger.debug(str(msg.body))
         storage.add_event(
             data.get('job_id'),
             parse(data.get('x-send-datetime')),
