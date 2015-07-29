@@ -9,7 +9,7 @@ connection = Connection(
     user='guest',
     password='guest',
     vhost='/',
-    host='rabbit-ec2-01.seatgeek.com',
+    host='rabbit-host',
     heartbeat=None,
     debug=True)
 
