@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.2.1 (2015-08-07)
+------------------
+
+- Do not hardcode rabbitmq host. [Jose Diaz-Gonzalez]
+
 0.2.0 (2015-03-03)
 ------------------
 
@@ -206,9 +211,18 @@ Changelog
 
   0.7.1 had a bc-incompatible change when they made it PEP-8. Who knows what else broke
 
+v0.0.28 (2014-01-02)
+--------------------
+
 - Actually upgrade aniso8601. [Jose Diaz-Gonzalez]
 
+v0.0.27 (2014-01-02)
+--------------------
+
 - Use Integer instead of Integer(1) for run_now. [Jose Diaz-Gonzalez]
+
+v0.0.26 (2014-01-02)
+--------------------
 
 - Bump version. [zackkitzmiller]
 
@@ -233,6 +247,9 @@ Changelog
 
 - Api: Set routing_key for category jobs. [Philip Cristiano]
 
+v0.0.22 (2013-05-30)
+--------------------
+
 - V0.0.22. [Philip Cristiano]
 
 - Web: Remove jobs no longer defined in category. [Philip Cristiano]
@@ -250,6 +267,9 @@ Changelog
 
 - Mysql: Run less of the code in a try block. [Philip Cristiano]
 
+v0.0.21 (2013-03-10)
+--------------------
+
 - V0.0.21. [Philip Cristiano]
 
 - Web: Add page to list failures. [Philip Cristiano]
@@ -258,21 +278,36 @@ Changelog
 
 - Mysql: Remove duplicate setting of key. [Philip Cristiano]
 
+v0.0.20 (2013-02-26)
+--------------------
+
 - V0.0.20: Publish after committing. [Philip Cristiano]
 
   I thought this was how I was doing it. This definitely is related to #9
+
+v0.0.19 (2013-02-26)
+--------------------
 
 - V0.0.19: Set MySQL isolation leve. [Philip Cristiano]
 
   May actually fix #9
 
+v0.0.18 (2013-02-25)
+--------------------
+
 - V0.0.18: Set locked_by to catch race conditions. [Philip Cristiano]
 
   closes #9
 
+v0.0.17 (2013-02-25)
+--------------------
+
 - Timeout is an int short, use a shorter one. [Philip Cristiano]
 
   12 hours should be enough
+
+v0.0.16 (2013-02-25)
+--------------------
 
 - V0.0.16. [Philip Cristiano]
 
@@ -280,9 +315,15 @@ Changelog
 
   The heartbeat would kick the connection off causing a bunch of problems. This can be dealt with later since it's still a problem, but it takes 1 full day to cause it
 
+v0.0.15 (2013-02-24)
+--------------------
+
 - Close handler after process ends. [Philip Cristiano]
 
   May be causing a bug where the process appears to hang
+
+v0.0.14 (2013-02-24)
+--------------------
 
 - Exit on connection error. [Philip Cristiano]
 
