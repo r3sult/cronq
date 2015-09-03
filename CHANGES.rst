@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.2.2 (2015-09-03)
+------------------
+
+- Ensure the rst-lint binary is available. [Jose Diaz-Gonzalez]
+
 0.2.1 (2015-08-07)
 ------------------
 
