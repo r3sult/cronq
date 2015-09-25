@@ -7,6 +7,7 @@ import importlib
 import logging
 import logging.handlers
 import os
+import re
 import socket
 import subprocess
 import sys
@@ -19,6 +20,8 @@ from cronq.config import QUEUE
 from cronq.queue_connection import connect
 
 logger = logging.getLogger(__name__)
+
+FILENAME_REGEX = re.compile('[\W_]+', re.UNICODE)
 
 
 class NullHandler(logging.Handler):
@@ -132,7 +135,11 @@ def create_runner(channel):
             return reject(requeue=False)
         logger.info("waiting")
 
-        filename = '{0}/{1}.log'.format(LOG_PATH, data.get('name', 'UNKNOWN'))
+        splits = FILENAME_REGEX.split(data.get('name', 'UNKNOWN'))
+        if len(splits) > 1:
+            logfile = "_".join(splits)
+        filename = '{0}/{1}.log'.format(LOG_PATH, logfile)
+
         handler = logging.handlers.WatchedFileHandler(filename)
         while proc.returncode is None:
             log_record = logging.makeLogRecord({
