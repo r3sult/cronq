@@ -32,11 +32,14 @@ def channel_closed_cb(ch):
     message = "AMQP channel closed; close-info: {0}".format(ch.close_info)
     logger.warning(message)
 
+
 def create_connection_closed_cb(connection):
     def connection_closed_cb():
-        message = "AMQP broker connection closed; close-info: {0}".format(connection.close_info)
+        message = "AMQP broker connection closed; close-info: {0}".format(
+            connection.close_info)
         logger.warning(message)
     return connection_closed_cb
+
 
 def setup():
     conn = connect()
@@ -69,7 +72,7 @@ def make_directory(directory):
         pass
 
 
-def create_runner(channel):
+def create_runner(channel):  # noqa
 
     def run_something(msg):
         tag = msg.delivery_info['delivery_tag']

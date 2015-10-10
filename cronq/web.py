@@ -31,6 +31,7 @@ app.jinja_env.globals.update(took=took)
 import logging
 logger = logging.getLogger(__name__)
 
+
 @app.before_request
 def create_storage():
     if request.path.startswith('/static/'):

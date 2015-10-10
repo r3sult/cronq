@@ -1,5 +1,6 @@
 import time
 
+
 class Injector(object):
 
     def __init__(self, storage):

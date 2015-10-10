@@ -10,6 +10,7 @@ from haigha.message import Message
 
 logger = logging.getLogger('cronq')
 
+
 class Publisher(object):
 
     def __init__(self):

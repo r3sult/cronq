@@ -34,7 +34,8 @@ def setup():
 
 def create_connection_closed_cb(connection):
     def connection_closed_cb():
-        message = "AMQP broker connection closed; close-info: {0}".format(connection.close_info)
+        message = "AMQP broker connection closed; close-info: {0}".format(
+            connection.close_info)
         logger.warning(message)
     return connection_closed_cb
 
