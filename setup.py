@@ -24,7 +24,7 @@ def run_setup():
         version=__version__,
         description='A Cron-like system for running tasks',
         keywords='cron amqp',
-        url='http://github.com/seatgeek/cronq',
+        url='https://github.com/seatgeek/cronq',
         author='SeatGeek',
         author_email='opensource@seatgeek.com',
         license='BSD',
