@@ -10,7 +10,6 @@ Jinja2==2.7.3
 MarkupSafe==0.23
 mock==1.0.1
 mysql-connector-python==1.2.3
--e git://github.com/lacostej/nosyd.git@291ef6a24f1a4fd6009ff13b680cbb876a883db6#egg=Nosyd-master
 python-dateutil==2.2
 six==1.7.3
 SQLAlchemy==0.9.7

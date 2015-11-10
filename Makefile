@@ -28,6 +28,7 @@ acceptance-test:
 
 .PHONY: tdd
 tdd:
+	$(PIP) install -e git://github.com/lacostej/nosyd.git@291ef6a24f1a4fd6009ff13b680cbb876a883db6#egg=Nosyd-master
 	$(DEV_ENV) $(NOSYD) tests/unit
 
 .PHONY: docs
