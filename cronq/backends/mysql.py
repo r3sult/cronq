@@ -243,7 +243,7 @@ class Storage(object):
         if job is None:
             session.close()
             return
-        logger.info('Found a job: {} {}'.format(job.name, job.next_run))
+        logger.info('Found a job: {0} {1}'.format(job.name, job.next_run))
 
         while job.next_run < datetime.datetime.utcnow():
             logger.info('Adding time!')
@@ -262,7 +262,7 @@ class Storage(object):
             self.publisher.publish(job.routing_key, job_doc, uuid4().hex)
         except Exception, e:
             session.rollback()
-            logger.exception('{} {}'.format(job.name, e))
+            logger.exception('{0} {1}'.format(job.name, e))
             raise
         session.close()
         return True
