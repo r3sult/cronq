@@ -9,7 +9,7 @@ from cronq.config import RABBITMQ_PASS
 from haigha.connections import RabbitConnection
 from haigha.message import Message
 
-logger = logging.getLogger('cronq')
+logger = logging.getLogger(__name__)
 
 
 class Publisher(object):

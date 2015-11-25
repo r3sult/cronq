@@ -18,7 +18,8 @@ from cronq.models.event import Event
 from cronq.models.job import Job
 
 
-logger = logging.getLogger('cronq')
+logger = logging.getLogger(__name__)
+
 
 class Storage(object):
 
