@@ -1,6 +1,29 @@
 Changelog
 =========
 
+0.3.0 (2015-11-25)
+------------------
+
+- Use __name__ when retrieving a logger. [Jose Diaz-Gonzalez]
+
+- Remove nosyd from requirements. [Jose Diaz-Gonzalez]
+
+- Add LICENSE.txt. [Jose Diaz-Gonzalez]
+
+- Fix formatting. [Evan Carter]
+
+- First pass at fixing mysql backend logging. [Evan Carter]
+
+- Switch all links to https. [Jose Diaz-Gonzalez]
+
+- Add source code encodings to all python files. [Jose Diaz-Gonzalez]
+
+- Fix PEP8 violations. [Jose Diaz-Gonzalez]
+
+- Pin all python requirements. [Jose Diaz-Gonzalez]
+
+- Add check for gitchangelog. [Jose Diaz-Gonzalez]
+
 0.2.2 (2015-09-03)
 ------------------
 
