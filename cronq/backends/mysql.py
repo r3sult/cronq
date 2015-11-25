@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
+import logging
 import os
 import socket
 
@@ -16,6 +17,8 @@ from cronq.models.category import Category
 from cronq.models.event import Event
 from cronq.models.job import Job
 
+
+logger = logging.getLogger('cronq')
 
 class Storage(object):
 
@@ -225,7 +228,7 @@ class Storage(object):
 
     def inject(self):
         """Get a message from storage and injects it into the job stream"""
-        print 'Trying to inject', datetime.datetime.utcnow()
+        logger.info('Trying to inject')
         while self.get_unpublished_task() is not None:
             pass
 
@@ -240,12 +243,12 @@ class Storage(object):
         if job is None:
             session.close()
             return
-        print 'Found a job:', job.name, job.next_run
+        logger.info('Found a job: {0} {1}'.format(job.name, job.next_run))
 
         while job.next_run < datetime.datetime.utcnow():
-            print 'Adding time!'
+            logger.info('Adding time!')
             job.next_run += job.interval
-        print job.next_run
+        logger.info(job.next_run)
         job_doc = {
             'name': job.name,
             'command': unicode(job.command),
@@ -257,8 +260,9 @@ class Storage(object):
         try:
             session.commit()
             self.publisher.publish(job.routing_key, job_doc, uuid4().hex)
-        except Exception:
+        except Exception, e:
             session.rollback()
+            logger.exception('{0} {1}'.format(job.name, e))
             raise
         session.close()
         return True
