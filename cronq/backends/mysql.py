@@ -45,9 +45,9 @@ class Storage(object):
 
     def bootstrap(self):
         models = [
+            Category,
             Job,
             Event,
-            Category,
         ]
         for model in models:
             try:
