@@ -1,6 +1,15 @@
 Changelog
 =========
 
+0.3.1 (2016-01-25)
+------------------
+
+- Minor fixes to release script. [Jose Diaz-Gonzalez]
+
+- Fix ordering of bootstrap models. [Jose Diaz-Gonzalez]
+
+  Closes #27
+
 0.3.0 (2015-11-25)
 ------------------
 
