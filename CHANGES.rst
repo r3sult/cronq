@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.4.1 (2016-02-03)
+------------------
+
+- Retry updating job status. [Jose Diaz-Gonzalez]
+
 0.4.0 (2016-02-03)
 ------------------
 
