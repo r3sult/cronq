@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.4.0 (2016-02-03)
+------------------
+
+- Catch deadlocks job publishing to reduce reported errors. [Jose Diaz-
+  Gonzalez]
+
+- Cleanup imports. [Jose Diaz-Gonzalez]
+
 0.3.1 (2016-01-25)
 ------------------
 
