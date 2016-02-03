@@ -4,8 +4,9 @@ import logging
 import socket
 
 from cronq.config import RABBITMQ_HOSTS
-from cronq.config import RABBITMQ_USER
 from cronq.config import RABBITMQ_PASS
+from cronq.config import RABBITMQ_USER
+
 from haigha.connections import RabbitConnection
 from haigha.message import Message
 

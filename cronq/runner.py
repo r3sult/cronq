@@ -1,9 +1,7 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import datetime
-import gevent
-import json
 import importlib
+import json
 import logging
 import logging.handlers
 import os
@@ -12,11 +10,13 @@ import subprocess
 import sys
 import time
 
-from haigha.message import Message
-
 from cronq.config import LOG_PATH
 from cronq.config import QUEUE
 from cronq.queue_connection import connect
+
+import gevent
+
+from haigha.message import Message
 
 logger = logging.getLogger(__name__)
 

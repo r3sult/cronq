@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-from sqlalchemy import Column
+from cronq.models.base import Base
+
 from sqlalchemy import CHAR
+from sqlalchemy import Column
 from sqlalchemy import Integer
 from sqlalchemy.orm import relationship
-
-from cronq.models.base import Base
 
 
 class Category(Base):

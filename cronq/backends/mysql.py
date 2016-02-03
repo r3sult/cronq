@@ -4,18 +4,20 @@ import logging
 import os
 import socket
 
-from sqlalchemy import or_
-from sqlalchemy.sql.expression import asc
-from sqlalchemy.sql.expression import desc
-from sqlalchemy import create_engine
-from sqlalchemy.exc import OperationalError, ProgrammingError
-from sqlalchemy.orm import sessionmaker
-from uuid import uuid4
-
 from cronq.config import DATABASE_URL
 from cronq.models.category import Category
 from cronq.models.event import Event
 from cronq.models.job import Job
+
+from sqlalchemy import create_engine
+from sqlalchemy import or_
+from sqlalchemy.exc import OperationalError
+from sqlalchemy.exc import ProgrammingError
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.sql.expression import asc
+from sqlalchemy.sql.expression import desc
+
+from uuid import uuid4
 
 
 logger = logging.getLogger(__name__)
@@ -244,11 +246,13 @@ class Storage(object):
         if job is None:
             session.close()
             return
+
         logger.info('Found a job: {0} {1}'.format(job.name, job.next_run))
 
         while job.next_run < datetime.datetime.utcnow():
             logger.info('Adding time!')
             job.next_run += job.interval
+
         logger.info(job.next_run)
         job_doc = {
             'name': job.name,

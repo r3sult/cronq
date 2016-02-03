@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 import datetime
 
-from sqlalchemy import Column
+from cronq.models.base import Base
+
 from sqlalchemy import CHAR
+from sqlalchemy import Column
 from sqlalchemy import DateTime
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
@@ -10,8 +12,6 @@ from sqlalchemy import Interval
 from sqlalchemy import Text
 from sqlalchemy import UniqueConstraint
 from sqlalchemy.orm import relationship
-
-from cronq.models.base import Base
 
 
 class Job(Base):

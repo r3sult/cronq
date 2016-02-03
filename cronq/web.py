@@ -1,24 +1,23 @@
 # -*- coding: utf-8 -*-
 import datetime
+import json
 import logging
 
-import json
-
-from flask import Flask
-from flask import g
-from flask import render_template
-from flask import request
-from flask import Response
-from flask import redirect
-from flask import url_for
-from flask import flash
-from flask import abort
-
 from cronq import interval_parser
+from cronq.backends.mysql import Storage
 from cronq.utils import split_command
 from cronq.utils import task_status
 from cronq.utils import took
-from cronq.backends.mysql import Storage
+
+from flask import Flask
+from flask import Response
+from flask import abort
+from flask import flash
+from flask import g
+from flask import redirect
+from flask import render_template
+from flask import request
+from flask import url_for
 
 app = Flask(__name__)
 stream_handler = logging.StreamHandler()
@@ -29,7 +28,6 @@ app.jinja_env.filters['split_command'] = split_command
 app.jinja_env.globals.update(task_status=task_status)
 app.jinja_env.globals.update(took=took)
 
-import logging
 logger = logging.getLogger(__name__)
 
 

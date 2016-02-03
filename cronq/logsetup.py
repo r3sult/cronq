@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-import os
 import logging
 import logging.config
+import os
 
 LOG_SETTINGS = {
     'version': 1,

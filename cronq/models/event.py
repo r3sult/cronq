@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-from sqlalchemy import Column
+from cronq.models.base import Base
+
 from sqlalchemy import CHAR
+from sqlalchemy import Column
 from sqlalchemy import DateTime
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
-
-from cronq.models.base import Base
 
 
 class Event(Base):
