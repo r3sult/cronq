@@ -11,6 +11,7 @@ from cronq.models.job import Job
 
 from sqlalchemy import create_engine
 from sqlalchemy import or_
+from sqlalchemy.exc import InternalError
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.exc import ProgrammingError
 from sqlalchemy.orm import sessionmaker
@@ -262,9 +263,14 @@ class Storage(object):
         job.run_now = False
         me = '{0}.{1}'.format(socket.gethostname(), os.getpid())
         job.locked_by = me
+
         try:
             session.commit()
             self.publisher.publish(job.routing_key, job_doc, uuid4().hex)
+        except InternalError, e:
+            session.rollback()
+            logger.info('Error publishing {0} - {1}'.format(job.name, e))
+            return
         except Exception, e:
             session.rollback()
             logger.exception('{0} {1}'.format(job.name, e))
