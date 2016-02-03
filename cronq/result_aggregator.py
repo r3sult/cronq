@@ -1,15 +1,12 @@
 # -*- coding: utf-8 -*-
 import json
 import logging
-import time
 from uuid import UUID
 
 from cronq.backends.mysql import Storage
 from cronq.queue_connection import connect
 
 from dateutil.parser import parse
-
-from sqlalchemy.exc import DatabaseError
 
 logger = logging.getLogger(__name__)
 
@@ -76,12 +73,7 @@ def create_aggregator(channel):
                 data.get('type'),
                 data.get('return_code', None))
 
-        try:
-            update_status()
-        except DatabaseError:
-            time.sleep(1)
-            update_status()
-
+        update_status()
         ack()
 
     return run_something
