@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
 import json
+import logging
+import time
 from uuid import UUID
-
-from dateutil.parser import parse
 
 from cronq.backends.mysql import Storage
 from cronq.queue_connection import connect
 
-import logging
+from dateutil.parser import parse
+
+from sqlalchemy.exc import DatabaseError
+
 logger = logging.getLogger(__name__)
 
 
@@ -62,11 +65,22 @@ def create_aggregator(channel):
             data.get('x-host'),
             data.get('return_code'),
         )
-        storage.update_job_status(
-            data.get('job_id'),
-            parse(data.get('x-send-datetime')),
-            data.get('type'),
-            data.get('return_code', None))
+
+        def update_status():
+            logger.info('Attempting to update status on job {0}'.format(
+                data.get('job_id')
+            ))
+            storage.update_job_status(
+                data.get('job_id'),
+                parse(data.get('x-send-datetime')),
+                data.get('type'),
+                data.get('return_code', None))
+
+        try:
+            update_status()
+        except DatabaseError:
+            time.sleep(1)
+            update_status()
 
         ack()
 
