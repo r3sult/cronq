@@ -270,6 +270,7 @@ class Storage(object):
         except InternalError, e:
             session.rollback()
             logger.info('Error publishing {0} - {1}'.format(job.name, e))
+            session.close()
             return
         except Exception, e:
             session.rollback()
