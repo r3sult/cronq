@@ -269,7 +269,7 @@ class Storage(object):
             self.publisher.publish(job.routing_key, job_doc, uuid4().hex)
         except InternalError, e:
             session.rollback()
-            logger.info('Error publishing {0} - {1}'.format(job.name, e))
+            logger.warning('Error publishing {0} - {1}'.format(job.name, e))
             session.close()
             return
         except Exception, e:
