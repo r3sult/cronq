@@ -5,6 +5,7 @@ import logging
 
 from cronq import interval_parser
 from cronq.backends.mysql import Storage
+from cronq.utils import setup_logging
 from cronq.utils import split_command
 from cronq.utils import task_status
 from cronq.utils import took
@@ -19,6 +20,7 @@ from flask import render_template
 from flask import request
 from flask import url_for
 
+setup_logging()
 app = Flask(__name__)
 stream_handler = logging.StreamHandler()
 stream_handler.setLevel(logging.INFO)

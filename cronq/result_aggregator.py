@@ -5,9 +5,11 @@ from uuid import UUID
 
 from cronq.backends.mysql import Storage
 from cronq.queue_connection import connect
+from cronq.utils import setup_logging
 
 from dateutil.parser import parse
 
+setup_logging()
 logger = logging.getLogger(__name__)
 
 
@@ -52,8 +54,11 @@ def create_aggregator(channel):
 
         data = json.loads(str(msg.body))
         run_id = UUID(hex=data['run_id'])
-        logger.debug("id:{}".format(run_id))
-        logger.debug(str(msg.body))
+
+        logger.info('[job:{0}] [run_id:{1}] Running job {2}'.format(
+            data.get('job_id'), run_id, str(msg.body)
+        ))
+
         storage.add_event(
             data.get('job_id'),
             parse(data.get('x-send-datetime')),
@@ -63,8 +68,8 @@ def create_aggregator(channel):
             data.get('return_code'),
         )
 
-        logger.info('Attempting to update status on job {0}'.format(
-            data.get('job_id')
+        logger.info('[job:{0}] [run_id:{1}] Attempting to update status on job'.format(
+            data.get('job_id'), run_id
         ))
         storage.update_job_status(
             data.get('job_id'),
@@ -72,8 +77,8 @@ def create_aggregator(channel):
             data.get('type'),
             data.get('return_code', None))
 
-        logger.info('Acking message on job {0}'.format(
-            data.get('job_id')
+        logger.info('[job:{0}] [run_id:{1}] Acking message on job'.format(
+            data.get('job_id'), run_id
         ))
         ack()
 

@@ -13,11 +13,13 @@ import time
 from cronq.config import LOG_PATH
 from cronq.config import QUEUE
 from cronq.queue_connection import connect
+from cronq.utils import setup_logging
 
 import gevent
 
 from haigha.message import Message
 
+setup_logging()
 logger = logging.getLogger(__name__)
 
 
@@ -107,7 +109,9 @@ def create_runner(channel):  # noqa
             return reject(requeue=False)
 
         cmd = data.get('cmd')
-        logger.info("Starting {}".format(cmd))
+        logger.info('[job:{0}] [run_id:{1}] Starting {2}'.format(
+            data.get('job_id'), data.get('run_id'), cmd
+        ))
         publish_result({
             'job_id': data.get('job_id'),
             'run_id': data.get('run_id'),
@@ -124,7 +128,9 @@ def create_runner(channel):  # noqa
                 bufsize=1,
             )
         except OSError:
-            logger.exception("Failed job")
+            logger.exception('[job:{0}] [run_id:{1}] Failed job'.format(
+                data.get('job_id'), data.get('run_id')
+            ))
             end = time.time()
             publish_result({
                 'job_id': data.get('job_id'),
@@ -133,7 +139,9 @@ def create_runner(channel):  # noqa
                 'type': 'failed',
             })
             return reject(requeue=False)
-        logger.info("waiting")
+        logger.info('[job:{0}] [run_id:{1}] waiting'.format(
+            data.get('job_id'), data.get('run_id')
+        ))
 
         filename = '{0}/{1}.log'.format(LOG_PATH, data.get('name', 'UNKNOWN'))
         handler = logging.handlers.WatchedFileHandler(filename)
@@ -153,7 +161,9 @@ def create_runner(channel):  # noqa
             'run_time': end - start,
             'type': 'finished',
         })
-        logger.info("Done {} {}".format(proc.returncode, data.get('run_id')))
+        logger.info('[job:{0}] [run_id:{1}] Done {2}'.format(
+            data.get('job_id'), data.get('run_id'), proc.returncode
+        ))
         ack()
 
     return run_something
