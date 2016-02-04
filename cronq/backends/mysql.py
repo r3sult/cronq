@@ -251,9 +251,14 @@ class Storage(object):
         logger.info('[job:{0}] Found a job: {1} {2}'.format(
             job.id, job.name, job.next_run))
 
-        while job.next_run < datetime.datetime.utcnow():
-            logger.info('[job:{0}] Adding time!'.format(job.id))
-            job.next_run += job.interval
+        if job.next_run is None:
+            current_time = datetime.datetime.utcnow()
+            logger.info('[job:{0}] Setting time to {1}'.format(job.id, current_time))
+            job.next_run = current_time
+        else:
+            while job.next_run < datetime.datetime.utcnow():
+                logger.info('[job:{0}] Adding time!'.format(job.id))
+                job.next_run += job.interval
 
         logger.info('[job:{0}] Next job run: {1}'.format(job.id, job.next_run))
         job_doc = {
