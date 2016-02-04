@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.4.4 (2016-02-04)
+------------------
+
+- Add better verbose logging. [Jose Diaz-Gonzalez]
+
 0.4.3 (2016-02-04)
 ------------------
 
