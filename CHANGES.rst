@@ -1,6 +1,15 @@
 Changelog
 =========
 
+0.4.3 (2016-02-04)
+------------------
+
+- Change message from info to warning. [Jose Diaz-Gonzalez]
+
+- Close the session before returning. [Jose Diaz-Gonzalez]
+
+- Add more logging around results aggregation. [Jose Diaz-Gonzalez]
+
 0.4.2 (2016-02-03)
 ------------------
 
