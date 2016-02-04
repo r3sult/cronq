@@ -63,17 +63,18 @@ def create_aggregator(channel):
             data.get('return_code'),
         )
 
-        def update_status():
-            logger.info('Attempting to update status on job {0}'.format(
-                data.get('job_id')
-            ))
-            storage.update_job_status(
-                data.get('job_id'),
-                parse(data.get('x-send-datetime')),
-                data.get('type'),
-                data.get('return_code', None))
+        logger.info('Attempting to update status on job {0}'.format(
+            data.get('job_id')
+        ))
+        storage.update_job_status(
+            data.get('job_id'),
+            parse(data.get('x-send-datetime')),
+            data.get('type'),
+            data.get('return_code', None))
 
-        update_status()
+        logger.info('Acking message on job {0}'.format(
+            data.get('job_id')
+        ))
         ack()
 
     return run_something
