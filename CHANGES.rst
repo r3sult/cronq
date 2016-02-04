@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.4.5 (2016-02-04)
+0.5.0 (2016-02-04)
 ------------------
 
 - Ensure we handle cases where the next_run is null. [Jose Diaz-
