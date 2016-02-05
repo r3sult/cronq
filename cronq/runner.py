@@ -13,13 +13,11 @@ import time
 from cronq.config import LOG_PATH
 from cronq.config import QUEUE
 from cronq.queue_connection import connect
-from cronq.utils import setup_logging
 
 import gevent
 
 from haigha.message import Message
 
-setup_logging()
 logger = logging.getLogger(__name__)
 
 

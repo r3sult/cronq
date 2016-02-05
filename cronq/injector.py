@@ -18,9 +18,6 @@ class Injector(object):
 def main():
     from cronq.backends.mysql import Storage
     from cronq.queue_connection import Publisher
-    from cronq.utils import setup_logging
-
-    setup_logging()
 
     logger = logging.getLogger('cronq.injector')
     logger.info('Creating injector')

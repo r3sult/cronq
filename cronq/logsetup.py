@@ -8,7 +8,7 @@ LOG_SETTINGS = {
     'disable_existing_loggers': True,
     'formatters': {
         'normal': {
-            'format': "[%(asctime)s] %(name)s - %(levelname)s - %(message)s",
+            'format': "[%(asctime)s] %(name)s [pid:%(process)d] - %(levelname)s - %(message)s",  # noqa
             'datefmt': "%Y-%m-%d %H:%M:%S"
         },
     },
@@ -43,4 +43,7 @@ if LOGGING_VERBOSE:
     LOG_SETTINGS['root']['handlers'].remove('console')
     LOG_SETTINGS['root']['handlers'].append('verbose')
 
-logging.config.dictConfig(LOG_SETTINGS)
+if os.getenv('LOGGING_FILE_CONFIG'):
+    logging.config.fileConfig(os.getenv('LOGGING_FILE_CONFIG'))
+else:
+    logging.config.dictConfig(LOG_SETTINGS)
