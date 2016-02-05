@@ -1,7 +1,12 @@
 Changelog
 =========
 
-0.5.0 (2016-02-04)
+0.6.0 (2016-02-05)
+------------------
+
+- Set format on all log levels. [Jose Diaz-Gonzalez]
+
+0.4.5 (2016-02-04)
 ------------------
 
 - Ensure we handle cases where the next_run is null. [Jose Diaz-
