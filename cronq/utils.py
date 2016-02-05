@@ -10,9 +10,18 @@ def setup_logging():
     else:
         logformat = "[%(asctime)s] %(name)s [pid:%(process)d] - %(levelname)s - %(message)s"  # noqa
         datefmt = "%Y-%m-%d %H:%M:%S"
-        logging.basicConfig(level=logging.DEBUG,
-                            format=logformat,
-                            datefmt=datefmt)
+        levels = [
+            logging.CRITICAL,
+            logging.ERROR,
+            logging.WARNING,
+            logging.INFO,
+            logging.DEBUG,
+            logging.NOTSET,
+        ]
+        for level in levels:
+            logging.basicConfig(level=level,
+                                format=logformat,
+                                datefmt=datefmt)
 
 
 def split_command(string):
