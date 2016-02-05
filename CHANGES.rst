@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.6.1 (2016-02-05)
+------------------
+
+- Move all logging setup into cronq.logsetup module. [Jose Diaz-
+  Gonzalez]
+
 0.6.0 (2016-02-05)
 ------------------
 
