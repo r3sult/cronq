@@ -171,14 +171,15 @@ def create_runner(channel):  # noqa
                 continue
 
             if message:
-                log_record = logging.makeLogRecord({
-                    'msg': message,
-                })
-                handler.emit(log_record)
-                if log_to_stdout:
-                    logger.info('[job:{0}] [run_id:{1}] {2}'.format(
-                        data.get('job_id'), data.get('run_id'), log_record.getMessage()
-                    ))
+                for m in message.splitlines():
+                    log_record = logging.makeLogRecord({
+                        'msg': message,
+                    })
+                    handler.emit(log_record)
+                    if log_to_stdout:
+                        logger.info('[job:{0}] [run_id:{1}] {2}'.format(
+                            data.get('job_id'), data.get('run_id'), log_record.getMessage()
+                        ))
 
             time.sleep(0.00001)
             sys.stdout.flush()
