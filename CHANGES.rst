@@ -1,6 +1,16 @@
 Changelog
 =========
 
+0.7.0 (2016-02-11)
+------------------
+
+- Add the ability to enable job run logging to stdout. [Jose Diaz-
+  Gonzalez]
+
+- Uppercase status string. [Jose Diaz-Gonzalez]
+
+- Structure exit code better in log message. [Jose Diaz-Gonzalez]
+
 0.6.1 (2016-02-05)
 ------------------
 
