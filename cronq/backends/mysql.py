@@ -186,10 +186,22 @@ class Storage(object):
         if len(events) == 0:
             return []
 
+        log_url_template = os.getenv('CRONQ_LOG_URL_TEMPLATE', None)
+
         chunks = {}
         for event in events:
             if event['run_id'] not in chunks:
-                chunks[event['run_id']] = {'first': None, 'last': None}
+                log_url = None
+                if log_url_template:
+                    log_url = log_url_template\
+                        .replace('{job_id}', str(event['job_id']))\
+                        .replace('{run_id}', str(event['run_id']))
+
+                chunks[event['run_id']] = {
+                    'first': None,
+                    'last': None,
+                    'log_url': log_url
+                }
 
             if event['type'] == 'starting':
                 chunks[event['run_id']]['first'] = event

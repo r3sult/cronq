@@ -137,6 +137,14 @@ The web view is a WSGI app run from ``cronq.web:app`` and requires only database
     # specify the database connection string
     export CRONQ_MYSQL=mysql+mysqlconnector://cronq:cronq@localhost/cronq
 
+    # if you have an aggregated log dashboard, you can provide a search url
+    # template. it will be used in the web dashboard for linking to logs
+    # the following strings will be replaced:
+    #
+    # {job_id} : replaced with the job's job_id
+    # {run_id} : replaced with the job's run_id
+    export CRONQ_LOG_URL_TEMPLATE="https://logs.service/search?run_id={run_id}"
+
     # run the web admin
     gunicorn --access-logfile - -w 2 --worker-class=gevent cronq.web:app
 
