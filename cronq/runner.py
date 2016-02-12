@@ -159,7 +159,7 @@ def create_runner(channel):  # noqa
             'run_time': end - start,
             'type': 'finished',
         })
-        logger.info('[job:{0}] [run_id:{1}] Done {2}'.format(
+        logger.info('[job:{0}] [run_id:{1}] [exit_code:{2}] Done'.format(
             data.get('job_id'), data.get('run_id'), proc.returncode
         ))
         ack()
