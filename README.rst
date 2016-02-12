@@ -48,6 +48,9 @@ The runner requires ``/var/log/cronq/`` to exist and be writable by the user exe
     # specify the rabbitmq queue to listen to
     export CRONQ_QUEUE=cronq_jobs # `cronq_jobs` is the default queue
 
+    # log job output to stdout *as well as* /var/log/cronq
+    export CRONQ_RUNNER_LOG_TO_STDOUT=1
+
     # run commands
     cronq-runner
 

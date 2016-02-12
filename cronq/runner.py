@@ -143,11 +143,16 @@ def create_runner(channel):  # noqa
 
         filename = '{0}/{1}.log'.format(LOG_PATH, data.get('name', 'UNKNOWN'))
         handler = logging.handlers.WatchedFileHandler(filename)
+        log_to_stdout = bool(os.getenv('CRONQ_RUNNER_LOG_TO_STDOUT', False))
         while proc.returncode is None:
             log_record = logging.makeLogRecord({
                 'msg': proc.stdout.read(1024),
             })
             handler.emit(log_record)
+            if log_to_stdout:
+                logger.info('[job:{0}] [run_id:{1}] {2}'.format(
+                    data.get('job_id'), data.get('run_id'), log_record.getMessage()
+                ))
             proc.poll()
         handler.close()
 
