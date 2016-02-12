@@ -1,7 +1,13 @@
 Changelog
 =========
 
-0.7.1 (2016-02-11)
+0.7.2 (2016-02-11)
+------------------
+
+- Split messages by newline when logging job messages. [Jose Diaz-
+  Gonzalez]
+
+0.7.1 (2016-02-12)
 ------------------
 
 - Attempt to use unbuffered process log collection. [Jose Diaz-Gonzalez]
