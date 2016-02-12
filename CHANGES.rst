@@ -1,7 +1,14 @@
 Changelog
 =========
 
-0.7.0 (2016-02-11)
+0.7.1 (2016-02-11)
+------------------
+
+- Attempt to use unbuffered process log collection. [Jose Diaz-Gonzalez]
+
+- Remove unused imports. [Jose Diaz-Gonzalez]
+
+0.7.0 (2016-02-12)
 ------------------
 
 - Add the ability to enable job run logging to stdout. [Jose Diaz-
