@@ -137,7 +137,7 @@ def create_runner(channel):  # noqa
                 'type': 'failed',
             })
             return reject(requeue=False)
-        logger.info('[job:{0}] [run_id:{1}] waiting'.format(
+        logger.info('[job:{0}] [run_id:{1}] Waiting'.format(
             data.get('job_id'), data.get('run_id')
         ))
 
