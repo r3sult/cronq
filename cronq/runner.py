@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
+import fcntl
 import importlib
 import json
 import logging
@@ -13,6 +14,7 @@ import time
 from cronq.config import LOG_PATH
 from cronq.config import QUEUE
 from cronq.queue_connection import connect
+from cronq.utils import unicodedammit
 
 import gevent
 
@@ -117,13 +119,13 @@ def create_runner(channel):  # noqa
             'type': 'starting',
         })
         start = time.time()
+        process = None
         try:
-            proc = subprocess.Popen(
+            process = subprocess.Popen(
                 cmd,
                 shell=True,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
-                bufsize=1,
             )
         except OSError:
             logger.exception('[job:{0}] [run_id:{1}] Failed job'.format(
@@ -137,6 +139,11 @@ def create_runner(channel):  # noqa
                 'type': 'failed',
             })
             return reject(requeue=False)
+
+        fd = process.stdout.fileno()
+        fl = fcntl.fcntl(fd, fcntl.F_GETFL)
+        fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NONBLOCK)
+
         logger.info('[job:{0}] [run_id:{1}] Waiting'.format(
             data.get('job_id'), data.get('run_id')
         ))
@@ -144,28 +151,50 @@ def create_runner(channel):  # noqa
         filename = '{0}/{1}.log'.format(LOG_PATH, data.get('name', 'UNKNOWN'))
         handler = logging.handlers.WatchedFileHandler(filename)
         log_to_stdout = bool(os.getenv('CRONQ_RUNNER_LOG_TO_STDOUT', False))
-        while proc.returncode is None:
-            log_record = logging.makeLogRecord({
-                'msg': proc.stdout.read(1024),
-            })
-            handler.emit(log_record)
-            if log_to_stdout:
-                logger.info('[job:{0}] [run_id:{1}] {2}'.format(
-                    data.get('job_id'), data.get('run_id'), log_record.getMessage()
-                ))
-            proc.poll()
+
+        while True:
+            try:
+                nextline = process.stdout.readline()
+            except IOError:
+                nextline = ''
+
+            if nextline == '' and process.poll() is not None:
+                break
+
+            if nextline == '':
+                continue
+
+            try:
+                message = nextline.rstrip()
+                message = unicodedammit(message)
+            except:
+                continue
+
+            if message:
+                log_record = logging.makeLogRecord({
+                    'msg': message,
+                })
+                handler.emit(log_record)
+                if log_to_stdout:
+                    logger.info('[job:{0}] [run_id:{1}] {2}'.format(
+                        data.get('job_id'), data.get('run_id'), log_record.getMessage()
+                    ))
+
+            time.sleep(0.00001)
+            sys.stdout.flush()
+
         handler.close()
 
         end = time.time()
         publish_result({
             'job_id': data.get('job_id'),
             'run_id': data.get('run_id'),
-            'return_code': proc.returncode,
+            'return_code': process.returncode,
             'run_time': end - start,
             'type': 'finished',
         })
         logger.info('[job:{0}] [run_id:{1}] [exit_code:{2}] Done'.format(
-            data.get('job_id'), data.get('run_id'), proc.returncode
+            data.get('job_id'), data.get('run_id'), process.returncode
         ))
         ack()
 
