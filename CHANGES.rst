@@ -1,7 +1,13 @@
 Changelog
 =========
 
-0.7.2 (2016-02-11)
+0.8.0 (2016-02-11)
+------------------
+
+- Add link to logs if CRONQ_LOG_URL_TEMPLATE env var is available. [Jose
+  Diaz-Gonzalez]
+
+0.7.2 (2016-02-12)
 ------------------
 
 - Split messages by newline when logging job messages. [Jose Diaz-
