@@ -1,7 +1,12 @@
 Changelog
 =========
 
-0.8.1 (2016-02-18)
+0.9.0 (2016-02-19)
+------------------
+
+- Properly namespace log metadata. [Jose Diaz-Gonzalez]
+
+0.8.1 (2016-02-19)
 ------------------
 
 - Use unicode string for logging utf8 characters in global log. [Jose
