@@ -177,7 +177,7 @@ def create_runner(channel):  # noqa
                     })
                     handler.emit(log_record)
                     if log_to_stdout:
-                        logger.info('[job:{0}] [run_id:{1}] {2}'.format(
+                        logger.info(u'[job:{0}] [run_id:{1}] {2}'.format(
                             data.get('job_id'), data.get('run_id'), log_record.getMessage()
                         ))
 
