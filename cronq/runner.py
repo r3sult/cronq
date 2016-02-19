@@ -109,7 +109,7 @@ def create_runner(channel):  # noqa
             return reject(requeue=False)
 
         cmd = data.get('cmd')
-        logger.info('[job:{0}] [run_id:{1}] Starting {2}'.format(
+        logger.info('[cronq_job_id:{0}] [cronq_run_id:{1}] Starting {2}'.format(
             data.get('job_id'), data.get('run_id'), cmd
         ))
         publish_result({
@@ -128,7 +128,7 @@ def create_runner(channel):  # noqa
                 stderr=subprocess.STDOUT,
             )
         except OSError:
-            logger.exception('[job:{0}] [run_id:{1}] Failed job'.format(
+            logger.exception('[cronq_job_id:{0}] [cronq_run_id:{1}] Failed job'.format(
                 data.get('job_id'), data.get('run_id')
             ))
             end = time.time()
@@ -144,7 +144,7 @@ def create_runner(channel):  # noqa
         fl = fcntl.fcntl(fd, fcntl.F_GETFL)
         fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NONBLOCK)
 
-        logger.info('[job:{0}] [run_id:{1}] Waiting'.format(
+        logger.info('[cronq_job_id:{0}] [cronq_run_id:{1}] Waiting'.format(
             data.get('job_id'), data.get('run_id')
         ))
 
@@ -177,7 +177,7 @@ def create_runner(channel):  # noqa
                     })
                     handler.emit(log_record)
                     if log_to_stdout:
-                        logger.info(u'[job:{0}] [run_id:{1}] {2}'.format(
+                        logger.info(u'[cronq_job_id:{0}] [cronq_run_id:{1}] {2}'.format(
                             data.get('job_id'), data.get('run_id'), log_record.getMessage()
                         ))
 
@@ -194,7 +194,7 @@ def create_runner(channel):  # noqa
             'run_time': end - start,
             'type': 'finished',
         })
-        logger.info('[job:{0}] [run_id:{1}] [exit_code:{2}] Done'.format(
+        logger.info('[cronq_job_id:{0}] [cronq_run_id:{1}] [cronq_exit_code:{2}] Done'.format(
             data.get('job_id'), data.get('run_id'), process.returncode
         ))
         ack()

@@ -53,7 +53,7 @@ def create_aggregator(channel):
         data = json.loads(str(msg.body))
         run_id = UUID(hex=data['run_id'])
 
-        logger.info('[job:{0}] [run_id:{1}] Running job {2}'.format(
+        logger.info('[cronq_job_id:{0}] [cronq_run_id:{1}] Running job {2}'.format(
             data.get('job_id'), run_id, str(msg.body)
         ))
 
@@ -66,7 +66,7 @@ def create_aggregator(channel):
             data.get('return_code'),
         )
 
-        logger.info('[job:{0}] [run_id:{1}] Attempting to update status on job'.format(  # noqa
+        logger.info('[cronq_job_id:{0}] [cronq_run_id:{1}] Attempting to update status on job'.format(  # noqa
             data.get('job_id'), run_id
         ))
         storage.update_job_status(
@@ -75,7 +75,7 @@ def create_aggregator(channel):
             data.get('type'),
             data.get('return_code', None))
 
-        logger.info('[job:{0}] [run_id:{1}] Acking message on job'.format(
+        logger.info('[cronq_job_id:{0}] [cronq_run_id:{1}] Acking message on job'.format(
             data.get('job_id'), run_id
         ))
         ack()

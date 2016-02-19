@@ -260,19 +260,19 @@ class Storage(object):
             session.close()
             return
 
-        logger.info('[job:{0}] Found a job: {1} {2}'.format(
+        logger.info('[cronq_job_id:{0}] Found a job: {1} {2}'.format(
             job.id, job.name, job.next_run))
 
         if job.next_run is None:
             current_time = datetime.datetime.utcnow()
-            logger.info('[job:{0}] Setting time to {1}'.format(job.id, current_time))
+            logger.info('[cronq_job_id:{0}] Setting time to {1}'.format(job.id, current_time))
             job.next_run = current_time
         else:
             while job.next_run < datetime.datetime.utcnow():
-                logger.info('[job:{0}] Adding time!'.format(job.id))
+                logger.info('[cronq_job_id:{0}] Adding time!'.format(job.id))
                 job.next_run += job.interval
 
-        logger.info('[job:{0}] Next job run: {1}'.format(job.id, job.next_run))
+        logger.info('[cronq_job_id:{0}] Next job run: {1}'.format(job.id, job.next_run))
         job_doc = {
             'name': job.name,
             'command': unicode(job.command),
@@ -285,16 +285,16 @@ class Storage(object):
         try:
             session.commit()
             self.publisher.publish(job.routing_key, job_doc, uuid4().hex)
-            logger.info('[job:{0}] Job published {1}'.format(job.id, job.name))
+            logger.info('[cronq_job_id:{0}] Job published {1}'.format(job.id, job.name))
         except InternalError, e:
             session.rollback()
-            logger.warning('[job:{0}] Error publishing {1} - {2}'.format(
+            logger.warning('[cronq_job_id:{0}] Error publishing {1} - {2}'.format(
                 job.id, job.name, e))
             session.close()
             return
         except Exception, e:
             session.rollback()
-            logger.exception('[job:{0}] {1} {2}'.format(job.id, job.name, e))
+            logger.exception('[cronq_job_id:{0}] {1} {2}'.format(job.id, job.name, e))
             raise
         session.close()
         return True
