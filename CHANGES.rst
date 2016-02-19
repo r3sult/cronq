@@ -1,7 +1,13 @@
 Changelog
 =========
 
-0.8.0 (2016-02-11)
+0.8.1 (2016-02-18)
+------------------
+
+- Use unicode string for logging utf8 characters in global log. [Jose
+  Diaz-Gonzalez]
+
+0.8.0 (2016-02-12)
 ------------------
 
 - Add link to logs if CRONQ_LOG_URL_TEMPLATE env var is available. [Jose
