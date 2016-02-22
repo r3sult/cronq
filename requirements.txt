@@ -4,7 +4,7 @@ Flask==0.10.1
 gevent==1.0.1
 greenlet==0.4.3
 gunicorn==19.1.1
-haigha==0.7.0
+haigha==0.8.0
 itsdangerous==0.24
 Jinja2==2.7.3
 MarkupSafe==0.23
