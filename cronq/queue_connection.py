@@ -31,7 +31,7 @@ class Publisher(object):
 
     def _publish(self, routing_key, body):
         msg = Message(json.dumps(body), {})
-        self._channel.basic.publish(msg, 'cronq', routing_key)
+        self._channel.basic.publish_synchronous(msg, 'cronq', routing_key)
 
 
 def connect():
