@@ -27,11 +27,15 @@ class Publisher(object):
             'name': job['name'],
         }
         logger.debug(cmd)
-        self._publish(routing_key, cmd)
 
-    def _publish(self, routing_key, body):
+        def _publish_callback():
+            logger.info('[cronq_job_id:{0}] Job published {1}'.format(job['id'], job['name']))
+
+        self._publish(routing_key, cmd, _publish_callback)
+
+    def _publish(self, routing_key, body, cb):
         msg = Message(json.dumps(body), {})
-        self._channel.basic.publish_synchronous(msg, 'cronq', routing_key)
+        self._channel.basic.publish_synchronous(msg, 'cronq', routing_key, cb=cb)
 
 
 def connect():

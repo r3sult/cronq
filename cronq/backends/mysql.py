@@ -285,7 +285,6 @@ class Storage(object):
         try:
             session.commit()
             self.publisher.publish(job.routing_key, job_doc, uuid4().hex)
-            logger.info('[cronq_job_id:{0}] Job published {1}'.format(job.id, job.name))
         except InternalError, e:
             session.rollback()
             logger.warning('[cronq_job_id:{0}] Error publishing {1} - {2}'.format(
