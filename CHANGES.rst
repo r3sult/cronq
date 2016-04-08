@@ -1,6 +1,16 @@
 Changelog
 =========
 
+0.10.0 (2016-04-08)
+-------------------
+
+- Use synchronous callbacks to correctly log when a job is published.
+  [Jose Diaz-Gonzalez]
+
+- Move cronq to do synchronous publishing. [Jose Diaz-Gonzalez]
+
+- Pull down all keys when updating local copy. [Jose Diaz-Gonzalez]
+
 0.9.0 (2016-02-19)
 ------------------
 
