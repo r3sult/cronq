@@ -246,7 +246,8 @@ class Storage(object):
     def inject(self):
         """Get a message from storage and injects it into the job stream"""
         logger.info('Trying to inject')
-        self.get_unpublished_task()
+        while self.get_unpublished_task() is not None:
+            pass
 
     def get_job_to_inject(self, session):
         to_run = or_(
