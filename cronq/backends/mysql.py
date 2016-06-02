@@ -3,6 +3,7 @@ import datetime
 import logging
 import os
 import socket
+import time
 
 from cronq.config import DATABASE_URL
 from cronq.models.category import Category
@@ -248,21 +249,21 @@ class Storage(object):
         while self.get_unpublished_task() is not None:
             pass
 
-    def get_unpublished_task(self):
-        session = self._new_session()
+    def get_job_to_inject(self, session):
         to_run = or_(
             Job.next_run < datetime.datetime.utcnow(),
             Job.run_now == True,  # noqa
         )
-
         job = session.query(Job).filter(to_run).first()
         if job is None:
-            session.close()
-            return
+            return None
 
         logger.info('[cronq_job_id:{0}] Found a job: {1} {2}'.format(
             job.id, job.name, job.next_run))
 
+        return job
+
+    def update_job_time(self, session, job):
         if job.next_run is None:
             current_time = datetime.datetime.utcnow()
             logger.info('[cronq_job_id:{0}] Setting time to {1}'.format(job.id, current_time))
@@ -271,30 +272,58 @@ class Storage(object):
             while job.next_run < datetime.datetime.utcnow():
                 logger.info('[cronq_job_id:{0}] Adding time!'.format(job.id))
                 job.next_run += job.interval
+        job.run_now = False
+        me = '{0}.{1}'.format(socket.gethostname(), os.getpid())
+        job.locked_by = me
 
-        logger.info('[cronq_job_id:{0}] Next job run: {1}'.format(job.id, job.next_run))
+        # update
+        try:
+            session.merge(job)
+            session.commit()
+        except InternalError, e:
+            session.rollback()
+            logger.warning('[cronq_job_id:{0}] Error updating time {1} - {2}'.format(
+                job.id, job.name, e))
+            return None
+        except Exception, e:
+            session.rollback()
+            logger.exception('[cronq_job_id:{0}] {1} {2}'.format(job.id, job.name, e))
+            raise
+        else:
+            logger.info('[cronq_job_id:{0}] Next job run: {1}'.format(job.id, job.next_run))
+            return job
+
+    def get_unpublished_task(self):
+        session = self._new_session()
+
+        job = self.get_job_to_inject(session)
+        if not job:
+            logger.info("no job found")
+            session.close()
+            return
+
+
+        # update job time
+        job = self.update_job_time(session, job)
+        if not job:
+            logger.info("no job found afer update time")
+            session.close()
+            return
+
+        # inject
         job_doc = {
             'name': job.name,
             'command': unicode(job.command),
             'id': job.id,
         }
-        job.run_now = False
-        me = '{0}.{1}'.format(socket.gethostname(), os.getpid())
-        job.locked_by = me
 
-        try:
-            session.commit()
-            self.publisher.publish(job.routing_key, job_doc, uuid4().hex)
-        except InternalError, e:
-            session.rollback()
+        # publish
+        logger.info("try publish")
+        success = self.publisher.publish(job.routing_key, job_doc, uuid4().hex)
+        if not success:
             logger.warning('[cronq_job_id:{0}] Error publishing {1} - {2}'.format(
                 job.id, job.name, e))
-            session.close()
-            return
-        except Exception, e:
-            session.rollback()
-            logger.exception('[cronq_job_id:{0}] {1} {2}'.format(job.id, job.name, e))
-            raise
+
         session.close()
         return True
 
