@@ -1,7 +1,12 @@
 Changelog
 =========
 
-0.11.0 (2016-06-02)
+0.11.1 (2016-06-02)
+-------------------
+
+- Run PEP8 against queue_connection code. [Jose Diaz-Gonzalez]
+
+0.11.0 (2016-06-03)
 -------------------
 
 - Use requirements.txt for cronq requirements. [Jose Diaz-Gonzalez]
