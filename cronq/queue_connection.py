@@ -1,26 +1,27 @@
 # -*- coding: utf-8 -*-
+import itertools
 import json
 import logging
+import random
 import socket
+import time
+import urlparse
 
 from cronq.config import RABBITMQ_HOSTS
 from cronq.config import RABBITMQ_PASS
 from cronq.config import RABBITMQ_USER
 
-logger = logging.getLogger(__name__)
-
-import itertools
-import random
-import time
-import urlparse
-
 from haigha.connections.rabbit_connection import RabbitConnection
 from haigha.message import Message
+
+logger = logging.getLogger(__name__)
+
 
 def create_host_factory(hosts):
     random.shuffle(hosts)
     hosts_itr = itertools.cycle(hosts)
     return hosts_itr.next
+
 
 class QueueConnection(object):
     """A wrapper around an AMQP connection for ease of publishing
@@ -78,8 +79,8 @@ class QueueConnection(object):
                 self._connection_path, self._connection_query = self._connection_path.split('?', 1)
 
             self._connection_hosts = _connection_params.hostname.split(',')
-            self._connection_user=_connection_params.username
-            self._connection_password=_connection_params.password
+            self._connection_user = _connection_params.username
+            self._connection_password = _connection_params.password
 
         else:
             self._connection_hosts = RABBITMQ_HOSTS
@@ -184,6 +185,7 @@ class QueueConnection(object):
     def close(self):
         self._connection.close()
 
+
 class Publisher(object):
 
     def __init__(self):
@@ -199,6 +201,7 @@ class Publisher(object):
         logger.debug(cmd)
         return self._connection.publish_json("cronq", routing_key, {}, cmd)
 
+
 def connect():
     logger.info('Hosts are: {0}'.format(RABBITMQ_HOSTS))
     rabbit_logger = logging.getLogger('amqp-dispatcher.haigha')
@@ -211,6 +214,7 @@ def connect():
         heartbeat=43200,
     )
     return conn
+
 
 def connect_to_hosts(connector, hosts, **kwargs):
     for host in hosts:
