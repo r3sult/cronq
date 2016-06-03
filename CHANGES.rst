@@ -1,6 +1,23 @@
 Changelog
 =========
 
+0.11.0 (2016-06-02)
+-------------------
+
+- Use requirements.txt for cronq requirements. [Jose Diaz-Gonzalez]
+
+  Also fix support for haigha
+
+
+- This is actually a feature, i guess. [Adam Cohen]
+
+- Bump haigha requirement for wahtever reason. [Adam Cohen]
+
+- Refactor this code to make it more obvious what’s going on. [Adam
+  Cohen]
+
+- Use better queueconnection. [Adam Cohen]
+
 0.10.0 (2016-04-08)
 -------------------
 
