@@ -1,7 +1,14 @@
 Changelog
 =========
 
-0.11.1 (2016-06-02)
+0.11.2 (2016-07-09)
+-------------------
+
+- Open logs in a new window/tab. [Andy Dawson]
+
+- Open external links in a new page. [Jose Diaz-Gonzalez]
+
+0.11.1 (2016-06-03)
 -------------------
 
 - Run PEP8 against queue_connection code. [Jose Diaz-Gonzalez]
