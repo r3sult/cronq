@@ -17,3 +17,11 @@ QUEUE = os.getenv('CRONQ_QUEUE', 'cronq_jobs')
 RABBITMQ_HOSTS = hosts
 RABBITMQ_USER = os.getenv('RABBITMQ_USER', 'guest')
 RABBITMQ_PASS = os.getenv('RABBITMQ_PASS', 'guest')
+
+default_rabbitmq_url = 'amqp://{0}:{1}@{2}/'.format(
+    RABBITMQ_USER,
+    RABBITMQ_PASS,
+    ','.join(RABBITMQ_HOSTS)
+)
+
+RABBITMQ_URL = os.getenv('RABBITMQ_URL', default_rabbitmq_url)
