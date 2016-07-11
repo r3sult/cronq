@@ -7,10 +7,6 @@ import socket
 import time
 import urlparse
 
-from cronq.config import RABBITMQ_HOSTS
-from cronq.config import RABBITMQ_PASS
-from cronq.config import RABBITMQ_USER
-
 from cronq.config import RABBITMQ_URL
 from haigha.connections.rabbit_connection import RabbitConnection
 from haigha.message import Message
@@ -80,25 +76,17 @@ class QueueConnection(object):
 
     """
     def __init__(self, url=None, confirm=False):
+        if url is  None:
+            url = RABBITMQ_URL
+        hosts, user, password, vhost, port, heartbeat = parse_url(RABBITMQ_URL)
+        self._connection_hosts = hosts
+        self._connection_user = user
+        self._connection_password = password
+        self._connection_path = vhost
+        self._connection_port = port
+        self._connection_heartbeat = heartbeat
 
-        if url is not None:
-            _connection_params = urlparse.urlparse(url)
-            # workaround for bug in 12.04
-            self._connection_path = _connection_params.path
-            self._connection_query = _connection_params.query
-            if '?' in self._connection_path and self._connection_query == '':
-                self._connection_path, self._connection_query = self._connection_path.split('?', 1)
-
-            self._connection_hosts = _connection_params.hostname.split(',')
-            self._connection_user = _connection_params.username
-            self._connection_password = _connection_params.password
-
-        else:
-            self._connection_hosts = RABBITMQ_HOSTS
-            self._connection_user = RABBITMQ_USER
-            self._connection_password = RABBITMQ_PASS
-            self._connection_path = "/"
-
+        self._connection_params = urlparse.urlparse(url)
         self._connect_attempt_delay = 0.1
 
         self._get_next_host = create_host_factory(self._connection_hosts)
@@ -125,6 +113,8 @@ class QueueConnection(object):
                 password=self._connection_password,
                 vhost=self._connection_path,
                 close_cb=self._close_cb,
+                heartbeat=self._connection_heartbeat,
+                transport='gevent'
             )
         except socket.error as exc:
             self._logger.error('Error connecting to rabbitmq {}'.format(exc))
@@ -306,10 +296,14 @@ def connect():
     conn = connect_to_hosts(
         RabbitConnection,
         hosts,
+        port=port,
         user=user,
         password=password,
+        vhost=vhost,
+        heartbeat=heartbeat,
         logger=rabbit_logger,
         heartbeat=heartbeat,
+        transport='gevent'
     )
     return conn
 
