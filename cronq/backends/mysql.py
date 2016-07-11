@@ -334,7 +334,7 @@ class Storage(object):
         success = self.publisher.publish(job.routing_key, job_doc, uuid4().hex)
         if not success:
             logger.warning('[cronq_job_id:{0}] Error publishing {1} - {2}'.format(
-                job.id, job.name, e))
+                job.id, job.name))
 
         session.close()
         return True
