@@ -5,7 +5,6 @@ from uuid import UUID
 
 from cronq.backends.mysql import Storage
 from cronq.queue_connection import connect
-
 from dateutil.parser import parse
 
 logger = logging.getLogger(__name__)
@@ -53,7 +52,7 @@ def create_aggregator(channel):
         data = json.loads(str(msg.body))
         run_id = UUID(hex=data['run_id'])
 
-        logger.info('[cronq_job_id:{0}] [cronq_run_id:{1}] Running job {2}'.format(
+        logger.info('[cronq_job_id:{0}] [cronq_run_id:{1}] Write job result to database: {2}'.format(
             data.get('job_id'), run_id, str(msg.body)
         ))
 
@@ -70,6 +69,7 @@ def create_aggregator(channel):
             data.get('job_id'), run_id
         ))
         storage.update_job_status(
+            run_id,
             data.get('job_id'),
             parse(data.get('x-send-datetime')),
             data.get('type'),
