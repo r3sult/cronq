@@ -101,7 +101,19 @@ class Storage(object):
         self.session.add(event)
         self.session.commit()
 
-    def update_job_status(self, job_id, _datetime, status, return_code=None):
+    def update_job_status(self, run_id, job_id, _datetime, status, return_code=None):
+        while True:
+            try:
+                self._update_job_status(job_id, _datetime, status, return_code)
+                break
+            except InternalError:
+                logger.info('[cronq_job_id:{0}] [cronq_run_id:{1}] Unable to update job with result, retrying'.format(
+                    job_id, run_id
+                ))
+                self.session.rollback()
+        return True
+
+    def _update_job_status(self, job_id, _datetime, status, return_code=None):
         job = self.session.query(Job).filter_by(id=job_id).first()
         if job:
             job.current_status = status
