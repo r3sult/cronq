@@ -285,7 +285,7 @@ class QueueConnection(object):
 class Publisher(object):
 
     def __init__(self):
-        self._connection = QueueConnection(confirm=True)
+        self._connection = QueueConnection(RABBITMQ_URL, confirm=True)
 
     def publish(self, routing_key, job, run_id):
         cmd = {
