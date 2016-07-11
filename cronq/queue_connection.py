@@ -113,8 +113,7 @@ class QueueConnection(object):
                 password=self._connection_password,
                 vhost=self._connection_path,
                 close_cb=self._close_cb,
-                heartbeat=self._connection_heartbeat,
-                transport='gevent'
+                heartbeat=self._connection_heartbeat
             )
         except socket.error as exc:
             self._logger.error('Error connecting to rabbitmq {}'.format(exc))
@@ -301,8 +300,7 @@ def connect():
         password=password,
         vhost=vhost,
         heartbeat=heartbeat,
-        logger=rabbit_logger,
-        transport='gevent'
+        logger=rabbit_logger
     )
     return conn
 
