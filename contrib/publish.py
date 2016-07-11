@@ -1,15 +1,16 @@
-import time
 import json
+import os
+import time
 
 from haigha.connection import Connection
 from haigha.message import Message
 from uuid import uuid4
 
 connection = Connection(
-    user='guest',
-    password='guest',
+    user=os.getenv('RABBITMQ_USER'),
+    password=os.getenv('RABBITMQ_PASS'),
     vhost='/',
-    host='rabbit-host',
+    host=os.getenv('RABBITMQ_HOSTS', 'localhost').split(',')[0],
     heartbeat=None,
     debug=True)
 
@@ -23,10 +24,16 @@ ch.queue.bind('cronq_results', 'cronq', 'cronq_results')
 while True:
     print 'publish'
     cmd = {
-        'job_id': str(uuid4()),
-        'cmd': 'sleep 1'
+        "cmd": "sleep 1",
+        "job_id": 1024,
+        "name": "[TEST] A test job",
+        "run_id": "1234"
     }
-    ch.basic.publish(Message(json.dumps(cmd), application_headers={
-        'src': 'test'
-    }), 'cronq', 'cronq')
+    ch.basic.publish(
+        Message(json.dumps(cmd), application_headers={
+            'src': 'test'
+        }),
+        exchange='cronq',
+        routing_key='test'
+    )
     time.sleep(1)
