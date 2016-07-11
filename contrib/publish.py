@@ -1,9 +1,9 @@
-import json
 import time
-from uuid import uuid4
+import json
 
 from haigha.connection import Connection
 from haigha.message import Message
+from uuid import uuid4
 
 connection = Connection(
     user='guest',
