@@ -11,6 +11,7 @@ from cronq.config import RABBITMQ_HOSTS
 from cronq.config import RABBITMQ_PASS
 from cronq.config import RABBITMQ_USER
 
+from cronq.config import RABBITMQ_URL
 from haigha.connections.rabbit_connection import RabbitConnection
 from haigha.message import Message
 
@@ -293,15 +294,17 @@ class Publisher(object):
 
 
 def connect():
+    hosts, user, password, vhost, port, heartbeat = parse_url(RABBITMQ_URL)
+
     logger.info('Hosts are: {0}'.format(RABBITMQ_HOSTS))
     rabbit_logger = logging.getLogger('amqp-dispatcher.haigha')
     conn = connect_to_hosts(
         RabbitConnection,
-        RABBITMQ_HOSTS,
-        user=RABBITMQ_USER,
-        password=RABBITMQ_PASS,
+        hosts,
+        user=user,
+        password=password,
         logger=rabbit_logger,
-        heartbeat=43200,
+        heartbeat=heartbeat,
     )
     return conn
 
@@ -315,3 +318,68 @@ def connect_to_hosts(connector, hosts, **kwargs):
         except socket.error:
             logger.info('Error connecting to {0}'.format(host))
     logger.error('Could not connect to any hosts')
+
+
+def parse_url(rabbitmq_url):
+    """returns tuple containing
+    HOSTS, USER, PASSWORD, VHOST
+    """
+    hosts = user = password = vhost = None
+    port = 5672
+
+    cp = urlparse.urlparse(rabbitmq_url)
+    hosts_string = cp.hostname
+    hosts = hosts_string.split(",")
+    if cp.port:
+        port = int(cp.port)
+    user = cp.username
+    password = cp.password
+    vhost = cp.path
+    query = cp.query
+
+    # workaround for bug in 12.04
+    if '?' in vhost and query == '':
+        vhost, query = vhost.split('?', 1)
+
+    heartbeat = parse_heartbeat(query)
+    return (hosts, user, password, vhost, port, heartbeat)
+
+
+def parse_heartbeat(query):
+    logger = logging.getLogger('amqp-dispatcher')
+
+    default_heartbeat = None
+    heartbeat = default_heartbeat
+    if query:
+        qs = urlparse.parse_qs(query)
+        heartbeat = qs.get('heartbeat', default_heartbeat)
+    else:
+        logger.debug('No heartbeat specified, using broker defaults')
+
+    if isinstance(heartbeat, (list, tuple)):
+        if len(heartbeat) == 0:
+            logger.warning('No heartbeat value set, using default')
+            heartbeat = default_heartbeat
+        elif len(heartbeat) == 1:
+            heartbeat = heartbeat[0]
+        else:
+            logger.warning('Multiple heartbeat values set, using broker default: {0}'.format(
+                heartbeat
+            ))
+            heartbeat = default_heartbeat
+
+    if type(heartbeat) == str and heartbeat.lower() == 'none':
+        return None
+
+    if heartbeat is None:
+        return heartbeat
+
+    try:
+        heartbeat = int(heartbeat)
+    except ValueError:
+        logger.warning('Unable to cast heartbeat to int, using broker default: {0}'.format(
+            heartbeat
+        ))
+        heartbeat = default_heartbeat
+
+    return heartbeat
