@@ -265,7 +265,7 @@ class QueueConnection(object):
                              headers,
                              body,
                              seconds):
-        data = ujson.dumps(body)
+        data = json.dumps(body)
         return self.publish_delayed(exchange,
                                     routing_key,
                                     headers,
