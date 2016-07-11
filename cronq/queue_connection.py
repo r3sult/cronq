@@ -302,7 +302,6 @@ def connect():
         vhost=vhost,
         heartbeat=heartbeat,
         logger=rabbit_logger,
-        heartbeat=heartbeat,
         transport='gevent'
     )
     return conn
