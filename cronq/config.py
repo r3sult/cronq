@@ -9,10 +9,14 @@ if os.getenv('RABBITMQ_HOSTS', None) is not None:
 else:
     hosts = [os.getenv('RABBITMQ_HOST', 'localhost')]
 
+default_log_path = '/var/log/cronq'
+if not os.path.exists('/var/log/cronq'):
+    default_log_path = '/tmp'
+
 DATABASE_URL = os.getenv(
     'CRONQ_MYSQL',
     'mysql+mysqlconnector://root@localhost/cronq')
-LOG_PATH = os.getenv('LOG_PATH', '/var/log/cronq')
+LOG_PATH = os.getenv('LOG_PATH', default_log_path)
 QUEUE = os.getenv('CRONQ_QUEUE', 'cronq_jobs')
 RABBITMQ_HOSTS = hosts
 RABBITMQ_USER = os.getenv('RABBITMQ_USER', 'guest')

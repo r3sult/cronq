@@ -36,7 +36,7 @@ cronq-runner
 
 The ``runner`` executes tasks, and should be run on hosts that will actually perform work. There is no limit to the number of runners that can execute.
 
-The runner requires ``/var/log/cronq/`` to exist and be writable by the user executing the runner.
+The runner requires ``/var/log/cronq/`` to exist and be writable by the user executing the runner. If it is not, logs will be written to ``/tmp``.
 
 .. code-block:: bash
 
