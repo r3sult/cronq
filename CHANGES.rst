@@ -1,6 +1,72 @@
 Changelog
 =========
 
+0.12.0 (2016-07-11)
+-------------------
+
+Fix
+~~~
+
+- Trim prefix and suffix underscores. [Jose Diaz-Gonzalez]
+
+- Avoid the default log directory if it is unwritable. [Jose Diaz-
+  Gonzalez]
+
+- Update contrib/publish.py. [Jose Diaz-Gonzalez]
+
+- Conform to pep8 (sans E501) [Jose Diaz-Gonzalez]
+
+- Correct the indexing issue. [Jose Diaz-Gonzalez]
+
+- Drop use of gevent. [Jose Diaz-Gonzalez]
+
+- Remove undefined global. [Jose Diaz-Gonzalez]
+
+- Properly retry updating job status. [Jose Diaz-Gonzalez]
+
+- Use proper variable name for rabbitmq hosts. [Jose Diaz-Gonzalez]
+
+- Do not use duplicate keyword arguments. [Jose Diaz-Gonzalez]
+
+- Do not use ujson. [Jose Diaz-Gonzalez]
+
+Other
+~~~~~
+
+- Feat: use dashes instead of underscores. [Jose Diaz-Gonzalez]
+
+- Feat: add editorconfig. [Jose Diaz-Gonzalez]
+
+- Feat: use RABBITMQ_URL for the connection information everywhere.
+  [Jose Diaz-Gonzalez]
+
+  - add broker-specified heartbeat support
+  - switch to gevent for transport
+  - simplify connection info parsing
+
+
+- Chore: specify the RABBITMQ_URL when instantiating a QueueConnection.
+  [Jose Diaz-Gonzalez]
+
+- Feat: allow users to override the rabbitmq port. [Jose Diaz-Gonzalez]
+
+- Refactor: cleanup logging output. [Jose Diaz-Gonzalez]
+
+- Refactor: use RABBITMQ_URL when making a generic cronq connection.
+  [Jose Diaz-Gonzalez]
+
+- Feat: populate config.RABBITMQ_URL from existing defaults. [Jose Diaz-
+  Gonzalez]
+
+- Chore: reorder imports. [Jose Diaz-Gonzalez]
+
+- Feat: add publish_delayed and publish_json_delayed. [Jose Diaz-
+  Gonzalez]
+
+- Sync docblock for QueueConnection class. [Jose Diaz-Gonzalez]
+
+- [LOGGING] sluggify log filenames. [zackkitzmiller]
+
 0.11.2 (2016-07-09)
 -------------------
 
