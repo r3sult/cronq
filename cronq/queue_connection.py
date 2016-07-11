@@ -76,7 +76,7 @@ class QueueConnection(object):
 
     """
     def __init__(self, url=None, confirm=False):
-        if url is  None:
+        if url is None:
             url = RABBITMQ_URL
         hosts, user, password, vhost, port, heartbeat = parse_url(RABBITMQ_URL)
         self._connection_hosts = hosts

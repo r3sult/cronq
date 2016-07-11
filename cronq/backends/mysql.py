@@ -314,7 +314,6 @@ class Storage(object):
             session.close()
             return
 
-
         # update job time
         job = self.update_job_time(session, job)
         if not job:
