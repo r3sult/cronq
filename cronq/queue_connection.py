@@ -120,6 +120,7 @@ class QueueConnection(object):
         try:
             self._connection = RabbitConnection(
                 host=host,
+                port=self._connection_port,
                 user=self._connection_user,
                 password=self._connection_password,
                 vhost=self._connection_path,
@@ -340,6 +341,10 @@ def parse_url(rabbitmq_url):
     password = cp.password
     vhost = cp.path
     query = cp.query
+
+    port = 5672
+    if cp.port:
+        port = cp.port
 
     # workaround for bug in 12.04
     if '?' in vhost and query == '':
