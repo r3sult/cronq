@@ -28,44 +28,54 @@ class QueueConnection(object):
 
     Simple instantiation:
 
-        queueconnection = QueueConnection(os.getenv('RABBITMQ_URL', 'amqp://guest:guest@localhost'))
+        RABBITMQ_URL = os.getenv('RABBITMQ_URL', 'amqp://guest@localhost')
+        queueconnection = QueueConnection(RABBITMQ_URL)
 
-    Publishing requires konwing the exchange, routing_key, (headers) and the string body
+    Publishing requires knowing the exchange, routing_key, (headers) and
+    the string body:
 
+        # We don't really use headers
+        # look up AMQP stuff if you are interested
         queueconnection.publish(
             exchange='exchange',
             routing_key='routing_key',
-            headers={}, # We don't really use these, look up AMQP stuff if you are interested
+            headers={},
             body='String Body'
         )
 
-    Usually we want to publish JSON so there is a method that will serialize a dict for you
+    Usually we want to publish JSON so there is a method that will serialize
+    a dict for you:
 
+        # We don't really use headers
+        # look up AMQP stuff if you are interested
         queueconnection.publish_json(
             exchange='exchange',
             routing_key='routing_key',
-            headers={}, # We don't really use these, look up AMQP stuff if you are interested
+            headers={},
             body={'key': 'value'}
         )
 
-    All of these are asynchronous publishes to the server, if you want to make sure that
-    these at least make it to the server you can turn on publisher confirmations. Sync
-    calls take longer so they aren't on by default. Turning them on is done by passing
-    `confirm=True` to the constructor.
+    All of these are asynchronous publishes to the server, if you want to make
+    sure that these at least make it to the server you can turn on publisher
+    confirmations. Sync calls take longer so they aren't on by default. Turning
+    them on is done by passing `confirm=True` to the constructor.
 
-        queueconnection = QueueConnection(os.getenv('RABBITMQHOST', 'localhost'), confirm=True)
+        RABBITMQ_URL = os.getenv('RABBITMQ_URL', 'amqp://guest@localhost')
+        queueconnection = QueueConnection(RABBITMQ_URL, confirm=True)
 
     Now publishes will return a bool of whether the publish succeeded.
 
+        # We don't really use headers
+        # look up AMQP stuff if you are interested
         succeeded = queueconnection.publish(
             exchange='exchange',
             routing_key='routing_key',
-            headers={}, # We don't really use these, look up AMQP stuff if you are interested
+            headers={},
             body='String Body'
         )
 
-    Without `confirm=True` the return value of publish will only indicate if the message
-    was written to a connection successfully.
+    Without `confirm=True` the return value of publish will only indicate if
+    the message was written to a connection successfully.
 
     """
     def __init__(self, url=None, confirm=False):
