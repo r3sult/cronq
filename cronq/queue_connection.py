@@ -192,6 +192,86 @@ class QueueConnection(object):
         data = json.dumps(body)
         return self.publish(exchange, routing_key, headers, data)
 
+    def publish_delayed(self,
+                        exchange,
+                        routing_key,
+                        headers,
+                        body,
+                        seconds,
+                        connect_attempts=3):
+        """Publish a messages to AMQP after a delay in seconds
+
+        Returns a bool about the success of the publish. If `confirm=True` True
+        means it reached the AMQP server. If `confirm=False` it means that it
+        was able to be written to a connection but makes no guarantee about the
+        message making it to the server.
+
+        """
+        if not self.is_connected():
+            self._try_to_connect(attempts=connect_attempts)
+
+        if self._connection is None or self._channel is None:
+            self._logger.error('Tried to publish without an AMQP connection')
+            return False
+
+        # Ensure that the delayed exchange exists
+        self._channel.exchange.declare('delayed',
+                                       'topic',
+                                       auto_delete=False,
+                                       nowait=False,
+                                       durable=True)
+
+        expire_add = 1000  # in seconds
+
+        # Create the delayed queue
+        # This queue will expire 10 seconds after the message
+        expire_millis = seconds * expire_add
+        delayed_queue_name, _, _ = self._channel.queue.declare(
+            auto_delete=True, nowait=False, arguments={
+                "x-dead-letter-exchange": exchange,
+                "x-dead-letter-routing-key": routing_key,
+                # Expire after message TTL + 10s
+                "x-expires": expire_millis + expire_add
+            }
+        )
+
+        # Bind queue to channel
+        self._channel.queue.bind(exchange='delayed',
+                                 routing_key=delayed_queue_name,
+                                 queue=delayed_queue_name,
+                                 nowait=False)
+
+        # Publish to delayed exchange
+        message = Message(body,
+                          application_headers=headers,
+                          expiration=str(seconds * expire_add))
+        msg_number = self._channel.basic.publish(
+            message,
+            exchange="delayed",
+            routing_key=delayed_queue_name
+        )
+
+        # Confirm publish
+        if self._confirm:
+            if self.is_connected():
+                self._connection.read_frames()
+                return self._last_confirmed_message == msg_number
+            return False
+        return True
+
+    def publish_json_delayed(self,
+                             exchange,
+                             routing_key,
+                             headers,
+                             body,
+                             seconds):
+        data = ujson.dumps(body)
+        return self.publish_delayed(exchange,
+                                    routing_key,
+                                    headers,
+                                    data,
+                                    seconds)
+
     def close(self):
         self._connection.close()
 
