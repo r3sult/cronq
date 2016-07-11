@@ -291,7 +291,7 @@ class Publisher(object):
 def connect():
     hosts, user, password, vhost, port, heartbeat = parse_url(RABBITMQ_URL)
 
-    logger.info('Hosts are: {0}'.format(RABBITMQ_HOSTS))
+    logger.info('Hosts are: {0}'.format(hosts))
     rabbit_logger = logging.getLogger('amqp-dispatcher.haigha')
     conn = connect_to_hosts(
         RabbitConnection,
