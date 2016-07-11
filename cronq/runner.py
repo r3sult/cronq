@@ -153,8 +153,8 @@ def create_runner(channel):  # noqa
 
         splits = FILENAME_REGEX.split(data.get('name', 'UNKNOWN'))
         if len(splits) > 1:
-            logfile = "_".join(splits)
-        filename = '{0}/{1}.log'.format(LOG_PATH, logfile.strip('_'))
+            logfile = '-'.join(splits)
+        filename = '{0}/{1}.log'.format(LOG_PATH, logfile.strip('-'))
 
         handler = logging.handlers.WatchedFileHandler(filename)
         log_to_stdout = bool(os.getenv('CRONQ_RUNNER_LOG_TO_STDOUT', False))
