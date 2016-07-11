@@ -116,7 +116,7 @@ class QueueConnection(object):
         self._connection = None
         self._last_confirmed_message = None
         host = self._get_next_host()
-        self._logger.info('Trying to connect to {}'.format(host))
+        self._logger.debug('Trying to connect to {}'.format(host))
         try:
             self._connection = RabbitConnection(
                 host=host,
@@ -126,13 +126,13 @@ class QueueConnection(object):
                 close_cb=self._close_cb,
             )
         except socket.error as exc:
-            self._logger.info('Error connecting {}'.format(exc))
+            self._logger.error('Error connecting to rabbitmq {}'.format(exc))
             return False
         self._channel = self._connection.channel()
         if self._confirm:
             self._channel.confirm.select(nowait=False)
             self._channel.basic.set_ack_listener(self._ack)
-        self._logger.info('Connected to {}'.format(host))
+        self._logger.debug('Connected to {}'.format(host))
         return True
 
     def _try_to_connect(self, attempts=3):
@@ -161,7 +161,12 @@ class QueueConnection(object):
         self._connection = None
         self._channel = None
 
-    def publish(self, exchange, routing_key, headers, body, connect_attempts=3):
+    def publish(self,
+                exchange,
+                routing_key,
+                headers,
+                body,
+                connect_attempts=3):
         """Publish a messages to AMQP
 
         Returns a bool about the success of the publish. If `confirm=True` True
@@ -174,7 +179,7 @@ class QueueConnection(object):
             self._try_to_connect(attempts=connect_attempts)
 
         if self._connection is None or self._channel is None:
-            self._logger.info('Tried to publish without an AMQP connection')
+            self._logger.error('Tried to publish without an AMQP connection')
             return False
         msg_number = self._channel.basic.publish(
             Message(body, application_headers=headers),
@@ -186,8 +191,7 @@ class QueueConnection(object):
                 self._connection.read_frames()
                 return self._last_confirmed_message == msg_number
             return False
-        else:
-            return True
+        return True
 
     def publish_json(self, exchange, routing_key, headers, body):
         data = json.dumps(body)
