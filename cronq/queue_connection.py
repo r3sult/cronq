@@ -2,8 +2,10 @@
 import itertools
 import json
 import logging
+import os
 import random
 import socket
+import string
 import time
 import urlparse
 
@@ -85,6 +87,7 @@ class QueueConnection(object):
         self._connection_path = vhost
         self._connection_port = port
         self._connection_heartbeat = heartbeat
+        self._connection_name = self._generate_connection_name()
 
         self._connection_params = urlparse.urlparse(url)
         self._connect_attempt_delay = 0.1
@@ -113,7 +116,10 @@ class QueueConnection(object):
                 password=self._connection_password,
                 vhost=self._connection_path,
                 close_cb=self._close_cb,
-                heartbeat=self._connection_heartbeat
+                heartbeat=self._connection_heartbeat,
+                client_properties={
+                    'connection_name': self._connection_name,
+                },
             )
         except socket.error as exc:
             self._logger.error('Error connecting to rabbitmq {}'.format(exc))
@@ -124,6 +130,15 @@ class QueueConnection(object):
             self._channel.basic.set_ack_listener(self._ack)
         self._logger.debug('Connected to {}'.format(host))
         return True
+
+    def _generate_connection_name(self):
+        random_generator = random.SystemRandom()
+        random_string = ''.join([random_generator.choice(string.ascii_lowercase) for i in xrange(10)])
+        return '{0}-{1}-{2}'.format(
+            socket.gethostname(),
+            os.getpid(),
+            random_string,
+        )
 
     def _try_to_connect(self, attempts=3):
         """Try to connect handling retries"""
@@ -292,6 +307,15 @@ def connect():
 
     logger.info('Hosts are: {0}'.format(hosts))
     rabbit_logger = logging.getLogger('amqp-dispatcher.haigha')
+
+    random_generator = random.SystemRandom()
+    random_string = ''.join([random_generator.choice(string.ascii_lowercase) for i in xrange(10)])
+    connection_name = '{0}-{1}-{2}'.format(
+        socket.gethostname(),
+        os.getpid(),
+        random_string,
+    )
+
     conn = connect_to_hosts(
         RabbitConnection,
         hosts,
@@ -300,9 +324,18 @@ def connect():
         password=password,
         vhost=vhost,
         heartbeat=heartbeat,
-        logger=rabbit_logger
+        logger=rabbit_logger,
+        client_properties={
+            'connection_name': connection_name
+        }
     )
     return conn
+
+
+def generate_random_string(length):
+    """generates  a random alphanumeric string of length `strlen`"""
+    random_generator = random.SystemRandom()
+    return ''.join([random_generator.choice(string.ascii_lowercase) for i in xrange(length)])
 
 
 def connect_to_hosts(connector, hosts, **kwargs):
