@@ -143,7 +143,9 @@ The web view is a WSGI app run from ``cronq.web:app`` and requires only database
     #
     # {job_id} : replaced with the job's job_id
     # {run_id} : replaced with the job's run_id
-    export CRONQ_LOG_URL_TEMPLATE="https://logs.service/search?run_id={run_id}"
+    # {start_time} : replaced with job's start time
+    # {end_time} : replaced with job's end time, or now if job is still running
+    export CRONQ_LOG_URL_TEMPLATE="https://logs.service/search?run_id={run_id}&from={start_time}&to={end_time}"
 
     # run the web admin
     gunicorn --access-logfile - -w 2 --worker-class=gevent cronq.web:app
