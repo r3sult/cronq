@@ -2,11 +2,6 @@ Changelog
 =========
 
 
-0.12.1 (2016-08-15)
--------------------
-
-- Adds time range to logs link if fields present in template variable. [Jon Coe]
-
 0.12.0 (2016-07-11)
 -------------------
 
