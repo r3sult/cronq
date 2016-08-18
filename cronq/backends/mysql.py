@@ -3,7 +3,7 @@ import datetime
 import logging
 import os
 import socket
-import time
+import urllib
 
 from cronq.config import DATABASE_URL
 from cronq.models.category import Category
@@ -199,27 +199,25 @@ class Storage(object):
         if len(events) == 0:
             return []
 
-        log_url_template = os.getenv('CRONQ_LOG_URL_TEMPLATE', None)
 
         chunks = {}
         for event in events:
             if event['run_id'] not in chunks:
-                log_url = None
-                if log_url_template:
-                    log_url = log_url_template\
-                        .replace('{job_id}', str(event['job_id']))\
-                        .replace('{run_id}', str(event['run_id']))
 
                 chunks[event['run_id']] = {
                     'first': None,
                     'last': None,
-                    'log_url': log_url
+                    'job_id': event['job_id']
                 }
 
             if event['type'] == 'starting':
                 chunks[event['run_id']]['first'] = event
             else:
                 chunks[event['run_id']]['last'] = event
+
+        log_url_template = os.getenv('CRONQ_LOG_URL_TEMPLATE', None)
+        if log_url_template:
+            self._add_log_urls(chunks, log_url_template)
 
         docs = [chunk for i, chunk in chunks.iteritems()]
 
@@ -234,6 +232,7 @@ class Storage(object):
                 return 1
             return int((first['datetime'] - last['datetime']).total_seconds())
 
+        # newest to oldest
         docs = sorted(docs, cmp=chunk_compare, reverse=True)
 
         return docs
@@ -317,7 +316,7 @@ class Storage(object):
         # update job time
         job = self.update_job_time(session, job)
         if not job:
-            logger.info("no job found afer update time")
+            logger.info("no job found after update time")
             session.close()
             return
 
@@ -362,3 +361,31 @@ class Storage(object):
                 return self.SUCCEEDED
 
         return self.FINISHED
+
+
+    @staticmethod
+    def _add_log_urls(chunks, log_url_template):
+        for run_id, run_data in chunks.items():
+            log_url = log_url_template \
+                .replace('{job_id}', str(run_data['job_id'])) \
+                .replace('{run_id}', str(run_id))
+
+            if any([time_field in log_url_template for time_field in ('{start_time}', '{end_time}')]):
+                if run_data.get('first'):
+                    start_time = urllib.quote(run_data['first']['datetime'].strftime('%Y-%m-%dT%H:%M:%S.000Z'))
+                else:
+                    # default to now minus 24hrs if field is missing. this generally means bad data
+                    logger.warning("No start time found for {0}, using 24 hours ago for log url".format(run_id))
+                    one_day_ago = datetime.datetime.utcnow() - datetime.timedelta(hours=24)
+                    start_time = urllib.quote(one_day_ago.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
+
+                if run_data.get('last'):
+                    end_time = urllib.quote(run_data['last']['datetime'].strftime('%Y-%m-%dT%H:%M:%S.999Z'))
+                else:
+                    # default to just slightly in the future if not present. probably means still running
+                    few_seconds_in_future = datetime.datetime.utcnow() + datetime.timedelta(seconds=5)
+                    end_time = urllib.quote(few_seconds_in_future.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
+                log_url = log_url.replace('{start_time}', start_time)
+                log_url = log_url.replace('{end_time}', end_time)
+
+            run_data['log_url'] = log_url
