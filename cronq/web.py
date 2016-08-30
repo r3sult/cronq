@@ -73,7 +73,8 @@ def job(id):
 
     job_doc = g.storage.get_job(id)
     chunks = g.storage.last_event_chunks_for_job(id, 20)
-    return render_template('job.html', job=job_doc, chunks=chunks)
+    title = job_doc.name
+    return render_template('job.html', job=job_doc, chunks=chunks, title=title)
 
 
 @app.route('/run/<string:id>')
