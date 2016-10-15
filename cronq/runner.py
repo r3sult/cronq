@@ -6,6 +6,7 @@ import json
 import logging
 import logging.handlers
 import os
+import random
 import re
 import socket
 import subprocess
@@ -169,6 +170,7 @@ def create_runner(channel):  # noqa
                 break
 
             if nextline == '':
+                time.sleep(0.1 * random.random())
                 continue
 
             try:
