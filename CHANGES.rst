@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.13.0 (2016-10-18)
+-------------------
+
+- Replace pure busy wait with spin lock. [BrianLondon]
+
+- Adds more details in README for log_url time params. [Jon Coe]
+
+- Adds time ranges to log links in webapp. [Jon Coe]
 
 0.12.0 (2016-07-11)
 -------------------

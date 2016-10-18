@@ -20,11 +20,11 @@ Using PIP via PyPi::
 
 Using PIP via Github::
 
-    pip install git+git://github.com/seatgeek/cronq.git@0.12.0#egg=cronq
+    pip install git+git://github.com/seatgeek/cronq.git@0.13.0#egg=cronq
 
 Adding to your ``requirements.txt`` file (run ``pip install -r requirements.txt`` afterwards)::
 
-    git+ssh://git@github.com/seatgeek/python-cronq.git@0.12.0#egg=cronq
+    git+ssh://git@github.com/seatgeek/python-cronq.git@0.13.0#egg=cronq
 
 Usage
 =====
