@@ -1,6 +1,31 @@
 Changelog
 =========
 
+0.14.0 (2016-12-29)
+-------------------
+
+Fix
+~~~
+
+- Cleanup logging for job publishing. [Jose Diaz-Gonzalez]
+
+Other
+~~~~~
+
+- Support alternate git status output. [Jose Diaz-Gonzalez]
+
+- Use client_properties to set the connection_name for use in the
+  management ui. [Jose Diaz-Gonzalez]
+
+  The consumer_name is based upon the following bits:
+
+  - the hostname of the server cronq is running on
+  - the process id
+  - a random string made of only ascii characters
+
+  This can be used to more easily figure out where consumers are in your infrastructure.
+
+
 0.13.0 (2016-10-18)
 -------------------
 
