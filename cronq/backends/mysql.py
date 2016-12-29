@@ -56,7 +56,7 @@ class Storage(object):
         for model in models:
             try:
                 model.__table__.create(self._engine)
-            except (OperationalError, ProgrammingError):
+            except (InternalError, OperationalError, ProgrammingError):
                 pass
 
     def close(self):
