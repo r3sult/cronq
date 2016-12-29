@@ -1,6 +1,15 @@
 Changelog
 =========
 
+0.15.1 (2016-12-29)
+-------------------
+
+Fix
+~~~
+
+- Ignore InternalError from pymysql on table bootstrap. [Jose Diaz-
+  Gonzalez]
+
 0.15.0 (2016-12-29)
 -------------------
 
