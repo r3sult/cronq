@@ -10,7 +10,7 @@ itsdangerous==0.24
 Jinja2==2.7.3
 MarkupSafe==0.23
 mock==1.0.1
-mysql-connector-python==1.2.3
+PyMySQL==0.7.9
 python-dateutil==2.2
 six==1.7.3
 SQLAlchemy==0.9.7

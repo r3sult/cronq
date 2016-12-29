@@ -15,7 +15,7 @@ if not os.path.exists('/var/log/cronq'):
 
 DATABASE_URL = os.getenv(
     'CRONQ_MYSQL',
-    'mysql+mysqlconnector://root@localhost/cronq')
+    'mysql+pymysql://root@localhost/cronq')
 LOG_PATH = os.getenv('LOG_PATH', default_log_path)
 QUEUE = os.getenv('CRONQ_QUEUE', 'cronq_jobs')
 RABBITMQ_HOSTS = hosts
