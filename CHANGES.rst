@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.15.0 (2016-12-29)
+-------------------
+
+- Refactor: switch from mysqlconnector to pymysql. [Jose Diaz-Gonzalez]
+
+  This will allow cronq to be installable without resorting to custom install steps.
+
+
 0.14.0 (2016-12-29)
 -------------------
 
