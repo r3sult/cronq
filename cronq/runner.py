@@ -18,8 +18,6 @@ from cronq.config import QUEUE
 from cronq.queue_connection import connect
 from cronq.utils import unicodedammit
 
-import gevent
-
 from haigha.message import Message
 
 logger = logging.getLogger(__name__)
@@ -225,51 +223,6 @@ def load_module_object(module_object_str):
     module = load_module(module_name)
     return getattr(module, obj_name)
 
-
-class ConsumerPool(object):
-    def __init__(self, channel, klass, greenlet_maker, size=1):
-        self._channel = channel
-        self._pool = gevent.queue.Queue()
-        self._klass = klass
-        self._gm = greenlet_maker
-        for i in range(size):
-            self._create()
-
-    def _create(self):
-        logger.debug('Creating consumer instance: {0}'.format(
-            self._klass.__name__))
-        self._pool.put(self._klass())
-
-    def handle(self, msg):
-        def func():
-            consumer = self._pool.get()
-            amqp_proxy = AMQPProxy(self._channel, msg)
-
-            def put_back(successful_greenlet):
-                logger.debug('Successful run, putting consumer back')
-                self._pool.put(consumer)
-
-            def recreate(failed_greenlet):
-                logger.info('Consume failed, shutting down consumer')
-                if not amqp_proxy.has_responded_to_message:
-                    amqp_proxy.reject(requeue=True)
-                shutdown_greenlet = gevent.Greenlet(
-                    consumer.shutdown,
-                    failed_greenlet.exception
-                )
-
-                def create_wrapper(*args):
-                    self._create()
-                shutdown_greenlet.link(create_wrapper)
-                shutdown_greenlet.start()
-
-            greenlet = self._gm(consumer.consume, amqp_proxy, msg)
-            greenlet.link_value(put_back)
-            greenlet.link_exception(recreate)
-            greenlet.start()
-        self._gm(func).start()
-
-
 class AMQPProxy(object):
 
     def __init__(self, channel, msg):
@@ -306,24 +259,6 @@ class AMQPProxy(object):
             raise Exception('Already responded to message!')
         else:
             self._terminal_state = True
-
-
-def message_pump_greenthread(connection):
-    logging.debug('Starting message pump')
-    exit_code = 0
-    try:
-        while connection is not None:
-            # Pump
-            connection.read_frames()
-
-            # Yield to other greenlets so they don't starve
-            gevent.sleep()
-    except Exception as exc:
-        logger.exception(exc)
-        exit_code = 1
-    finally:
-        logging.debug('Leaving message pump')
-    return exit_code
 
 
 def main():

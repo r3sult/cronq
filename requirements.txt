@@ -2,9 +2,6 @@ aniso8601==0.82
 argparse==1.2.1
 coverage==3.7.1
 Flask==0.10.1
-gevent==1.0.1
-greenlet==0.4.3
-gunicorn==19.1.1
 haigha==0.9.0
 itsdangerous==0.24
 Jinja2==2.7.3
