@@ -270,15 +270,13 @@ def setup():
     while max_failures > 0:
         runner.connect()
 
-        try:
-            broken = runner.consume()
-        except KeyboardInterrupt:
-            raise
+        broken = runner.consume()
 
         max_failures -= 1
 
-    sys.exit(1)
 
+    runner.logger.warning("Too many errors, exiting")
+    sys.exit(1)
 
 def make_directory(directory):
     try:
