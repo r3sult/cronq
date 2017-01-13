@@ -12,9 +12,9 @@ import urlparse
 from cronq.config import RABBITMQ_URL
 from haigha.connections.rabbit_connection import RabbitConnection
 from haigha.message import Message
+from cronq.rabbit_connection import parse_url
 
 logger = logging.getLogger(__name__)
-
 
 def create_host_factory(hosts):
     random.shuffle(hosts)
@@ -77,10 +77,14 @@ class QueueConnection(object):
     the message was written to a connection successfully.
 
     """
-    def __init__(self, url=None, confirm=False):
+    def __init__(self, url=None, confirm=False, **kwargs):
         if url is None:
             url = RABBITMQ_URL
         hosts, user, password, vhost, port, heartbeat = parse_url(RABBITMQ_URL)
+
+        if heartbeat is None:
+            heartbeat = kwargs.get('heartbeat', None)
+
         self._connection_hosts = hosts
         self._connection_user = user
         self._connection_password = password
@@ -144,8 +148,9 @@ class QueueConnection(object):
         """Try to connect handling retries"""
         for _ in range(attempts):
             if self.is_connected():
-                return
+                return True
             else:
+                self._logger.debug("attempt to create connection")
                 self._create_connection()
                 time.sleep(self._connect_attempt_delay)
 
@@ -186,16 +191,20 @@ class QueueConnection(object):
         if self._connection is None or self._channel is None:
             self._logger.error('Tried to publish without an AMQP connection')
             return False
+
         msg_number = self._channel.basic.publish(
             Message(body, application_headers=headers),
             exchange=exchange,
             routing_key=routing_key
         )
+
         if self._confirm:
             if self.is_connected():
                 self._connection.read_frames()
                 return self._last_confirmed_message == msg_number
-            return False
+            else:
+                return False
+
         return True
 
     def publish_json(self, exchange, routing_key, headers, body):
@@ -209,7 +218,7 @@ class QueueConnection(object):
 class Publisher(object):
 
     def __init__(self):
-        self._connection = QueueConnection(RABBITMQ_URL, confirm=True)
+        self.queue_connection = QueueConnection(RABBITMQ_URL, confirm=True)
 
     def publish(self, routing_key, job, run_id):
         cmd = {
@@ -219,120 +228,4 @@ class Publisher(object):
             'name': job['name'],
         }
         logger.debug(cmd)
-        return self._connection.publish_json("cronq", routing_key, {}, cmd)
-
-
-def connect():
-    hosts, user, password, vhost, port, heartbeat = parse_url(RABBITMQ_URL)
-
-    logger.info('Hosts are: {0}'.format(hosts))
-    rabbit_logger = logging.getLogger('amqp-dispatcher.haigha')
-
-    random_generator = random.SystemRandom()
-    random_string = ''.join([random_generator.choice(string.ascii_lowercase) for i in xrange(10)])
-    connection_name = '{0}-{1}-{2}'.format(
-        socket.gethostname(),
-        os.getpid(),
-        random_string,
-    )
-
-    conn = connect_to_hosts(
-        RabbitConnection,
-        hosts,
-        port=port,
-        user=user,
-        password=password,
-        vhost=vhost,
-        heartbeat=heartbeat,
-        logger=rabbit_logger,
-        client_properties={
-            'connection_name': connection_name
-        }
-    )
-    return conn
-
-
-def generate_random_string(length):
-    """generates  a random alphanumeric string of length `strlen`"""
-    random_generator = random.SystemRandom()
-    return ''.join([random_generator.choice(string.ascii_lowercase) for i in xrange(length)])
-
-
-def connect_to_hosts(connector, hosts, **kwargs):
-    for host in hosts:
-        logger.info('Trying to connect to host: {0}'.format(host))
-        try:
-            conn = connector(host=host, **kwargs)
-            return conn
-        except socket.error:
-            logger.info('Error connecting to {0}'.format(host))
-    logger.error('Could not connect to any hosts')
-
-
-def parse_url(rabbitmq_url):
-    """returns tuple containing
-    HOSTS, USER, PASSWORD, VHOST
-    """
-    hosts = user = password = vhost = None
-    port = 5672
-
-    cp = urlparse.urlparse(rabbitmq_url)
-    hosts_string = cp.hostname
-    hosts = hosts_string.split(",")
-    if cp.port:
-        port = int(cp.port)
-    user = cp.username
-    password = cp.password
-    vhost = cp.path
-    query = cp.query
-
-    port = 5672
-    if cp.port:
-        port = cp.port
-
-    # workaround for bug in 12.04
-    if '?' in vhost and query == '':
-        vhost, query = vhost.split('?', 1)
-
-    heartbeat = parse_heartbeat(query)
-    return (hosts, user, password, vhost, port, heartbeat)
-
-
-def parse_heartbeat(query):
-    logger = logging.getLogger('amqp-dispatcher')
-
-    default_heartbeat = None
-    heartbeat = default_heartbeat
-    if query:
-        qs = urlparse.parse_qs(query)
-        heartbeat = qs.get('heartbeat', default_heartbeat)
-    else:
-        logger.debug('No heartbeat specified, using broker defaults')
-
-    if isinstance(heartbeat, (list, tuple)):
-        if len(heartbeat) == 0:
-            logger.warning('No heartbeat value set, using default')
-            heartbeat = default_heartbeat
-        elif len(heartbeat) == 1:
-            heartbeat = heartbeat[0]
-        else:
-            logger.warning('Multiple heartbeat values set, using broker default: {0}'.format(
-                heartbeat
-            ))
-            heartbeat = default_heartbeat
-
-    if type(heartbeat) == str and heartbeat.lower() == 'none':
-        return None
-
-    if heartbeat is None:
-        return heartbeat
-
-    try:
-        heartbeat = int(heartbeat)
-    except ValueError:
-        logger.warning('Unable to cast heartbeat to int, using broker default: {0}'.format(
-            heartbeat
-        ))
-        heartbeat = default_heartbeat
-
-    return heartbeat
+        return self.queue_connection.publish_json("cronq", routing_key, {}, cmd)
