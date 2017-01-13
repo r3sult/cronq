@@ -100,7 +100,7 @@ def plain_rabbit_connection_to_hosts(hosts, **kwargs):
     logger.error('Could not connect to any hosts')
 
 
-def connect():
+def connect(**kwargs):
     hosts, user, password, vhost, port, heartbeat = parse_url(RABBITMQ_URL)
 
     logger.info('Hosts are: {0}'.format(hosts))
@@ -116,6 +116,8 @@ def connect():
 
     heartbeat = heartbeat or 1
 
+    close_cb = kwargs.get('close_cb')
+
     conn = plain_rabbit_connection_to_hosts(
         hosts,
         port=port,
@@ -124,9 +126,11 @@ def connect():
         vhost=vhost,
         heartbeat=heartbeat,
         logger=rabbit_logger,
+        close_cb=close_cb,
         client_properties={
             'connection_name': connection_name
         }
     )
 
     return conn
+
