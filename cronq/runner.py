@@ -15,74 +15,15 @@ import time
 
 from cronq.config import LOG_PATH
 from cronq.config import QUEUE
-from cronq.rabbit_connection import connect
+from cronq.rabbit_connection import connect, CronqConsumer
 from cronq.utils import unicodedammit
 
 from haigha.message import Message
 
-
 FILENAME_REGEX = re.compile('[\W_]+', re.UNICODE)
 
-
-class NullHandler(logging.Handler):
-    def emit(self, record):
-        pass
-
-class CronqRunner(object):
+class CronqRunner(CronqConsumer):
     """handles reconnects"""
-
-    def __init__(self):
-        self._connection = None
-        self._channel = None
-
-        # logging
-        self.logger = logging.getLogger(__name__)
-        self.logger.addHandler(NullHandler())
-
-    def _create_connection(self):
-        self._connection = connect(close_cb=self._connection_closed_cb)
-        self._channel = self._connection.channel()
-
-    def connect(self):
-        return self._create_connection()
-
-    @property
-    def connection(self):
-        if self._connection:
-            return self._connection
-
-    @property
-    def channel(self):
-        if self._channel:
-            return self._channel
-
-    def is_connected(self):
-        return self.connection and self.channel
-
-    def make_connected(self, attempts=3):
-        for _ in range(attempts):
-            if self.is_connected():
-                return True
-            else:
-                self.logger.debug("attempt to create connection")
-                self._create_connection()
-                time.sleep(.1)
-        return False
-
-    @staticmethod
-    def tag_from_msg(msg):
-        tag = msg.delivery_info['delivery_tag']
-        return tag
-
-    def ack(self, msg):
-        tag = self.tag_from_msg(msg)
-        if self.is_connected():
-            self.channel.basic.ack(tag)
-
-    def reject(self, msg, requeue=True):
-        tag = self.tag_from_msg(msg)
-        if self.is_connected():
-            self.channel.basic.reject(tag, requeue=requeue)
 
     def publish_result(self, body):
         headers = {
@@ -100,14 +41,6 @@ class CronqRunner(object):
                 self.logger.debug('Missing {0}'.format(key))
                 valid = False
         return valid
-
-    def log_message(self, job_id, run_id, message, lvl=logging.INFO):
-        msg = "[cronq_job_id:{0}] [cronq_run_id]:{1} {2}".format(
-            job_id,
-            run_id,
-            message
-        )
-        self.logger.log(lvl, msg)
 
     def run_job(self, data):
         start = time.time()
@@ -203,6 +136,7 @@ class CronqRunner(object):
 
         # communicate finished
         end = time.time()
+        print 'publish result, finished'
         self.publish_result({
             'job_id': job_id,
             'run_id': run_id,
@@ -236,44 +170,14 @@ class CronqRunner(object):
         else:
             return self.ack(msg)
 
-    def consume(self):
-        self.make_connected()
-
-        def runner(msg):
-            return self.run_something(msg)
-
-        self.channel.basic.qos(prefetch_count=1)
-        self.channel.basic.consume(
-            queue=QUEUE,
-            consumer=runner,
-            no_ack=False
-        )
-
-        while self.is_connected():
-            self.connection.read_frames()
-
-        return False
-
-    def _connection_closed_cb(self):
-        if self._connection is None:
-            reason = 'unknown'
-        else:
-            reason = self._connection.close_info['reply_text']
-        self.logger.info('Disconnected because: {}'.format(reason))
-        self._connection = None
-        self._channel = None
-
 def setup():
     runner = CronqRunner()
 
-    max_failures = 10
+    max_failures = 1000
     while max_failures > 0:
         runner.connect()
-
-        broken = runner.consume()
-
+        broken = runner.consume(queue=QUEUE)
         max_failures -= 1
-
 
     runner.logger.warning("Too many errors, exiting")
     sys.exit(1)
