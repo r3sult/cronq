@@ -57,7 +57,7 @@ class Storage(object):
             try:
                 model.__table__.create(self._engine)
             except (InternalError, OperationalError, ProgrammingError):
-                pass
+                logger.debug("error in create table - probably already exists: {}".format(model.__table__))
 
     def close(self):
         self.session.close()
@@ -85,7 +85,7 @@ class Storage(object):
         self.session.commit()
 
     def remove_job(self, job_id):
-        job = self.session.query(Job).filter_by(id=job_id).first()
+        job = self.session.query(Job).get(job_id)
         if job:
             self.session.delete(job)
             self.session.commit()
@@ -107,34 +107,39 @@ class Storage(object):
                 self._update_job_status(job_id, _datetime, status, return_code)
                 break
             except InternalError:
-                logger.info('[cronq_job_id:{0}] [cronq_run_id:{1}] Unable to update job with result, retrying'.format(
+                logger.warning('[cronq_job_id:{0}] [cronq_run_id:{1}] Unable to update job with result, retrying'.format(
                     job_id, run_id
                 ))
                 self.session.rollback()
         return True
 
-    def _update_job_status(self, job_id, _datetime, status, return_code=None):
-        job = self.session.query(Job).filter_by(id=job_id).first()
-        if job:
-            job.current_status = status
-            if status == self.STARTED:
-                job.last_run_start = _datetime
-                job.last_run_status = None
-                job.last_run_stop = None
-            if status == self.FAILED:
-                job.last_run_status = status
-                job.last_run_stop = _datetime
-            if status == self.FINISHED:
-                job.last_run_status = status
-                job.last_run_stop = _datetime
-                if return_code is not None:
-                    job.current_status = self.FAILED
-                    job.last_run_status = self.FAILED
-                    if int(return_code) == 0:
-                        job.current_status = self.SUCCEEDED
-                        job.last_run_status = self.SUCCEEDED
-            self.session.merge(job)
-            self.session.commit()
+    def _update_job_status(self, job_id, _datetime, new_status, return_code=None):
+        job = self.session.query(Job).get(job_id)
+
+        if not job:
+            logger.warning('[cronq_job_id:{0}] job not found during update')
+            return
+
+        # update record if found
+        job.current_status = new_status
+        if new_status == self.STARTED:
+            job.last_run_start = _datetime
+            job.last_run_status = None
+            job.last_run_stop = None
+        if new_status == self.FAILED:
+            job.last_run_status = new_status
+            job.last_run_stop = _datetime
+        if new_status == self.FINISHED:
+            job.last_run_status = new_status
+            job.last_run_stop = _datetime
+            if return_code is not None:
+                job.current_new_status = self.FAILED
+                job.last_run_status = self.FAILED
+                if int(return_code) == 0:
+                    job.current_status = self.SUCCEEDED
+                    job.last_run_status = self.SUCCEEDED
+        self.session.merge(job)
+        self.session.commit()
 
     @property
     def jobs(self):
@@ -163,7 +168,7 @@ class Storage(object):
             }
 
     def get_job(self, id):
-        job = self.session.query(Job).filter_by(id=id).first()
+        job = self.session.query(Job).get(id)
         return self._job_doc_for_model(job)
 
     def _job_doc_for_model(self, job):
@@ -178,8 +183,10 @@ class Storage(object):
     def jobs_for_category(self, id=None, name=None):
         if id and name:
             assert "Don't pass both id and name"
+
         if name:
             id = self.category_id_for_name(name)
+
         for job in self.session.query(Job).filter_by(category_id=id):
             yield self._job_doc_for_model(job)
 
@@ -250,8 +257,9 @@ class Storage(object):
         return self.event_models_to_docs(events)
 
     def run_job_now(self, id):
-        event = self.session.query(Job).filter_by(id=id).first()
+        event = self.session.query(Job).get(id)
         event.run_now = True
+        self.session.merge(event)
         self.session.commit()
 
     def inject(self):
