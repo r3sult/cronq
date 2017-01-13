@@ -19,7 +19,6 @@ class NullHandler(logging.Handler):
     def emit(self, record):
         pass
 
-
 logger = logging.getLogger(__name__)
 
 def generate_random_string(length):
@@ -29,7 +28,6 @@ def generate_random_string(length):
 
 
 def parse_heartbeat(query):
-    print query
     logger = logging.getLogger('amqp-dispatcher')
 
     default_heartbeat = None
