@@ -136,7 +136,6 @@ class CronqRunner(CronqConsumer):
 
         # communicate finished
         end = time.time()
-        print 'publish result, finished'
         self.publish_result({
             'job_id': job_id,
             'run_id': run_id,
