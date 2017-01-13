@@ -15,7 +15,7 @@ import time
 
 from cronq.config import LOG_PATH
 from cronq.config import QUEUE
-from cronq.queue_connection import connect
+from cronq.rabbit_connection import connect
 from cronq.utils import unicodedammit
 
 from haigha.message import Message
@@ -207,22 +207,6 @@ def create_runner(channel):  # noqa
         ack()
 
     return run_something
-
-
-def load_module(module_name):
-    return importlib.import_module(module_name)
-
-
-def load_consumer(consumer_str):
-    logger.debug('Loading consumer {0}'.format(consumer_str))
-    return load_module_object(consumer_str)
-
-
-def load_module_object(module_object_str):
-    module_name, obj_name = module_object_str.split(':')
-    module = load_module(module_name)
-    return getattr(module, obj_name)
-
 
 def main():
     setup()
