@@ -2,12 +2,14 @@
 import json
 import logging
 from uuid import UUID
+import sys
 
 from cronq.backends.mysql import Storage
-from cronq.rabbit_connection import connect, CronqConsumer
+from cronq.rabbit_connection import CronqConsumer
 from dateutil.parser import parse
 
 logger = logging.getLogger(__name__)
+
 
 class CronqAggregator(CronqConsumer):
 
@@ -16,14 +18,13 @@ class CronqAggregator(CronqConsumer):
         self.storage = Storage()
 
     def run_something(self, msg):
-        tag = msg.delivery_info['delivery_tag']
         data = json.loads(str(msg.body))
 
         job_id = data['job_id']
         run_id = UUID(hex=data['run_id'])
 
         self.log_message(job_id, run_id,
-            "Write job result to database {}".format(str(msg.body)))
+                         "Write job result to database {}".format(str(msg.body)))
 
         self.storage.add_event(
             job_id,
@@ -53,22 +54,7 @@ def setup():
     max_failures = 10
     while max_failures > 0:
         runner.connect()
-
-        broken = runner.consume()
-
-        max_failures -= 1
-
-
-    runner.logger.warning("Too many errors, exiting")
-    sys.exit(1)
-
-def setup():
-    runner = CronqAggregator()
-
-    max_failures = 10
-    while max_failures > 0:
-        runner.connect()
-        broken = runner.consume(queue="cronq_results")
+        runner.consume(queue="cronq_results")
         max_failures -= 1
 
     runner.logger.warning("Too many errors, exiting")

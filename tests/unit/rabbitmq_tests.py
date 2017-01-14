@@ -11,8 +11,6 @@ class TestGenerateRandomString(unittest.TestCase):
         s = rabbit_connection.generate_random_string(8)
         self.assertEqual(8, len(s))
 
-
-
 class TestParseHeartbeat(unittest.TestCase):
 
     def test_heartbeat_from_rabbitmq_url(self):

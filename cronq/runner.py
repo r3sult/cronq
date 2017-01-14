@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
 import fcntl
-import importlib
 import json
 import logging
 import logging.handlers
@@ -15,14 +14,16 @@ import time
 
 from cronq.config import LOG_PATH
 from cronq.config import QUEUE
-from cronq.rabbit_connection import connect, CronqConsumer
+from cronq.rabbit_connection import CronqConsumer
 from cronq.utils import unicodedammit
 
 from haigha.message import Message
 
 FILENAME_REGEX = re.compile('[\W_]+', re.UNICODE)
 
+
 class CronqRunner(CronqConsumer):
+
     """handles reconnects"""
 
     def publish_result(self, body):
@@ -117,7 +118,7 @@ class CronqRunner(CronqConsumer):
             try:
                 message = nextline.rstrip()
                 message = unicodedammit(message)
-            except TypeError,ValueError:
+            except (TypeError, ValueError):
                 continue
 
             if message:
@@ -127,7 +128,8 @@ class CronqRunner(CronqConsumer):
                     })
                     handler.emit(log_record)
                     if log_to_stdout:
-                        self.log_message(job_id, run_id, log_record.getMessage())
+                        self.log_message(
+                            job_id, run_id, log_record.getMessage())
 
             time.sleep(0.00001)
             sys.stdout.flush()
@@ -144,12 +146,11 @@ class CronqRunner(CronqConsumer):
             'type': 'finished',
         })
 
-        self.log_message(job_id, run_id, "[cronq_exit_code:{}] Done".format(process.returncode))
+        self.log_message(
+            job_id, run_id, "[cronq_exit_code:{}] Done".format(process.returncode))
         return True
 
     def run_something(self, msg):
-        tag = msg.delivery_info['delivery_tag']
-        channel = self.channel
         make_directory(LOG_PATH)
 
         data = json.loads(str(msg.body))
@@ -169,23 +170,26 @@ class CronqRunner(CronqConsumer):
         else:
             return self.ack(msg)
 
+
 def setup():
     runner = CronqRunner()
 
     max_failures = 1000
     while max_failures > 0:
         runner.connect()
-        broken = runner.consume(queue=QUEUE)
+        runner.consume(queue=QUEUE)
         max_failures -= 1
 
     runner.logger.warning("Too many errors, exiting")
     sys.exit(1)
+
 
 def make_directory(directory):
     try:
         os.mkdir(directory)
     except OSError:
         pass
+
 
 def main():
     setup()

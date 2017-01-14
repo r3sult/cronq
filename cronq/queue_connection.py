@@ -16,6 +16,7 @@ from cronq.rabbit_connection import parse_url
 
 logger = logging.getLogger(__name__)
 
+
 def create_host_factory(hosts):
     random.shuffle(hosts)
     hosts_itr = itertools.cycle(hosts)
@@ -23,6 +24,7 @@ def create_host_factory(hosts):
 
 
 class QueueConnection(object):
+
     """A wrapper around an AMQP connection for ease of publishing
 
     Simple instantiation:
@@ -77,6 +79,7 @@ class QueueConnection(object):
     the message was written to a connection successfully.
 
     """
+
     def __init__(self, url=None, confirm=False, **kwargs):
         if url is None:
             url = RABBITMQ_URL
@@ -137,7 +140,8 @@ class QueueConnection(object):
 
     def _generate_connection_name(self):
         random_generator = random.SystemRandom()
-        random_string = ''.join([random_generator.choice(string.ascii_lowercase) for i in xrange(10)])
+        random_string = ''.join([random_generator.choice(string.ascii_lowercase)
+                                 for i in xrange(10)])
         return '{0}-{1}-{2}'.format(
             socket.gethostname(),
             os.getpid(),

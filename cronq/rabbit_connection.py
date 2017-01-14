@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-import itertools
-import json
 import logging
 import os
 import random
@@ -8,18 +6,19 @@ import socket
 import string
 import time
 import urlparse
-import datetime
 
 from cronq.config import RABBITMQ_URL
 
 from haigha.connections.rabbit_connection import RabbitConnection
-from haigha.message import Message
+
 
 class NullHandler(logging.Handler):
+
     def emit(self, record):
         pass
 
 logger = logging.getLogger(__name__)
+
 
 def generate_random_string(length):
     """generates  a random alphanumeric string of length `strlen`"""
@@ -66,6 +65,7 @@ def parse_heartbeat(query):
 
     return heartbeat
 
+
 def parse_url(rabbitmq_url):
     """returns tuple containing
     HOSTS, USER, PASSWORD, VHOST
@@ -93,6 +93,7 @@ def parse_url(rabbitmq_url):
 
     heartbeat = parse_heartbeat(query)
     return (hosts, user, password, vhost, port, heartbeat)
+
 
 def plain_rabbit_connection_to_hosts(hosts, **kwargs):
     for host in hosts:
@@ -145,6 +146,7 @@ def connect(**kwargs):
 
 
 class CronqConsumer(object):
+
     """handles reconnects"""
 
     def __init__(self):
