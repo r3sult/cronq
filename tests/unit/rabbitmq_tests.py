@@ -2,6 +2,7 @@ import unittest
 
 from cronq import rabbit_connection
 
+
 class TestGenerateRandomString(unittest.TestCase):
 
     def test_string_length(self):
@@ -11,6 +12,7 @@ class TestGenerateRandomString(unittest.TestCase):
         s = rabbit_connection.generate_random_string(8)
         self.assertEqual(8, len(s))
 
+
 class TestParseHeartbeat(unittest.TestCase):
 
     def test_heartbeat_from_rabbitmq_url(self):
@@ -18,7 +20,7 @@ class TestParseHeartbeat(unittest.TestCase):
         vals = rabbit_connection.parse_url(url)
         self.assertEqual(100, vals[5])
 
-    def test_heartbeat_from_rabbitmq_url(self):
+    def test_heartbeat_from_rabbitmq_url2(self):
         url = "amqp://foo:bar@localhost"
         vals = rabbit_connection.parse_url(url)
         self.assertIsNone(vals[5])
@@ -26,6 +28,7 @@ class TestParseHeartbeat(unittest.TestCase):
     def test_basic(self):
         query = "heartbeat=100"
         self.assertEqual(100, rabbit_connection.parse_heartbeat(query))
+
 
 class TestParseUrl(unittest.TestCase):
 

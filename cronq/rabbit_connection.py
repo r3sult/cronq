@@ -11,6 +11,10 @@ from cronq.config import RABBITMQ_URL
 
 from haigha.connections.rabbit_connection import RabbitConnection
 
+# cronq jobs can be very long, override heartbeat settings
+# to keep rabbitmq connections alive (or there might be problems)
+CONSUMER_HEARTBEAT = 50000
+
 
 class NullHandler(logging.Handler):
 
@@ -27,8 +31,6 @@ def generate_random_string(length):
 
 
 def parse_heartbeat(query):
-    logger = logging.getLogger('amqp-dispatcher')
-
     default_heartbeat = None
     heartbeat = default_heartbeat
     if query:
@@ -100,6 +102,7 @@ def plain_rabbit_connection_to_hosts(hosts, **kwargs):
         logger.info('Trying to connect to host: {0}'.format(host))
         try:
             conn = RabbitConnection(host=host, **kwargs)
+            logger.info("...success")
             return conn
         except socket.error:
             logger.info('Error connecting to {0}'.format(host))
@@ -160,7 +163,7 @@ class CronqConsumer(object):
     def _create_connection(self):
         self._connection = connect(
             close_cb=self._connection_closed_cb,
-            heartbeat=50000)
+            heartbeat=CONSUMER_HEARTBEAT)
         self._channel = self._connection.channel()
 
     def connect(self):
@@ -203,6 +206,9 @@ class CronqConsumer(object):
         tag = self.tag_from_msg(msg)
         if self.is_connected():
             self.channel.basic.reject(tag, requeue=requeue)
+
+    def publish(self, msg, exchange, routing_key):
+        self.channel.basic.publish(msg, exchange, routing_key)
 
     def log_message(self, job_id, run_id, message, lvl=logging.INFO):
         msg = "[cronq_job_id:{0}] [cronq_run_id]:{1} {2}".format(

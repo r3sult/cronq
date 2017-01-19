@@ -33,7 +33,7 @@ class CronqRunner(CronqConsumer):
         }
         body.update(headers)
         msg = Message(json.dumps(body))
-        self.channel.basic.publish(msg, 'cronq', 'cronq_results')
+        self.publish(msg, 'cronq', 'cronq_results')
 
     def valid_job(self, data):
         valid = True
@@ -90,9 +90,7 @@ class CronqRunner(CronqConsumer):
         fl = fcntl.fcntl(fd, fcntl.F_GETFL)
         fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NONBLOCK)
 
-        self.logger.info('[cronq_job_id:{0}] [cronq_run_id:{1}] Waiting'.format(
-            data.get('job_id'), data.get('run_id')
-        ))
+        self.log_message(job_id, run_id, "Waiting")
 
         splits = FILENAME_REGEX.split(data.get('name', 'UNKNOWN'))
         if len(splits) > 1:
@@ -146,8 +144,7 @@ class CronqRunner(CronqConsumer):
             'type': 'finished',
         })
 
-        self.log_message(
-            job_id, run_id, "[cronq_exit_code:{}] Done".format(process.returncode))
+        self.log_message(job_id, run_id, "[cronq_exit_code:{}] Done".format(process.returncode))
         return True
 
     def run_something(self, msg):
@@ -166,8 +163,10 @@ class CronqRunner(CronqConsumer):
             success = False
 
         if not success:
+            self.logger.warning("rejecting message")
             return self.reject(msg, requeue=False)
         else:
+            self.logger.info("acking message")
             return self.ack(msg)
 
 
