@@ -5,7 +5,7 @@ import time
 from haigha.connections.rabbit_connection import RabbitConnection
 from haigha.message import Message
 
-connection = Connection(
+connection = RabbitConnection(
     user=os.getenv('RABBITMQ_USER'),
     password=os.getenv('RABBITMQ_PASS'),
     vhost='/',
