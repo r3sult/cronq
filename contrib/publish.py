@@ -2,9 +2,8 @@ import json
 import os
 import time
 
-from haigha.connection import Connection
+from haigha.connections.rabbit_connection import RabbitConnection
 from haigha.message import Message
-from uuid import uuid4
 
 connection = Connection(
     user=os.getenv('RABBITMQ_USER'),
