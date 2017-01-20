@@ -1,6 +1,43 @@
 Changelog
 =========
 
+0.16.0 (2017-01-20)
+-------------------
+
+- One more fix. [Adam Cohen]
+
+- Fix import. [Adam Cohen]
+
+- Some slightly better logging and stuff. [Adam Cohen]
+
+- Bugs and pep8 things. [Adam Cohen]
+
+- Unnecessary print. [Adam Cohen]
+
+- Unnecessary print. [Adam Cohen]
+
+- Refactor db code a bit. [Adam Cohen]
+
+- Clean up and test end-to-end. [Adam Cohen]
+
+- Slightly better logging. [Adam Cohen]
+
+- Cronq runner with reconnect. [Adam Cohen]
+
+- Remove unused amqpproxy. [Adam Cohen]
+
+- Remove a bunch of stuff from queue_connection, to rabbit_connection.
+  [Adam Cohen]
+
+- Split out rabbit_connection and add some parsing tests. [Adam Cohen]
+
+- This is unused. [Adam Cohen]
+
+- Remove delayed publishing stuff, left over from sg queueconnection
+  boilerplate. [Adam Cohen]
+
+- Remove references to gevent, etc. [Adam Cohen]
+
 0.15.1 (2016-12-29)
 -------------------
 
