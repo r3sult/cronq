@@ -211,7 +211,7 @@ class CronqConsumer(object):
         self.channel.basic.publish(msg, exchange, routing_key)
 
     def log_message(self, job_id, run_id, message, lvl=logging.INFO):
-        msg = "[cronq_job_id:{0}] [cronq_run_id]:{1} {2}".format(
+        msg = "[cronq_job_id:{0}] [cronq_run_id:{1}] {2}".format(
             job_id,
             run_id,
             message
