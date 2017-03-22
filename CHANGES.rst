@@ -1,6 +1,21 @@
 Changelog
 =========
 
+0.17.0 (2017-03-22)
+-------------------
+
+Fix
+~~~
+
+- Drop six dependency. [Jose Diaz-Gonzalez]
+
+Other
+~~~~~
+
+- [WEB] Add job name to title for browser autocomplete. [zackkitzmiller]
+
+- Fix placement of square bracket. [Jon Coe]
+
 0.16.0 (2017-01-20)
 -------------------
 
