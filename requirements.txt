@@ -9,7 +9,6 @@ MarkupSafe==0.23
 mock==1.0.1
 PyMySQL==0.7.9
 python-dateutil==2.2
-six==1.7.3
 SQLAlchemy==0.9.7
 Werkzeug==0.9.6
 wheel==0.24.0
