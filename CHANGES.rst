@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.17.1 (2017-04-13)
+-------------------
+
+Fix
+~~~
+
+- Retrieve job name correctly. [Jose Diaz-Gonzalez]
+
 0.17.0 (2017-03-22)
 -------------------
 
