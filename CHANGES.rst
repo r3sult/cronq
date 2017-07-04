@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.17.2 (2017-07-04)
+-------------------
+
+- Refactor: do not use relative import. [Jose Diaz-Gonzalez]
+
 0.17.1 (2017-04-13)
 -------------------
 
