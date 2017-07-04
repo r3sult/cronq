@@ -2,4 +2,4 @@
 __version__ = '0.17.1'
 
 # import here
-import logsetup
+import cronq.logsetup
