@@ -141,31 +141,78 @@ class Storage(object):
         self.session.merge(job)
         self.session.commit()
 
-    @property
-    def jobs(self):
+    def jobs(self, _id=None, category_id=None, page=0, per_page=None, sort='category_id.asc'):
         session = self.session
-        for job in session.query(Job).order_by(asc(Job.category_id)):
-            yield {
+        categories = list(self.categories())
+
+        query = session.query(Job)
+
+        if _id is not None:
+            query = query.filter_by(id=_id)
+
+        if category_id is not None:
+            query = query.filter_by(category_id=category_id)
+
+        field, order = sort.split('.', 1)
+        if order == 'asc':
+            query = query.order_by(asc(getattr(Job, field)))
+            if field != 'id':
+                query = query.order_by(asc(Job.id))
+        elif order == 'desc':
+            query = query.order_by(desc(getattr(Job, field)))
+            if field != 'id':
+                query = query.order_by(asc(Job.id))
+
+        if per_page is not None:
+            query = query.limit(per_page)
+
+        if page > 0:
+            query = query.offset(page * per_page)
+
+        for job in query:
+            data = {
                 'id': job.id,
                 'category_id': job.category_id,
                 'name': job.name,
-                'next_run': job.next_run,
                 'interval': job.interval,
+                'next_run': job.next_run,
                 'last_run_start': job.last_run_start,
                 'last_run_stop': job.last_run_stop,
                 'last_run_status': job.last_run_status,
-                'current_status': job.current_status or 'none',
                 'last_run_text': job.last_run_text(),
+                'current_status': job.current_status or 'none',
+                'routing_key': job.routing_key,
+                'command': job.command,
+                'locked_by': job.locked_by,
             }
+            category = filter(lambda c: c['id'] == job.category_id, categories)
+            if len(category) == 1:
+                data['category'] = category[0]
+            yield data
 
-    @property
-    def categories(self):
+    def categories(self, _id=None, sort='id.asc'):
         session = self.session
-        for category in session.query(Category).order_by(asc(Category.id)):
+
+        query = session.query(Category)
+
+        if _id is not None:
+            query = query.filter_by(id=_id)
+
+        field, order = sort.split('.', 1)
+        if order == 'asc':
+            query = query.order_by(asc(getattr(Category, field)))
+        elif order == 'desc':
+            query = query.order_by(desc(getattr(Category, field)))
+
+        for category in query:
             yield {
                 'id': category.id,
                 'name': category.name,
             }
+
+    def categories_first(self, name):
+        session = self.session
+        return session.query(Category).filter_by(name=name).first()
 
     def get_job(self, id):
         job = self.session.query(Job).get(id)

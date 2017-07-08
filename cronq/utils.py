@@ -69,3 +69,60 @@ def decode_string(newstr, ignore=False):
             pass
 
     raise Exception("can't decode this string at all")
+
+
+def json_serial(obj):
+    """JSON serializer for objects not serializable by default json code"""
+
+    if hasattr(obj, 'isoformat'):
+        serial = obj.isoformat()
+        return serial
+    if isinstance(obj, datetime.timedelta):
+        return obj.total_seconds()
+    raise TypeError ("Type %s not serializable" % type(obj))
+
+
+def query_id(args):
+    _id = args.get('id', None)
+    if _id is not None:
+        _id = int(_id)
+
+    return _id
+
+
+def query_category_id(args):
+    category_id = args.get('category_id', None)
+    if category_id is not None:
+        category_id = int(category_id)
+
+    return category_id
+
+
+def query_page(args):
+    page = int(args.get('page', 0))
+    if page < 0:
+        page = 0
+
+    return page
+
+
+def query_per_page(args):
+    per_page = int(args.get('per_page', 10))
+    if per_page > 100:
+        per_page = 100
+
+    return per_page
+
+def query_sort(args, allowed_fields=None):
+    field, order = args.get('sort', 'id.asc').split('.', 1)
+    if not order:
+        order = 'asc'
+
+    if allowed_fields is None:
+        allowed_fields = ['id', 'name']
+
+    if field not in allowed_fields:
+        field = 'id'
+
+    return '{0}.{1}'.format(field, order)
+
