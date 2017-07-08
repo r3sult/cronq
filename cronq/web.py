@@ -148,7 +148,7 @@ def api_categories():
             'data': {
                 'categories': list(categories)
             },
-        }),
+        }, default=json_serial),
         mimetype='application/json',
     )
 
@@ -164,7 +164,7 @@ def api_category_show(name):
                     'name': category.name,
                 },
             },
-        }),
+        }, default=json_serial),
         mimetype='application/json',
     )
 
