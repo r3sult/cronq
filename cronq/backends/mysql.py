@@ -9,6 +9,7 @@ from cronq.config import DATABASE_URL
 from cronq.models.category import Category
 from cronq.models.event import Event
 from cronq.models.job import Job
+from cronq.utils import chunks_to_runs
 
 from sqlalchemy import create_engine
 from sqlalchemy import or_
@@ -141,7 +142,7 @@ class Storage(object):
         self.session.merge(job)
         self.session.commit()
 
-    def jobs(self, _id=None, category_id=None, page=0, per_page=None, sort='category_id.asc'):
+    def jobs(self, _id=None, category_id=None, page=0, per_page=None, sort='category_id.asc', include_runs=False):
         session = self.session
         categories = list(self.categories())
 
@@ -185,6 +186,8 @@ class Storage(object):
                 'command': job.command,
                 'locked_by': job.locked_by,
             }
+            if include_runs:
+                data['runs'] = chunks_to_runs(self.last_event_chunks_for_job(job.id, 20))
             category = filter(lambda c: c['id'] == job.category_id, categories)
             if len(category) == 1:
                 data['category'] = category[0]

@@ -199,7 +199,8 @@ def api_jobs():
         category_id=category_id,
         page=page,
         per_page=per_page,
-        sort=sort)
+        sort=sort,
+        include_runs=True)
 
     return Response(
         json.dumps({
@@ -213,7 +214,7 @@ def api_jobs():
 
 @app.route('/api/jobs/<int:id>', methods=['GET'])
 def api_job_show(id):
-    jobs = list(g.storage.jobs(_id=id, per_page=1))
+    jobs = list(g.storage.jobs(_id=id, per_page=1, include_runs=True))
     if len(jobs) != 1:
         return Response(
             json.dumps({
