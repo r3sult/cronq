@@ -1,7 +1,26 @@
 Changelog
 =========
 
-0.19.0 (2017-07-08)
+0.20.0 (2017-07-08)
+-------------------
+
+Fix
+~~~
+
+- Ensure we properly convert all entries when there is no first or last
+  chunk. [Jose Diaz-Gonzalez]
+
+Other
+~~~~~
+
+- Chore: remove `/api/jobs/JOB_ID/runs` endpoint. [Jose Diaz-Gonzalez]
+
+  This is now included in the `/api/jobs/JOB_ID` endpoint
+
+
+- Feat: include runs in json api output. [Jose Diaz-Gonzalez]
+
+0.19.0 (2017-07-09)
 -------------------
 
 - Feat: add the ability to filter by category.name. [Jose Diaz-Gonzalez]
