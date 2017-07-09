@@ -71,6 +71,32 @@ def decode_string(newstr, ignore=False):
     raise Exception("can't decode this string at all")
 
 
+def chunks_to_runs(chunks):
+    runs = []
+    for chunk in chunks:
+        run_id = None
+        host = None
+        for entry in ['first', 'last']:
+            if run_id is None:
+                run_id = chunk.get(entry, {}).get('run_id', None)
+            if host is None:
+                host = chunk.get(entry, {}).get('host', None)
+
+        runs.append({
+            'id': run_id,
+            'job_id': chunk.get('job_id'),
+            'status': chunk.get('last', {}).get('status', 'pending'),
+            'started_event_id': chunk.get('first', {}).get('id', None),
+            'completed_event_id': chunk.get('last', {}).get('id', None),
+            'started_at': chunk.get('first', {}).get('datetime', None),
+            'completed_at': chunk.get('last', {}).get('datetime', None),
+            'return_code': chunk.get('last', {}).get('return_code', None),
+            'host': host,
+        })
+
+    return runs
+
+
 def json_serial(obj):
     """JSON serializer for objects not serializable by default json code"""
 
