@@ -1,6 +1,21 @@
 Changelog
 =========
 
+0.18.0 (2017-07-08)
+-------------------
+
+- Feat: add the ability to queue a job via api. [Jose Diaz-Gonzalez]
+
+- Feat: add the ability to list runs for a given job. [Jose Diaz-
+  Gonzalez]
+
+- Feat: ensure we have an error message when there is an invalid job
+  being requested. [Jose Diaz-Gonzalez]
+
+- Chore: add default serializer. [Jose Diaz-Gonzalez]
+
+- Feat: build out a simple queryable api for cronq. [Jose Diaz-Gonzalez]
+
 0.17.2 (2017-07-04)
 -------------------
 
