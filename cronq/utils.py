@@ -77,20 +77,40 @@ def chunks_to_runs(chunks):
         run_id = None
         host = None
         for entry in ['first', 'last']:
+            if chunk.get(entry, None) is None:
+                continue
+
             if run_id is None:
                 run_id = chunk.get(entry, {}).get('run_id', None)
             if host is None:
                 host = chunk.get(entry, {}).get('host', None)
 
+        status = 'pending'
+        completed_at = None
+        return_code = None
+        completed_event_id = None
+        if chunk.get('last', {}):
+            status = chunk.get('last', {}).get('status', 'pending')
+            completed_at = chunk.get('last', {}).get('datetime', None)
+            return_code = chunk.get('last', {}).get('return_code', None)
+            completed_event_id = chunk.get('last', {}).get('id', None)
+
+        started_at = None
+        started_event_id = None
+        first = chunk.get('first', None)
+        if first is not None:
+            started_at = chunk.get('first', {}).get('datetime', None)
+            started_event_id = chunk.get('first', {}).get('id', None)
+
         runs.append({
             'id': run_id,
             'job_id': chunk.get('job_id'),
-            'status': chunk.get('last', {}).get('status', 'pending'),
-            'started_event_id': chunk.get('first', {}).get('id', None),
-            'completed_event_id': chunk.get('last', {}).get('id', None),
-            'started_at': chunk.get('first', {}).get('datetime', None),
-            'completed_at': chunk.get('last', {}).get('datetime', None),
-            'return_code': chunk.get('last', {}).get('return_code', None),
+            'status': status,
+            'completed_at': completed_at,
+            'completed_event_id': completed_event_id,
+            'started_at': started_at,
+            'started_event_id': started_event_id,
+            'return_code': return_code,
             'host': host,
         })
 
