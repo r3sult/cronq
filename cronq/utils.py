@@ -117,7 +117,7 @@ def query_id(args):
 
 
 def query_category_id(args):
-    category_id = args.get('category_id', None)
+    category_id = args.get('category.id')
     if category_id is not None:
         category_id = int(category_id)
 
