@@ -246,6 +246,31 @@ def api_job_runs(id):
     )
 
 
+@app.route('/api/jobs/<int:id>/run', methods=['POST'])
+def api_job_run(id):
+    jobs = list(g.storage.jobs(_id=id, per_page=1))
+
+    if len(jobs) != 1:
+        return Response(
+            json.dumps({
+                'error': {
+                    'message': 'Job not found for id {0}'.format(id),
+                },
+            }, default=json_serial),
+            mimetype='application/json'
+        )
+
+    g.storage.run_job_now(id)
+    return Response(
+        json.dumps({
+            'success': {
+                'message': 'Job submitted at {0}'.format(datetime.datetime.utcnow()),
+            },
+        }, default=json_serial),
+        mimetype='application/json'
+    )
+
+
 def remove_jobs(storage, jobs):
     for job in jobs:
         g.storage.remove_job(job['id'])
