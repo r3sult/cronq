@@ -1,7 +1,15 @@
 Changelog
 =========
 
-0.18.0 (2017-07-08)
+0.19.0 (2017-07-08)
+-------------------
+
+- Feat: add the ability to filter by category.name. [Jose Diaz-Gonzalez]
+
+- Refactor: replace category_id filter with category.id. [Jose Diaz-
+  Gonzalez]
+
+0.18.0 (2017-07-09)
 -------------------
 
 - Feat: add the ability to queue a job via api. [Jose Diaz-Gonzalez]
