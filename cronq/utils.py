@@ -124,6 +124,10 @@ def query_category_id(args):
     return category_id
 
 
+def query_category_name(args):
+    return args.get('category.name', None)
+
+
 def query_page(args):
     page = int(args.get('page', 0))
     if page < 0:

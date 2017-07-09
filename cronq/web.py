@@ -9,6 +9,7 @@ from cronq.backends.mysql import Storage
 from cronq.utils import chunks_to_runs
 from cronq.utils import json_serial
 from cronq.utils import query_category_id
+from cronq.utils import query_category_name
 from cronq.utils import query_id
 from cronq.utils import query_page
 from cronq.utils import query_per_page
@@ -178,6 +179,20 @@ def api_jobs():
     sort = query_sort(request.args, allowed_fields=['id', 'name', 'category_id'])
     category_id = query_category_id(request.args)
     _id = query_id(request.args)
+
+    category_name = query_category_name(request.args)
+    if category_name:
+        category = g.storage.categories_first(category_name)
+        if category is None:
+            return Response(
+                json.dumps({
+                    'data': {
+                        'jobs': [],
+                    },
+                }, default=json_serial),
+                mimetype='application/json'
+            )
+        category_id = category.id
 
     jobs = g.storage.jobs(
         _id=_id,
