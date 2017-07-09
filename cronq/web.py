@@ -235,33 +235,6 @@ def api_job_show(id):
     )
 
 
-@app.route('/api/jobs/<int:id>/runs', methods=['GET'])
-def api_job_runs(id):
-    jobs = list(g.storage.jobs(_id=id, per_page=1))
-
-    if len(jobs) != 1:
-        return Response(
-            json.dumps({
-                'error': {
-                    'message': 'Job not found for id {0}'.format(id),
-                },
-            }, default=json_serial),
-            mimetype='application/json'
-        )
-
-    chunks = g.storage.last_event_chunks_for_job(id, 20)
-    runs = chunks_to_runs(chunks)
-    return Response(
-        json.dumps({
-            'data': {
-                'job': jobs[0],
-                'runs': runs,
-            }
-        }, default=json_serial),
-        mimetype='application/json'
-    )
-
-
 @app.route('/api/jobs/<int:id>/run', methods=['POST'])
 def api_job_run(id):
     jobs = list(g.storage.jobs(_id=id, per_page=1))
