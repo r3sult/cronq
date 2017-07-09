@@ -198,19 +198,25 @@ def api_jobs():
 @app.route('/api/jobs/<int:id>', methods=['GET'])
 def api_job_show(id):
     jobs = list(g.storage.jobs(_id=id, per_page=1))
-    job = None
-    if len(jobs) == 1:
-        job = jobs[0]
-
+    if len(jobs) != 1:
+        return Response(
+            json.dumps({
+                'error': {
+                    'message': 'Job not found for id {0}'.format(id),
+                },
+            }, default=json_serial),
+            mimetype='application/json'
+        )
 
     return Response(
         json.dumps({
             'data': {
-                'job': job,
+                'job': job[0],
             },
         }, default=json_serial),
         mimetype='application/json'
     )
+
 
 def remove_jobs(storage, jobs):
     for job in jobs:
