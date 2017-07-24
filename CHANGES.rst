@@ -1,6 +1,21 @@
 Changelog
 =========
 
+0.21.1 (2017-07-24)
+-------------------
+
+Fix
+~~~
+
+- Ensure we can import things from the validator class. [Jose Diaz-
+  Gonzalez]
+
+Other
+~~~~~
+
+- Feat: add more docs to readme regarding configuration validation.
+  [Jose Diaz-Gonzalez]
+
 0.21.0 (2017-07-24)
 -------------------
 
