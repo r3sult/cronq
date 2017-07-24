@@ -176,6 +176,23 @@ The web admin exposes a ``category`` endpoint which allows you to replace a set 
 
 This adds / updates a job named ``Test Job`` in the ``example`` category. The time format is ISO 8601. Any jobs no longer defined for the example category will be removed. This allows you to script job additions / removes in your VCS.
 
+Configuration Validation
+------------------------
+
+Before posting cronq configuration, you may wish to validate that the file is in the correct format. To do so, you can use the included ``cronq-validator`` console script.
+
+.. code-block:: bash
+
+    # looks for a cronq.config in the current directory by default
+    cronq-validator
+
+    # can be scoped to a specific file
+    cronq-validator --config cronq.json
+
+This will check both json syntax as well as whether the contents pass the Cronq ``jsonschema``. We also include a ``cronq.validator`` module which contains the following methods:
+
+- ``cronq_schema``: Returns the jsonschema as a python dictionary
+- ``validate``: Takes a path to a config file and runs validation. May raise ``ValidationError``.
 
 License
 =======
