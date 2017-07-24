@@ -1,7 +1,13 @@
 Changelog
 =========
 
-0.20.0 (2017-07-08)
+0.21.0 (2017-07-24)
+-------------------
+
+- Feat: add cronq-validator console script to allow validation of cronq
+  config via cli. [Jose Diaz-Gonzalez]
+
+0.20.0 (2017-07-09)
 -------------------
 
 Fix
