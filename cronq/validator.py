@@ -4,9 +4,10 @@ import argparse
 import logging
 import json
 import jsonschema
+import sys
 
 
-def _schema():
+def cronq_schema():
     return {
         "title": "cronq",
         "type": "object",
@@ -60,9 +61,10 @@ def validate(config_file):
 
     if config is None:
         logger.error('Failed to open config file')
-        sys.exit(1)
+        return False
 
-    jsonschema.validate(config, _schema())
+    jsonschema.validate(config, cronq_schema())
+    return True
 
 
 def main():
@@ -73,7 +75,8 @@ def main():
                         default='cronq.config',
                         help='path to the config file')
     args = parser.parse_args()
-    validate(args.config)
+    if not validate(args.config):
+        sys.exit(1)
 
 
 if __name__ == '__main__':
