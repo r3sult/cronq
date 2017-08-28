@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.22.0 (2017-08-28)
+-------------------
+
+- Feat: add .env to dockerignore. [Jose Diaz-Gonzalez]
+
+- Feat: add a Dockerfile for building and running cronq within docker.
+  [Jose Diaz-Gonzalez]
+
 0.21.1 (2017-07-24)
 -------------------
 
