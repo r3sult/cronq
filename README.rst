@@ -90,7 +90,7 @@ You can ostensibly run as many injectors as necessary. MySQL isolation levels ar
     export RABBITMQ_PASS=guest
 
     # specify the database connection string
-    export CRONQ_MYSQL=mysql+pymysql://cronq:cronq@localhost/cronq
+    export DATABASE_URL=mysql+pymysql://cronq:cronq@localhost/cronq
 
     # run the comand injector
     cronq-injector
@@ -114,7 +114,7 @@ The `results` aggregator listens to the ``cronq_results`` queue for the results 
     export RABBITMQ_PASS=guest
 
     # specify the database connection string
-    export CRONQ_MYSQL=mysql+pymysql://cronq:cronq@localhost/cronq
+    export DATABASE_URL=mysql+pymysql://cronq:cronq@localhost/cronq
 
     # run the results-aggregator
     cronq-results
@@ -135,7 +135,7 @@ The web view is a WSGI app run from ``cronq.web:app`` and requires only database
     sudo pip install greenlet gevent gunicorn
 
     # specify the database connection string
-    export CRONQ_MYSQL=mysql+pymysql://cronq:cronq@localhost/cronq
+    export DATABASE_URL=mysql+pymysql://cronq:cronq@localhost/cronq
 
     # if you have an aggregated log dashboard, you can provide a search url
     # template. it will be used in the web dashboard for linking to logs
