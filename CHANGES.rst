@@ -1,6 +1,18 @@
 Changelog
 =========
 
+0.23.0 (2017-08-29)
+-------------------
+
+- Docs: reference only RABBITMQ_URL. [Jose Diaz-Gonzalez]
+
+- Feat: allow setting DATABASE_URL env var. [Jose Diaz-Gonzalez]
+
+  - CRONQ_MYSQL is pretty cronq-specific, and using DATABASE_URL makes this much easier to deploy to a cloud environment
+  - force pymysql adapter if none is set instead of default to mysqldb
+  - only document DATABASE_URL usage
+
+
 0.22.0 (2017-08-28)
 -------------------
 
