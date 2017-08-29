@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.24.0 (2017-08-29)
+-------------------
+
+- Feat: upgrade dependencies. [Jose Diaz-Gonzalez]
+
 0.23.0 (2017-08-29)
 -------------------
 
