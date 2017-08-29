@@ -41,9 +41,7 @@ The runner requires ``/var/log/cronq/`` to exist and be writable by the user exe
 .. code-block:: bash
 
     # setup rabbitmq connection info
-    export RABBITMQ_HOST=localhost
-    export RABBITMQ_USER=guest
-    export RABBITMQ_PASS=guest
+    export RABBITMQ_URL=amqp://guest:guest@localhost/
 
     # specify the rabbitmq queue to listen to
     export CRONQ_QUEUE=cronq_jobs # `cronq_jobs` is the default queue
@@ -85,9 +83,7 @@ You can ostensibly run as many injectors as necessary. MySQL isolation levels ar
 .. code-block:: bash
 
     # setup rabbitmq connection info
-    export RABBITMQ_HOST=localhost
-    export RABBITMQ_USER=guest
-    export RABBITMQ_PASS=guest
+    export RABBITMQ_URL=amqp://guest:guest@localhost/
 
     # specify the database connection string
     export DATABASE_URL=mysql+pymysql://cronq:cronq@localhost/cronq
@@ -109,9 +105,7 @@ The `results` aggregator listens to the ``cronq_results`` queue for the results 
 .. code-block:: bash
 
     # setup rabbitmq connection info
-    export RABBITMQ_HOST=localhost
-    export RABBITMQ_USER=guest
-    export RABBITMQ_PASS=guest
+    export RABBITMQ_URL=amqp://guest:guest@localhost/
 
     # specify the database connection string
     export DATABASE_URL=mysql+pymysql://cronq:cronq@localhost/cronq
