@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.24.1 (2017-08-30)
+-------------------
+
+Fix
+~~~
+
+- Use a dict to set vars in a loop. [Jose Diaz-Gonzalez]
+
 0.24.0 (2017-08-29)
 -------------------
 
