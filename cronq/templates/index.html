@@ -27,10 +27,10 @@
 {% block main %}
       <div class="jumbotron">
         <h2>Tasks</h2>
-        {% set category_id = None %}
+        {% set vars = {'category_id': None} %}
         {% for job in jobs %}
-            {% if job.category_id != category_id %}
-                {% set category_id = job.category_id %}
+            {% if job.category_id != vars.category_id %}
+                {% if vars.update({'category_id': job.category_id}) %} {% endif %}
                 <h5 class="task-category">{{ categories[job.category_id].name }}</h4>
             {% endif %}
 
