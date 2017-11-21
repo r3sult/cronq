@@ -2,11 +2,9 @@
 import datetime
 import json
 import logging
-import time
 
 from cronq import interval_parser
 from cronq.backends.mysql import Storage
-from cronq.utils import chunks_to_runs
 from cronq.utils import json_serial
 from cronq.utils import query_category_id
 from cronq.utils import query_category_name
