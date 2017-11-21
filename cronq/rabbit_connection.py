@@ -8,6 +8,7 @@ import time
 import urlparse
 
 from cronq.config import RABBITMQ_URL
+from cronq.logger.handlers import NullHandler
 
 from haigha.connections.rabbit_connection import RabbitConnection
 
@@ -15,11 +16,6 @@ from haigha.connections.rabbit_connection import RabbitConnection
 # to keep rabbitmq connections alive (or there might be problems)
 CONSUMER_HEARTBEAT = 50000
 
-
-class NullHandler(logging.Handler):
-
-    def emit(self, record):
-        pass
 
 logger = logging.getLogger(__name__)
 
