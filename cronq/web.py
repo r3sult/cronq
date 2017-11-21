@@ -100,24 +100,33 @@ def failures():
 @blueprint_http.route('/api/category/<string:name>', methods=['PUT', 'POST'])
 def category(name):
     data = request.json
+    logger.info("Retrieving jobs")
     existing_jobs = g.storage.jobs_for_category(name=name)
+
+    logger.info("Retrieving category")
     category_id = g.storage.category_id_for_name(name)
     job_lookup = {}
 
+    logger.info("Validating jobs")
     if not validate_unique_job_names(data.get('jobs', [])):
         abort(400)
 
+    logger.info("Indexing existing jobs")
     for job in existing_jobs:
         job_lookup[job['name']] = job
 
+    logger.info("Processing posted jobs")
     for job in data.get('jobs', []):
         name = job['name']
+        logger.info("Calcuating next run for {0}".format(name))
         next_run, duration = interval_parser.next_run_and_duration_from_8601(
             job['schedule'])
         existing_job = job_lookup.get(name, {})
         new_id = existing_job.get('id')
         new_interval = duration.total_seconds()
         command = job['command']
+
+        logger.info("Adding job {0}".format(name))
         g.storage.add_job(
             name,
             new_interval,
@@ -130,6 +139,7 @@ def category(name):
         if existing_job:
             del job_lookup[name]
 
+    logger.info("Removing old jobs")
     remove_jobs(g.storage, job_lookup.itervalues())
 
     return '{"status": "success"}'
