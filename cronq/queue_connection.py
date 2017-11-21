@@ -9,7 +9,7 @@ import string
 import time
 import urlparse
 
-from cronq.config import RABBITMQ_URL
+from cronq.config import Config
 from haigha.connections.rabbit_connection import RabbitConnection
 from haigha.message import Message
 from cronq.rabbit_connection import parse_url
@@ -82,8 +82,8 @@ class QueueConnection(object):
 
     def __init__(self, url=None, confirm=False, **kwargs):
         if url is None:
-            url = RABBITMQ_URL
-        hosts, user, password, vhost, port, heartbeat = parse_url(RABBITMQ_URL)
+            url = Config.RABBITMQ_URL
+        hosts, user, password, vhost, port, heartbeat = parse_url(url)
 
         if heartbeat is None:
             heartbeat = kwargs.get('heartbeat', None)
@@ -222,7 +222,8 @@ class QueueConnection(object):
 class Publisher(object):
 
     def __init__(self):
-        self.queue_connection = QueueConnection(RABBITMQ_URL, confirm=True)
+        self.queue_connection = QueueConnection(Config.RABBITMQ_URL,
+                                                confirm=True)
 
     def publish(self, routing_key, job, run_id):
         cmd = {
@@ -232,4 +233,8 @@ class Publisher(object):
             'name': job['name'],
         }
         logger.debug(cmd)
-        return self.queue_connection.publish_json("cronq", routing_key, {}, cmd)
+        return self.queue_connection.publish_json(
+            "cronq",
+            routing_key,
+            {},
+            cmd)

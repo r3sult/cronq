@@ -5,7 +5,7 @@ import os
 import socket
 import urllib
 
-from cronq.config import DATABASE_URL
+from cronq.config import Config
 from cronq.models.category import Category
 from cronq.models.event import Event
 from cronq.models.job import Job
@@ -42,8 +42,9 @@ class Storage(object):
 
     def _new_engine(self, isolation_level='SERIALIZABLE'):
         if isolation_level is not None:
-            return create_engine(DATABASE_URL, isolation_level=isolation_level)
-        return create_engine(DATABASE_URL)
+            return create_engine(Config.DATABASE_URL,
+                                 isolation_level=isolation_level)
+        return create_engine(Config.DATABASE_URL)
 
     def _new_session(self):
         return self._maker()

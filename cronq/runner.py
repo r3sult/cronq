@@ -12,8 +12,7 @@ import subprocess
 import sys
 import time
 
-from cronq.config import LOG_PATH
-from cronq.config import QUEUE
+from cronq.config import Config
 from cronq.rabbit_connection import CronqConsumer
 from cronq.utils import unicodedammit
 
@@ -95,7 +94,7 @@ class CronqRunner(CronqConsumer):
         splits = FILENAME_REGEX.split(data.get('name', 'UNKNOWN'))
         if len(splits) > 1:
             logfile = '-'.join(splits)
-        filename = '{0}/{1}.log'.format(LOG_PATH, logfile.strip('-'))
+        filename = '{0}/{1}.log'.format(Config.LOG_PATH, logfile.strip('-'))
 
         handler = logging.handlers.WatchedFileHandler(filename)
         log_to_stdout = bool(os.getenv('CRONQ_RUNNER_LOG_TO_STDOUT', False))
@@ -148,7 +147,7 @@ class CronqRunner(CronqConsumer):
         return True
 
     def run_something(self, msg):
-        make_directory(LOG_PATH)
+        make_directory(Config.LOG_PATH)
 
         data = json.loads(str(msg.body))
         if not self.valid_job(data):
@@ -176,7 +175,7 @@ def setup():
     max_failures = 1000
     while max_failures > 0:
         runner.connect()
-        runner.consume(queue=QUEUE)
+        runner.consume(queue=CRONQ_QUEUE)
         max_failures -= 1
 
     runner.logger.warning("Too many errors, exiting")

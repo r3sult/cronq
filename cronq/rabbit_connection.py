@@ -7,7 +7,7 @@ import string
 import time
 import urlparse
 
-from cronq.config import RABBITMQ_URL
+from cronq.config import Config
 from cronq.logger.handlers import NullHandler
 
 from haigha.connections.rabbit_connection import RabbitConnection
@@ -106,7 +106,7 @@ def plain_rabbit_connection_to_hosts(hosts, **kwargs):
 
 
 def connect(**kwargs):
-    hosts, user, password, vhost, port, heartbeat = parse_url(RABBITMQ_URL)
+    hosts, user, password, vhost, port, heartbeat = parse_url(Config.RABBITMQ_URL)
 
     logger.info('Hosts are: {0}'.format(hosts))
     rabbit_logger = logging.getLogger('dispatcher.haigha')
