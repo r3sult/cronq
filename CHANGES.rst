@@ -1,6 +1,34 @@
 Changelog
 =========
 
+0.25.0 (2017-11-21)
+-------------------
+
+Fix
+~~~
+
+- Set path for static assets. [Jose Diaz-Gonzalez]
+
+- Use hooks. [Jose Diaz-Gonzalez]
+
+- Use correct url_for syntax. [Jose Diaz-Gonzalez]
+
+- Remove unused imports. [Jose Diaz-Gonzalez]
+
+Other
+~~~~~
+
+- Refactor: use blueprint for exposing the flask application. [Jose
+  Diaz-Gonzalez]
+
+- Feat: upgrade all dependencies. [Jose Diaz-Gonzalez]
+
+- Refactor: use Config object. [Jose Diaz-Gonzalez]
+
+- Refactor: drop extra configuration logic. [Jose Diaz-Gonzalez]
+
+- Refactor: move NullHandler to a separate module. [Jose Diaz-Gonzalez]
+
 0.24.1 (2017-08-30)
 -------------------
 
