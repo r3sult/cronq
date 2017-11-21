@@ -72,10 +72,10 @@
           <dl class="dl-horizontal">
             <dt>
               <h3 class="task-job-id">
-                <span class="task-status-container"><a href="{{ url_for("run_id", id=chunk.first.run_id) }}" class="task-status task-status-small task-status-{{ task_status(chunk.first, chunk.last) }}">&nbsp;</a></span>
+                <span class="task-status-container"><a href="{{ url_for('.run_id', id=chunk.first.run_id) }}" class="task-status task-status-small task-status-{{ task_status(chunk.first, chunk.last) }}">&nbsp;</a></span>
               ID</h3>
             </dt>
-            <dd><h3><a href="{{ url_for("run_id", id=chunk.first.run_id) }}">{{ chunk.first.run_id }}</a></h3></dd>
+            <dd><h3><a href="{{ url_for('.run_id', id=chunk.first.run_id) }}">{{ chunk.first.run_id }}</a></h3></dd>
             <dt>Host</dt>
             <dd>{{ chunk.first.host }}</dd>
 

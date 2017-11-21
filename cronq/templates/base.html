@@ -21,9 +21,9 @@
 
       <div class="masthead">
         <ul class="nav nav-pills pull-right">
-          <li ><a href="{{url_for('failures')}}">Failures</a></li>
+          <li ><a href="{{url_for('.failures')}}">Failures</a></li>
         </ul>
-        <h3 class="muted"><a href="{{url_for("index")}}">CronQ</a></h3>
+        <h3 class="muted"><a href="{{url_for('.index')}}">CronQ</a></h3>
       </div>
       {% with messages = get_flashed_messages() %}
         {% if messages %}

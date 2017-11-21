@@ -36,8 +36,8 @@
 
             <div class="task-container-outer">
                 <div class="task-container-inner">
-                    <a href="{{ url_for('job', id=job.id) }}" class="task-status task-status-{{ job.last_run_status }}"></a>
-                    <a href="{{ url_for('job', id=job.id) }}" class="task-name">{{ job.name }}</a>
+                    <a href="{{ url_for('.job', id=job.id) }}" class="task-status task-status-{{ job.last_run_status }}"></a>
+                    <a href="{{ url_for('.job', id=job.id) }}" class="task-name">{{ job.name }}</a>
                     <div class="task-lastrun">
                         {{ job.last_run_text | safe }}
                     </div>
