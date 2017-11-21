@@ -28,7 +28,12 @@ def run_setup():
         author='SeatGeek',
         author_email='opensource@seatgeek.com',
         license='BSD',
-        packages=['cronq', 'cronq.backends', 'cronq.models'],
+        packages=[
+            'cronq',
+            'cronq.backends',
+            'cronq.logger',
+            'cronq.models',
+        ],
         install_requires=open_file('requirements.txt').readlines(),
         test_suite='tests',
         long_description=open_file('README.rst').read(),

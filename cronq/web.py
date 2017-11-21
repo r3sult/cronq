@@ -16,7 +16,7 @@ from cronq.utils import split_command
 from cronq.utils import task_status
 from cronq.utils import took
 
-from flask import Flask
+from flask import Blueprint
 from flask import Response
 from flask import abort
 from flask import flash
@@ -26,26 +26,22 @@ from flask import render_template
 from flask import request
 from flask import url_for
 
-app = Flask(__name__)
-stream_handler = logging.StreamHandler()
-stream_handler.setLevel(logging.INFO)
-app.logger.addHandler(stream_handler)
-app.secret_key = 'not a secret'
-app.jinja_env.filters['split_command'] = split_command
-app.jinja_env.globals.update(task_status=task_status)
-app.jinja_env.globals.update(took=took)
+blueprint_http = Blueprint('blueprint_http', __name__)
+blueprint_http.add_app_template_filter(split_command, 'split_command')
+blueprint_http.add_app_template_filter(task_status, 'task_status')
+blueprint_http.add_app_template_filter(took, 'took')
 
 logger = logging.getLogger(__name__)
 
 
-@app.before_request
+@blueprint_http.before_request
 def create_storage():
     if request.path.startswith('/static/'):
         return
     g.storage = Storage(isolation_level=None)
 
 
-@app.after_request
+@blueprint_http.after_request
 def remove_storage(request):
     if hasattr(g, 'storage'):
         try:
@@ -55,7 +51,7 @@ def remove_storage(request):
     return request
 
 
-@app.route('/')
+@blueprint_http.route('/')
 def index():
     jobs = list(g.storage.jobs())
     categories = list(g.storage.categories())
@@ -63,7 +59,7 @@ def index():
     return render_template('index.html', jobs=jobs, categories=categories)
 
 
-@app.route('/_status')
+@blueprint_http.route('/_status')
 def status():
     return Response(
         json.dumps({'status': 'OK'}),
@@ -71,12 +67,12 @@ def status():
     )
 
 
-@app.route('/job/<int:id>', methods=['GET', 'POST'])
+@blueprint_http.route('/job/<int:id>', methods=['GET', 'POST'])
 def job(id):
     if request.method == 'POST' and request.form.get('run_now') is not None:
         g.storage.run_job_now(id)
         flash('Job submitted at {0}'.format(datetime.datetime.utcnow()))
-        return redirect(url_for('job', id=id))
+        return redirect(url_for('.job', id=id))
 
     job_doc = g.storage.get_job(id)
     chunks = g.storage.last_event_chunks_for_job(id, 20)
@@ -84,7 +80,7 @@ def job(id):
     return render_template('job.html', job=job_doc, chunks=chunks, title=title)
 
 
-@app.route('/run/<string:id>')
+@blueprint_http.route('/run/<string:id>')
 def run_id(id):
     events = list(g.storage.events_for_run_id(id))
     job_id = events[0]['job_id']
@@ -92,7 +88,7 @@ def run_id(id):
     return render_template('run_id.html', events=events, job=job)
 
 
-@app.route('/failures')
+@blueprint_http.route('/failures')
 def failures():
     failure_events = list(g.storage.failures())
     names = {job['id']: job['name'] for job in g.storage.jobs()}
@@ -101,7 +97,7 @@ def failures():
     return render_template('failures.html', events=failure_events)
 
 
-@app.route('/api/category/<string:name>', methods=['PUT', 'POST'])
+@blueprint_http.route('/api/category/<string:name>', methods=['PUT', 'POST'])
 def category(name):
     data = request.json
     existing_jobs = g.storage.jobs_for_category(name=name)
@@ -139,7 +135,7 @@ def category(name):
     return '{"status": "success"}'
 
 
-@app.route('/api/categories', methods=['GET'])
+@blueprint_http.route('/api/categories', methods=['GET'])
 def api_categories():
     _id = query_id(request.args)
     categories = g.storage.categories(_id=_id)
@@ -153,7 +149,7 @@ def api_categories():
     )
 
 
-@app.route('/api/categories/<string:name>', methods=['GET'])
+@blueprint_http.route('/api/categories/<string:name>', methods=['GET'])
 def api_category_show(name):
     category = g.storage.categories_first(name)
     return Response(
@@ -169,7 +165,7 @@ def api_category_show(name):
     )
 
 
-@app.route('/api/jobs', methods=['GET'])
+@blueprint_http.route('/api/jobs', methods=['GET'])
 def api_jobs():
 
     per_page = query_per_page(request.args)
@@ -210,7 +206,7 @@ def api_jobs():
     )
 
 
-@app.route('/api/jobs/<int:id>', methods=['GET'])
+@blueprint_http.route('/api/jobs/<int:id>', methods=['GET'])
 def api_job_show(id):
     jobs = list(g.storage.jobs(_id=id, per_page=1, include_runs=True))
     if len(jobs) != 1:
@@ -233,7 +229,7 @@ def api_job_show(id):
     )
 
 
-@app.route('/api/jobs/<int:id>/run', methods=['POST'])
+@blueprint_http.route('/api/jobs/<int:id>/run', methods=['POST'])
 def api_job_run(id):
     jobs = list(g.storage.jobs(_id=id, per_page=1))
 
@@ -266,7 +262,3 @@ def remove_jobs(storage, jobs):
 def validate_unique_job_names(jobs):
     job_names = [job['name'] for job in jobs]
     return len(job_names) == len(set(job_names))
-
-
-if __name__ == "__main__":
-    app.run(debug=True)

@@ -163,6 +163,7 @@ def query_per_page(args):
 
     return per_page
 
+
 def query_sort(args, allowed_fields=None):
     field, order = args.get('sort', 'id.asc').split('.', 1)
     if not order:
@@ -176,3 +177,18 @@ def query_sort(args, allowed_fields=None):
 
     return '{0}.{1}'.format(field, order)
 
+
+def to_bool(s):
+    try:
+        int_s = int(s)
+        return bool(int_s) is True
+    except:
+        pass
+
+    if isinstance(s, basestring):
+        if s.lower() in ['true', 't']:
+            return True
+        if s.lower() in ['false', 'f']:
+            return False
+
+    return bool(s) is True

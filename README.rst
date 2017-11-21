@@ -144,9 +144,9 @@ The web view is a WSGI app run from ``cronq.web:app`` and requires only database
     export CRONQ_LOG_URL_TEMPLATE="https://logs.service/search?run_id={run_id}&from={start_time}&to={end_time}"
 
     # run the web admin
-    gunicorn --access-logfile - -w 2 --worker-class=gevent cronq.web:app
+    gunicorn --access-logfile - -w 2 --bind :5000 --worker-class gevent cronq:make_application\(\) --error-logfile - --log-file -
 
-    # access the panel on http://127.0.0.1:8000
+    # access the panel on http://127.0.0.1:5000
 
 The web admin will list available commands, their result history, and a button to allow you to immediately schedule a job.
 
