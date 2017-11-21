@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.25.3 (2017-11-21)
+-------------------
+
+- Feat: log all jobs to be removed. [Jose Diaz-Gonzalez]
+
 0.25.2 (2017-11-21)
 -------------------
 
