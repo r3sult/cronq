@@ -139,7 +139,7 @@ def category(name):
         if existing_job:
             del job_lookup[name]
 
-    logger.info("Removing old jobs")
+    logger.info("Removing old jobs: {0}".format(job_lookup.keys()))
     remove_jobs(g.storage, job_lookup.itervalues())
 
     return '{"status": "success"}'
