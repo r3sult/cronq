@@ -9,8 +9,10 @@ def make_application():
     from flask import Flask
     from cronq.config import Config
     import cronq.web
+    import os
 
-    flask_app = Flask(__name__, static_url_path='')
+    flask_app = Flask(__name__,
+                      static_url_path='/static')
 
     if Config.BUGSNAG_API_KEY:
         import bugsnag
