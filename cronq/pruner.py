@@ -9,8 +9,8 @@ from sqlalchemy import between
 logger = logging.getLogger(__name__)
 
 
-def prune_record(event_id, max_event_id, storage):
-    last = event_id + 100
+def prune_record(event_id, max_event_id, interval, storage):
+    last = event_id + interval
     if last > max_event_id:
         last = max_event_id
 
@@ -21,13 +21,13 @@ def prune_record(event_id, max_event_id, storage):
     return last
 
 
-def prune(first, last):
+def prune(first, last, interval):
     storage = Storage(isolation_level=None)
 
     event_id = first
     while event_id <= last:
         try:
-            event_id = prune_record(event_id, last, storage)
+            event_id = prune_record(event_id, last, interval, storage)
         except (KeyboardInterrupt, SystemExit):
             storage.session.commit()
             return
@@ -46,13 +46,17 @@ def main():
                         type=int,
                         default='0',
                         help='first entry to prune')
+    parser.add_argument('--interval',
+                        type=int,
+                        default=100,
+                        help='interval to delete by')
     parser.add_argument('--last',
                         type=int,
                         default='0',
                         help='last entry to prune')
     args = parser.parse_args()
     args = vars(args)
-    prune(args['first'], args['last'])
+    prune(args['first'], args['last'], args['interval'])
 
 
 if __name__ == '__main__':
