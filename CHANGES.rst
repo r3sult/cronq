@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.26.1 (2017-11-23)
+-------------------
+
+Fix
+~~~
+
+- Do not pin to a functools version. [Jose Diaz-Gonzalez]
+
 0.26.0 (2017-11-23)
 -------------------
 
