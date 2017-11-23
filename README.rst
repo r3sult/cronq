@@ -52,10 +52,10 @@ The runner requires ``/var/log/cronq/`` to exist and be writable by the user exe
     # run commands
     cronq-runner
 
-When run, `cronq-runner` will:
+When run, ``cronq-runner`` will:
 
 - Setup a rabbitmq connection
-- Listen to the `cronq_jobs` queue
+- Listen to the ``cronq_jobs`` queue
 - Retrieve commands from the queue
 - Publish a message saying the command is started
 - Run the command in a shell subprocess
@@ -100,7 +100,7 @@ Note that jobs are not queued up at the *exact* time you specify in the database
 cronq-results
 =============
 
-The `results` aggregator listens to the ``cronq_results`` queue for the results of ``cronq-runner`` executions. You can run as many of these as possible, as they will retrieve results one-at-a-time from rabbitmq.
+The ``results`` aggregator listens to the ``cronq_results`` queue for the results of ``cronq-runner`` executions. You can run as many of these as possible, as they will retrieve results one-at-a-time from rabbitmq.
 
 .. code-block:: bash
 
@@ -118,15 +118,21 @@ These results can be viewed for particular commands within the web-admin, or by 
 cronq-pruner
 ============
 
-As time goes on, you will wish to prune your database of old events. A naive pruner is packaged with cronq, and can be used to prune from a starting event id to an ending event id:
+As time goes on, you will wish to prune your database of old events. A naive pruner is packaged with cronq, and it has the ability to prune events by a range or to keep at most ``N`` recent events
 
 .. code-block bash
 
     # specify the database connection string
     export DATABASE_URL=mysql+pymysql://cronq:cronq@localhost/cronq
 
-    # delete events 1 through 10
-    cronq-pruner --first 1 --last 10
+    # delete events 1 through 10 (deletes 100 at a time)
+    cronq-pruner --first 1 --last 10000
+
+    # delete events 1 through 10 (deletes 1000 at a time)
+    cronq-pruner --first 1 --last 10000 --range 100
+
+    # delete events not within the last 100 events
+    cronq-pruner --keep 100
 
 cronq-web
 =========
