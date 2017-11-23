@@ -34,6 +34,8 @@ def prune(first, last):
         except Exception as e:
             logger.warning(e)
             return
+        if event_id == last:
+            break
 
     storage.session.commit()
 
