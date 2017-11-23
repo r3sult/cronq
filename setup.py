@@ -44,6 +44,7 @@ def run_setup():
         entry_points="""
         [console_scripts]
            cronq-injector=cronq.injector:main
+           cronq-pruner=cronq.pruner:main
            cronq-results=cronq.result_aggregator:main
            cronq-runner=cronq.runner:main
            cronq-validator=cronq.validator:main

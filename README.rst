@@ -115,6 +115,19 @@ The `results` aggregator listens to the ``cronq_results`` queue for the results 
 
 These results can be viewed for particular commands within the web-admin, or by inspecting the database.
 
+cronq-pruner
+============
+
+As time goes on, you will wish to prune your database of old events. A naive pruner is packaged with cronq, and can be used to prune from a starting event id to an ending event id:
+
+.. code-block bash
+
+    # specify the database connection string
+    export DATABASE_URL=mysql+pymysql://cronq:cronq@localhost/cronq
+
+    # delete events 1 through 10
+    cronq-pruner --first 1 --last 10
+
 cronq-web
 =========
 
