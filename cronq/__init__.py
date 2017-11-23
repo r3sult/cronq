@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-__version__ = '0.26.3'
+__version__ = '0.26.4'
 
 # import here
 import cronq.logsetup

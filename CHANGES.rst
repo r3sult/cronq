@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.26.4 (2017-11-23)
+-------------------
+
+- Feat: allow customization of the interval. [Jose Diaz-Gonzalez]
+
 0.26.3 (2017-11-23)
 -------------------
 
