@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.27.0 (2017-11-23)
+-------------------
+
+- Feat: implement a pruning method that keeps last N records. [Jose
+  Diaz-Gonzalez]
+
 0.26.4 (2017-11-23)
 -------------------
 
