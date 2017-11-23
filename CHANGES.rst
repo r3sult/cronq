@@ -1,6 +1,15 @@
 Changelog
 =========
 
+0.26.3 (2017-11-23)
+-------------------
+
+Fix
+~~~
+
+- Ensure we don't infinite loop at the end of a pruning cycle. [Jose
+  Diaz-Gonzalez]
+
 0.26.2 (2017-11-23)
 -------------------
 
