@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.26.2 (2017-11-23)
+-------------------
+
+- Refactor: slightly faster pruning. [Jose Diaz-Gonzalez]
+
 0.26.1 (2017-11-23)
 -------------------
 
